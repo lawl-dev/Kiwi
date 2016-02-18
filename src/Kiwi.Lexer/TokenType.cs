@@ -44,6 +44,7 @@ namespace Kiwi.Lexer
         Float,
         Symbol,
         IntKeyword,
-        FloatKeyword
+        FloatKeyword,
+        Comment
     }
 }

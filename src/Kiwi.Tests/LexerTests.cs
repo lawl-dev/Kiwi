@@ -47,6 +47,8 @@ namespace Kiwi.Tests
         [TestCase(TokenType.Symbol, "MyVariableName")]
         [TestCase(TokenType.Int, "12312312")]
         [TestCase(TokenType.Float, "123123.111")]
+        [TestCase(TokenType.Comment, "//Comment")]
+        [TestCase(TokenType.Comment, "/*Dudiledu\r\nDada bu*/")]
         public void TestSingleTokenTypes(TokenType expectedTokenType, string source)
         {
             var lexer = new Lexer.Lexer();
