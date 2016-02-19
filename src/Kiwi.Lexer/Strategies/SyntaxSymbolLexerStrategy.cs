@@ -4,11 +4,11 @@ namespace Kiwi.Lexer.Strategies
 {
     internal class SyntaxSymbolLexerStrategy : TokenLexerStrategyBase
     {
-        private readonly List<string> _keywords;
+        private readonly List<string> _forbiddenSymbolNames;
 
-        public SyntaxSymbolLexerStrategy(List<string> keywords)
+        public SyntaxSymbolLexerStrategy(List<string> forbiddenSymbolNames)
         {
-            _keywords = keywords;
+            _forbiddenSymbolNames = forbiddenSymbolNames;
         }
 
         public override Token GetToken(TransactableTokenStream stream)
@@ -28,7 +28,7 @@ namespace Kiwi.Lexer.Strategies
                 stream.Consume();
             }
 
-            if (_keywords.Contains(symbolName))
+            if (_forbiddenSymbolNames.Contains(symbolName))
             {
                 stream.RollbackSnapshot();
                 return null;

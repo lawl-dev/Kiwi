@@ -22,12 +22,28 @@ namespace Kiwi.Lexer
                                                                        {TokenType.TwoDots, ".."},
                                                                        {TokenType.EqualGreater, "=>"},
                                                                        {TokenType.Plus, "+"},
+                                                                       {TokenType.Sub, "-"},
+                                                                       {TokenType.Mult, "*"},
+                                                                       {TokenType.Div, "/"},
+                                                                       {TokenType.Pow, "^"},
                                                                        {TokenType.Dot, "."},
                                                                        {TokenType.Greater, ">"},
                                                                        {TokenType.Equal, "="},
                                                                        {TokenType.Less, "<"}
                                                                    };
-        private readonly Dictionary<TokenType, string> _keywords = new Dictionary<TokenType, string>()
+        
+        public List<Token> Lex(string source)
+        {
+            _tokenStream = new TransactableTokenStream(source);
+
+            var strategies = CreateLexerStrategies();
+
+            return strategies.Where(x => x.IsMatch(_tokenStream)).Select(x => x.GetToken(_tokenStream)).ToList();
+        }
+
+        private List<TokenLexerStrategyBase> CreateLexerStrategies()
+        {
+            var keywords = new Dictionary<TokenType, string>()
                                                   {
                                                       {TokenType.Func, "func"},
                                                       {TokenType.Data, "data"},
@@ -52,84 +68,21 @@ namespace Kiwi.Lexer
                                                       {TokenType.If, "if"},
                                                       {TokenType.Else, "else"},
                                                   };
-        public List<Token> Lex(string source)
-        {
-            _tokenStream = new TransactableTokenStream(source);
 
-            var strategies = CreateLexerStrategies();
+            var forbiddenSymbolNames = keywords.Select(x => x.Value).ToList();
+            var keywordLexerStrategies = keywords.Select(keyword => new SyntaxLexerStrategy(keyword.Key, keyword.Value));
+            var specialCharacterLexerStrategies = _specialCharacters.Select(character => new SyntaxLexerStrategy(character.Key, character.Value));
 
-            return strategies.Where(x => x.IsMatch(_tokenStream)).Select(x => x.GetToken(_tokenStream)).ToList();
-        }
-
-        private List<TokenLexerStrategyBase> CreateLexerStrategies()
-        {
             var strategies = new List<TokenLexerStrategyBase>();
-            strategies.Add(new SyntaxSymbolLexerStrategy(_keywords.Select(x=>x.Value).ToList()));
+            strategies.Add(new SyntaxCommentLexerStrategy());
+            strategies.Add(new SyntaxSymbolLexerStrategy(forbiddenSymbolNames));
             strategies.Add(new SyntaxLexerStrategy(TokenType.Whitespace, " "));
             strategies.Add(new SyntaxLexerStrategy(TokenType.NewLine, "\r\n"));
-            strategies.AddRange(_keywords.Select(keyword => new SyntaxLexerStrategy(keyword.Key, keyword.Value)));
-            strategies.AddRange(_specialCharacters.Select(character => new SyntaxLexerStrategy(character.Key, character.Value)));
+            strategies.AddRange(keywordLexerStrategies);
+            strategies.AddRange(specialCharacterLexerStrategies);
             strategies.Add(new SyntaxFloatLexerStrategy());
             strategies.Add(new SyntaxIntegerLexerStrategy());
-            strategies.Add(new SyntaxCommentLexerStrategy());
             return strategies;
-        }
-    }
-
-    internal class SyntaxCommentLexerStrategy : TokenLexerStrategyBase
-    {
-        public override Token GetToken(TransactableTokenStream stream)
-        {
-            if (stream.Current != "/")
-            {
-                return null;
-            }
-
-            stream.TakeSnapshot();
-            stream.Consume();
-            string comment;
-            switch (stream.Current)
-            {
-                case "/":
-                    comment = LexSingleLineComment(stream);
-                    break;
-                case "*":
-                    comment = LexMultiLineComment(stream);
-                    break;
-                default:
-                    stream.RollbackSnapshot();
-                    return null;
-            }
-
-            stream.CommitSnapshot();
-            return new Token(TokenType.Comment, comment);
-        }
-
-        private static string LexMultiLineComment(TransactableTokenStream stream)
-        {
-            var comment = string.Empty;
-            while (stream.Current != null && stream.Current != "*/")
-            {
-                comment += stream.Current;
-                stream.Consume();
-            }
-            if (stream.Current == "*/")
-            {
-                comment += stream.Current;
-                stream.Consume();
-            }
-            return comment;
-        }
-
-        private static string LexSingleLineComment(TransactableTokenStream stream)
-        {
-            var comment = string.Empty;
-            while (stream.Current != null && stream.Current != "\r\n")
-            {
-                comment += stream.Current;
-                stream.Consume();
-            }
-            return comment;
         }
     }
 }

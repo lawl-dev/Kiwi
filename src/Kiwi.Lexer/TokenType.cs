@@ -45,6 +45,10 @@ namespace Kiwi.Lexer
         Symbol,
         IntKeyword,
         FloatKeyword,
-        Comment
+        Comment,
+        Sub,
+        Mult,
+        Div,
+        Pow
     }
 }

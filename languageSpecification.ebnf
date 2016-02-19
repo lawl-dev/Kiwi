@@ -1,0 +1,74 @@
+//Descriptor
+descriptor <DescriptorName>
+{
+	func <FunctionName>([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>]) [-> <returnType> | <dataClassDeclaration>];
+}
+
+//Class
+class <ClassName> [is <DescriptorName>]
+{
+	Constructor([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>])
+	{
+		[<statements>]
+	}
+
+	[<const / var>] <fieldType> <fieldName> [ = <expression> ]
+	
+	func <FunctionName>([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>]) [-> <returnType> | <dataClassDeclaration>]
+	{
+		[<statements>]
+	}
+}
+
+
+[return <value> | (<value1>, <valueN>)/*dataClassDeclaration constructor call*/ ]
+new <ClassName>(<paramerter>);
+
+enum <EnumName>
+{
+	<ValueName1> [ = <Value1>],
+	<ValueNameN>
+}
+
+when (<ExpressionOrValue>) {
+    is <TypeName>		-> {...}
+    <value> 	 		-> ...
+    <value1>, <valueN>  -> ...
+	<range>			    -> ...
+	<operator> <value>  -> ...
+    else     			-> ...
+}
+
+switch(<constValue>) {
+	case <const1> ->{...}
+	case <const2> ->...
+	case <constN> ->...
+	default       ->...
+}
+
+range:
+<valueFrom>..<valueTo>
+
+VariableDdeclaration:
+var <variableName>
+
+VariableInit:
+<variableName> <- <expression>
+
+for(<singleItem> in <collection>)
+{
+	<statements>
+}
+
+for(<variableInit>; <expesssion>; <exoression>)
+{
+	<statements>
+}
+
+
+Operators:
+Add: +
+Sub: -
+Mult: *
+Div: /
+Pow: ^
