@@ -34,11 +34,23 @@ namespace Kiwi.Lexer
         
         public List<Token> Lex(string source)
         {
+            var result = new List<Token>();
+
             _tokenStream = new TransactableTokenStream(source);
 
             var strategies = CreateLexerStrategies();
 
-            return strategies.Where(x => x.IsMatch(_tokenStream)).Select(x => x.GetToken(_tokenStream)).ToList();
+            while (_tokenStream.Current != null)
+            {
+                var strategy = strategies.FirstOrDefault(x => x.IsMatch(_tokenStream));
+                if (strategy == null)
+                {
+                    throw new KiwiSyntaxException($"Unexpected Token {_tokenStream.Current}");
+                }
+                result.Add(strategy.GetToken(_tokenStream));
+            }
+
+            return result;
         }
 
         private List<TokenLexerStrategyBase> CreateLexerStrategies()
@@ -46,6 +58,7 @@ namespace Kiwi.Lexer
             var keywords = new Dictionary<TokenType, string>()
                                                   {
                                                       {TokenType.Func, "func"},
+                                                      {TokenType.Descriptor, "descriptor"},
                                                       {TokenType.Data, "data"},
                                                       {TokenType.IntKeyword, "int"},
                                                       {TokenType.FloatKeyword, "float"},
