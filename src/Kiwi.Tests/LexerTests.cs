@@ -1,19 +1,20 @@
 ﻿using System.Linq;
 using Kiwi.Lexer;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace Kiwi.Tests
 {
     public class LexerTests
     {
-        [TestCase(TokenType.Func, "func")]
-        [TestCase(TokenType.Descriptor, "descriptor")]
-        [TestCase(TokenType.Data, "data")]
+        [TestCase(TokenType.FuncKeyword, "func")]
+        [TestCase(TokenType.DescriptorKeyword, "descriptor")]
+        [TestCase(TokenType.DataKeyword, "data")]
         [TestCase(TokenType.IntKeyword, "int")]
         [TestCase(TokenType.FloatKeyword, "float")]
-        [TestCase(TokenType.Const, "const")]
-        [TestCase(TokenType.String, "string")]
-        [TestCase(TokenType.Var, "var")]
+        [TestCase(TokenType.ConstKeyword, "const")]
+        [TestCase(TokenType.StringKeyword, "string")]
+        [TestCase(TokenType.VarKeyword, "var")]
         [TestCase(TokenType.OpenBracket, "{")]
         [TestCase(TokenType.ClosingBracket, "}")]
         [TestCase(TokenType.OpenParenth, "(")]
@@ -22,10 +23,10 @@ namespace Kiwi.Tests
         [TestCase(TokenType.Semicolon, ";")]
         [TestCase(TokenType.Comma, ",")]
         [TestCase(TokenType.TwoDots, "..")]
-        [TestCase(TokenType.Class, "class")]
-        [TestCase(TokenType.Is, "is")]
-        [TestCase(TokenType.Constructor, "Constructor")]
-        [TestCase(TokenType.Return, "return")]
+        [TestCase(TokenType.ClassKeyword, "class")]
+        [TestCase(TokenType.IsKeyword, "is")]
+        [TestCase(TokenType.ConstructorKeyword, "Constructor")]
+        [TestCase(TokenType.ReturnKeyword, "return")]
         [TestCase(TokenType.EqualGreater, "=>")]
         [TestCase(TokenType.Plus, "+")]
         [TestCase(TokenType.Sub, "-")]
@@ -33,20 +34,20 @@ namespace Kiwi.Tests
         [TestCase(TokenType.Div, "/")]
         [TestCase(TokenType.Pow, "^")]
         [TestCase(TokenType.Dot, ".")]
-        [TestCase(TokenType.New, "new")]
-        [TestCase(TokenType.Enum, "enum")]
-        [TestCase(TokenType.When, "when")]
+        [TestCase(TokenType.NewKeyword, "new")]
+        [TestCase(TokenType.EnumKeyword, "enum")]
+        [TestCase(TokenType.WhenKeyword, "when")]
         [TestCase(TokenType.Equal, "=")]
         [TestCase(TokenType.Greater, ">")]
-        [TestCase(TokenType.Switch, "switch")]
-        [TestCase(TokenType.Default, "default")]
-        [TestCase(TokenType.For, "for")]
-        [TestCase(TokenType.In, "in")]
+        [TestCase(TokenType.SwitchKeyword, "switch")]
+        [TestCase(TokenType.DefaultKeyword, "default")]
+        [TestCase(TokenType.ForKeyword, "for")]
+        [TestCase(TokenType.InKeyword, "in")]
         [TestCase(TokenType.Less, "<")]
-        [TestCase(TokenType.While, "while")]
-        [TestCase(TokenType.Repeat, "repeat")]
-        [TestCase(TokenType.If, "if")]
-        [TestCase(TokenType.Else, "else")]
+        [TestCase(TokenType.WhileKeyword, "while")]
+        [TestCase(TokenType.RepeatKeyword, "repeat")]
+        [TestCase(TokenType.IfKeyword, "if")]
+        [TestCase(TokenType.ElseKeyword, "else")]
         [TestCase(TokenType.LessHypen, "<-")]
         [TestCase(TokenType.Whitespace, " ")]
         [TestCase(TokenType.NewLine, "\r\n")]
@@ -55,6 +56,7 @@ namespace Kiwi.Tests
         [TestCase(TokenType.Float, "123123.111")]
         [TestCase(TokenType.Comment, "//Comment")]
         [TestCase(TokenType.Comment, "/*Dudiledu\r\nDada bu*/")]
+        [TestCase(TokenType.String, "\"Hallo\"")]
         public void TestSingleTokenTypes(TokenType expectedTokenType, string source)
         {
             var lexer = new Lexer.Lexer();
@@ -74,12 +76,12 @@ namespace Kiwi.Tests
                                             +
                                             "}";
 
-            var tokenTypesSource = new TokenType[]
+            var tokenTypesSource = new[]
                                                  {
-                                                     TokenType.Descriptor,
+                                                     TokenType.DescriptorKeyword,
                                                      TokenType.Symbol, 
                                                      TokenType.OpenBracket, 
-                                                     TokenType.Func, 
+                                                     TokenType.FuncKeyword, 
                                                      TokenType.Symbol, 
                                                      TokenType.OpenParenth, 
                                                      TokenType.Symbol, 
@@ -92,7 +94,7 @@ namespace Kiwi.Tests
                                                      TokenType.HypenGreater, 
                                                      TokenType.Symbol, 
                                                      TokenType.Semicolon,
-                                                     TokenType.Func,
+                                                     TokenType.FuncKeyword,
                                                      TokenType.Symbol,
                                                      TokenType.OpenParenth,
                                                      TokenType.Symbol,
@@ -103,7 +105,7 @@ namespace Kiwi.Tests
                                                      TokenType.Symbol,
                                                      TokenType.ClosingParenth,
                                                      TokenType.HypenGreater,
-                                                     TokenType.Data,
+                                                     TokenType.DataKeyword,
                                                      TokenType.Symbol, 
                                                      TokenType.OpenParenth, 
                                                      TokenType.Symbol, 
@@ -112,19 +114,121 @@ namespace Kiwi.Tests
                                                      TokenType.Semicolon, 
                                                      TokenType.ClosingBracket
                                                  };
+            ValidateLexerResults(descriptorSource, tokenTypesSource);
+        }
+
+        [Test]
+        public void TestSampleClass()
+        {
+            const string classSource = "class ClassNameSample is DescriptorNameSample" + "\r\n" +
+                                       "{" + "\r\n" +
+                                       "    const FieldTypeSample fieldNameSample = \"Hallo\";" + "\r\n" +
+                                       "    FieldTypeSample2 = 1 * 2 + 3 / 4;" + "\r\n" +
+                                       "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> TypeNameSample" + "\r\n"
+                                       +
+                                       "    {" + "\r\n" +
+                                       "        return new TypeNameSample();" + "\r\n" +
+                                       "    }" + "\r\n" +
+                                       "" + "\r\n" +
+                                       "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> data ReturnDataSample(TypeNameSample parameterNameSample, int lol)"
+                                       + "\r\n" +
+                                       "    {" + "\r\n" +
+                                       "        return new TypeNameSample(), 1;" + "\r\n" +
+                                       "    }" + "\r\n"+
+                                       "}";
+            var tokenTypesSource = new[]
+                                                 {
+                                                     TokenType.ClassKeyword,
+                                                     TokenType.Symbol, 
+                                                     TokenType.IsKeyword, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.OpenBracket, 
+                                                     TokenType.ConstKeyword, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Equal, 
+                                                     TokenType.String, 
+                                                     TokenType.Semicolon, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Equal, 
+                                                     TokenType.Int, 
+                                                     TokenType.Mult, 
+                                                     TokenType.Int, 
+                                                     TokenType.Plus,
+                                                     TokenType.Int, 
+                                                     TokenType.Div, 
+                                                     TokenType.Int, 
+                                                     TokenType.Semicolon, 
+                                                     TokenType.FuncKeyword, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.OpenParenth, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Comma, 
+                                                     TokenType.TwoDots, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.ClosingParenth, 
+                                                     TokenType.HypenGreater, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.OpenBracket, 
+                                                     TokenType.ReturnKeyword, 
+                                                     TokenType.NewKeyword, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.OpenParenth, 
+                                                     TokenType.ClosingParenth, 
+                                                     TokenType.Semicolon, 
+                                                     TokenType.ClosingBracket, 
+                                                     TokenType.FuncKeyword, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.OpenParenth, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Comma, 
+                                                     TokenType.TwoDots, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.ClosingParenth, 
+                                                     TokenType.HypenGreater, 
+                                                     TokenType.DataKeyword, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.OpenParenth, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.Comma, 
+                                                     TokenType.IntKeyword, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.ClosingParenth, 
+                                                     TokenType.OpenBracket, 
+                                                     TokenType.ReturnKeyword, 
+                                                     TokenType.NewKeyword, 
+                                                     TokenType.Symbol, 
+                                                     TokenType.OpenParenth, 
+                                                     TokenType.ClosingParenth, 
+                                                     TokenType.Comma, 
+                                                     TokenType.Int,
+                                                     TokenType.Semicolon, 
+                                                     TokenType.ClosingBracket,  
+                                                     TokenType.ClosingBracket,  
+                                                 };
+            ValidateLexerResults(classSource, tokenTypesSource);
+        }
+
+        private static void ValidateLexerResults(string source, TokenType[] tokenizedSourceWithoutWhitespaceAndNewLine)
+        {
             var lexer = new Lexer.Lexer();
-            var result = lexer.Lex(descriptorSource);
+            var result = lexer.Lex(source);
             var recoveredSource = string.Join("", result.Select(x => x.ToString()));
-            Assert.AreEqual(descriptorSource, recoveredSource);
+            Assert.AreEqual(source, recoveredSource);
             var tokenTypes =
                 result.Select(x => x.Type)
                       .Where(x => x != TokenType.Whitespace)
                       .Where(x => x != TokenType.NewLine)
                       .ToList();
-            Assert.AreEqual(tokenTypesSource.Length, tokenTypes.Count);
+            Assert.AreEqual(tokenizedSourceWithoutWhitespaceAndNewLine.Length, tokenTypes.Count);
             for (int i = 0; i < tokenTypes.Count; i++)
             {
-                Assert.AreEqual(tokenTypes[i], tokenTypesSource[i]);
+                Assert.AreEqual(tokenTypes[i], tokenizedSourceWithoutWhitespaceAndNewLine[i]);
             }
         }
     }

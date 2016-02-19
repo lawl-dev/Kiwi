@@ -22,7 +22,7 @@ namespace Kiwi.Lexer.Strategies
             }
 
             var symbolName = string.Empty;
-            while (stream.Current != null && char.IsLetter(stream.Current[0]))
+            while (stream.Current != null && (char.IsLetter(stream.Current[0]) || char.IsNumber(stream.Current[0])))
             {
                 symbolName += stream.Current[0];
                 stream.Consume();

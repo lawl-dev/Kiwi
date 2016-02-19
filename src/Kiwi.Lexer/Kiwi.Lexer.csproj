@@ -46,6 +46,7 @@
     <Compile Include="Strategies\SyntaxLexerStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strategies\SyntaxIntegerLexerStrategy.cs" />
+    <Compile Include="Strategies\SyntaxStringLexerStrategy.cs" />
     <Compile Include="Strategies\SyntaxSymbolLexerStrategy.cs" />
     <Compile Include="SyntaxCommentLexerStrategy.cs" />
     <Compile Include="Token.cs" />

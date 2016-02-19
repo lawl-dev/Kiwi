@@ -57,29 +57,29 @@ namespace Kiwi.Lexer
         {
             var keywords = new Dictionary<TokenType, string>()
                                                   {
-                                                      {TokenType.Func, "func"},
-                                                      {TokenType.Descriptor, "descriptor"},
-                                                      {TokenType.Data, "data"},
+                                                      {TokenType.FuncKeyword, "func"},
+                                                      {TokenType.DescriptorKeyword, "descriptor"},
+                                                      {TokenType.DataKeyword, "data"},
                                                       {TokenType.IntKeyword, "int"},
                                                       {TokenType.FloatKeyword, "float"},
-                                                      {TokenType.Const, "const"},
-                                                      {TokenType.String, "string"},
-                                                      {TokenType.Var, "var"},
-                                                      {TokenType.Class, "class"},
-                                                      {TokenType.Is, "is"},
-                                                      {TokenType.Constructor, "Constructor"},
-                                                      {TokenType.Return, "return"},
-                                                      {TokenType.New, "new"},
-                                                      {TokenType.Enum, "enum"},
-                                                      {TokenType.When, "when"},
-                                                      {TokenType.Switch, "switch"},
-                                                      {TokenType.Default, "default"},
-                                                      {TokenType.For, "for"},
-                                                      {TokenType.In, "in"},
-                                                      {TokenType.While, "while"},
-                                                      {TokenType.Repeat, "repeat"},
-                                                      {TokenType.If, "if"},
-                                                      {TokenType.Else, "else"},
+                                                      {TokenType.ConstKeyword, "const"},
+                                                      {TokenType.StringKeyword, "string"},
+                                                      {TokenType.VarKeyword, "var"},
+                                                      {TokenType.ClassKeyword, "class"},
+                                                      {TokenType.IsKeyword, "is"},
+                                                      {TokenType.ConstructorKeyword, "Constructor"},
+                                                      {TokenType.ReturnKeyword, "return"},
+                                                      {TokenType.NewKeyword, "new"},
+                                                      {TokenType.EnumKeyword, "enum"},
+                                                      {TokenType.WhenKeyword, "when"},
+                                                      {TokenType.SwitchKeyword, "switch"},
+                                                      {TokenType.DefaultKeyword, "default"},
+                                                      {TokenType.ForKeyword, "for"},
+                                                      {TokenType.InKeyword, "in"},
+                                                      {TokenType.WhileKeyword, "while"},
+                                                      {TokenType.RepeatKeyword, "repeat"},
+                                                      {TokenType.IfKeyword, "if"},
+                                                      {TokenType.ElseKeyword, "else"},
                                                   };
 
             var forbiddenSymbolNames = keywords.Select(x => x.Value).ToList();
@@ -95,6 +95,7 @@ namespace Kiwi.Lexer
             strategies.AddRange(specialCharacterLexerStrategies);
             strategies.Add(new SyntaxFloatLexerStrategy());
             strategies.Add(new SyntaxIntegerLexerStrategy());
+            strategies.Add(new SyntaxStringLexerStrategy());
             return strategies;
         }
     }
