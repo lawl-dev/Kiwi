@@ -17,9 +17,11 @@ namespace Kiwi.Lexer
             switch (stream.Current)
             {
                 case "/":
+                    stream.Consume();
                     comment = LexSingleLineComment(stream);
                     break;
                 case "*":
+                    stream.Consume();
                     comment = LexMultiLineComment(stream);
                     break;
                 default:
@@ -34,28 +36,31 @@ namespace Kiwi.Lexer
         private static string LexMultiLineComment(TransactableTokenStream stream)
         {
             var comment = string.Empty;
-            while (stream.Current != null && stream.Current != "*/")
+            while (stream.Current != null && (stream.Current != "*" && stream.Peek(1) != "/"))
             {
                 comment += stream.Current;
                 stream.Consume();
             }
-            if (stream.Current == "*/")
+            if (stream.Current == "*" && stream.Peek(1) == "/")
             {
                 comment += stream.Current;
                 stream.Consume();
+                comment += stream.Current;
+                stream.Consume();
             }
-            return comment;
+            return $"/*{comment}";
         }
 
         private static string LexSingleLineComment(TransactableTokenStream stream)
         {
             var comment = string.Empty;
-            while (stream.Current != null && stream.Current != "\r\n")
+            while (stream.Current != null && (stream.Current != "\r" && stream.Peek(1) != "\n"))
             {
                 comment += stream.Current;
                 stream.Consume();
             }
-            return comment;
+
+            return $"//{comment}";
         }
     }
 }
