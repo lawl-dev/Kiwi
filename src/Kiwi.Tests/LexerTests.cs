@@ -214,6 +214,87 @@ namespace Kiwi.Tests
             ValidateLexerResults(classSource, tokenTypesSource);
         }
 
+        [Test]
+        public void TestEnum()
+        {
+            const string enumSource = "enum EnumSample" + "\r\n" +
+                             "{" + "\r\n" +
+                             "  First," + "\r\n" +
+                             "  Second," + "\r\n" +
+                             "  Last = 1337" + "\r\n" +
+                             "}";
+
+            var tokenTypeSource = new[]
+                                  {
+                                      TokenType.EnumKeyword,
+                                      TokenType.Symbol,
+                                      TokenType.OpenBracket,
+                                      TokenType.Symbol,
+                                      TokenType.Comma,
+                                      TokenType.Symbol,
+                                      TokenType.Comma,
+                                      TokenType.Symbol,
+                                      TokenType.Equal,
+                                      TokenType.Int,
+                                      TokenType.ClosingBracket
+                                  };
+
+            ValidateLexerResults(enumSource, tokenTypeSource);
+        }
+
+
+        [Test]
+        public void TestWhen()
+        {
+            const string whenSource = "when(variableSample)" + "\r\n" +
+                                      "{" + "\r\n" +
+                                      "is TypeSample -> " + "\r\n" +
+                                      "     {" + "\r\n" +
+                                      "         //code" + "\r\n" +
+                                      "     }" + "\r\n" +
+                                      "1             -> //code" + "\r\n" +
+                                      "2, 3, 4, 5    -> //code" + "\r\n" +
+                                      "6..99         -> //code" + "\r\n" +
+                                      "else          -> //code" + "\r\n" +
+                                      "}";
+            var tokenTypeSource = new[]
+                                  {
+                                      TokenType.WhenKeyword,
+                                      TokenType.OpenParenth,
+                                      TokenType.Symbol,
+                                      TokenType.ClosingParenth,
+                                      TokenType.OpenBracket,
+                                      TokenType.IsKeyword,
+                                      TokenType.Symbol,
+                                      TokenType.HypenGreater,
+                                      TokenType.OpenBracket,
+                                      TokenType.Comment,
+                                      TokenType.ClosingBracket,
+                                      TokenType.Int,
+                                      TokenType.HypenGreater,
+                                      TokenType.Comment,
+                                      TokenType.Int,
+                                      TokenType.Comma,
+                                      TokenType.Int,
+                                      TokenType.Comma,
+                                      TokenType.Int,
+                                      TokenType.Comma,
+                                      TokenType.Int,
+                                      TokenType.HypenGreater,
+                                      TokenType.Comment,
+                                      TokenType.Int,
+                                      TokenType.TwoDots,
+                                      TokenType.Int,
+                                      TokenType.HypenGreater,
+                                      TokenType.Comment,
+                                      TokenType.ElseKeyword,
+                                      TokenType.HypenGreater,
+                                      TokenType.Comment,
+                                      TokenType.ClosingBracket,
+                                  };
+            ValidateLexerResults(whenSource, tokenTypeSource);
+        }
+
         private static void ValidateLexerResults(string source, TokenType[] tokenizedSourceWithoutWhitespaceAndNewLine)
         {
             var lexer = new Lexer.Lexer();

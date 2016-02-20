@@ -15,6 +15,13 @@
 
             stream.Consume();
             var rightPart = LexInteger(stream);
+
+            if (string.IsNullOrEmpty(rightPart))
+            {
+                stream.RollbackSnapshot();
+                return null;
+            }
+
             stream.CommitSnapshot();
             return new Token(TokenType.Float, leftPart + "." + rightPart);
         }
