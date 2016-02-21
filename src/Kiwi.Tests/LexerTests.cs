@@ -127,7 +127,7 @@ namespace Kiwi.Tests
         {
             const string classSource = "class ClassNameSample is DescriptorNameSample" + "\r\n" +
                                        "{" + "\r\n" +
-                                       "    const FieldTypeSample fieldNameSample = \"Hallo\";" + "\r\n" +
+                                       "    const FieldTypeSample fieldNameSample <- \"Hallo\";" + "\r\n" +
                                        "    FieldTypeSample2 = 1 * 2 + 3 / 4;" + "\r\n" +
                                        "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> TypeNameSample" + "\r\n"
                                        +
@@ -151,7 +151,7 @@ namespace Kiwi.Tests
                                                      TokenType.ConstKeyword, 
                                                      TokenType.Symbol, 
                                                      TokenType.Symbol, 
-                                                     TokenType.Equal, 
+                                                     TokenType.LessHypen, 
                                                      TokenType.String, 
                                                      TokenType.Semicolon, 
                                                      TokenType.Symbol, 
@@ -226,7 +226,7 @@ namespace Kiwi.Tests
                              "{" + "\r\n" +
                              "  First," + "\r\n" +
                              "  Second," + "\r\n" +
-                             "  Last = 1337" + "\r\n" +
+                             "  Last <- 1337" + "\r\n" +
                              "}";
 
             var tokenTypeSource = new[]
@@ -239,7 +239,7 @@ namespace Kiwi.Tests
                                       TokenType.Symbol,
                                       TokenType.Comma,
                                       TokenType.Symbol,
-                                      TokenType.Equal,
+                                      TokenType.LessHypen,
                                       TokenType.Int,
                                       TokenType.ClosingBracket
                                   };
