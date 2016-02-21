@@ -8,29 +8,6 @@ namespace Kiwi.Lexer
     public sealed class Lexer
     {
         private TransactableTokenStream _tokenStream;
-
-        private readonly Dictionary<TokenType, string> _specialCharacters = new Dictionary<TokenType, string>()
-                                                                   {
-                                                                       {TokenType.OpenBracket, "{"},
-                                                                       {TokenType.ClosingBracket, "}"},
-                                                                       {TokenType.OpenParenth, "("},
-                                                                       {TokenType.ClosingParenth, ")"},
-                                                                       {TokenType.HypenGreater, "->"},
-                                                                       {TokenType.LessHypen, "<-"},
-                                                                       {TokenType.Semicolon, ";"},
-                                                                       {TokenType.Comma, ","},
-                                                                       {TokenType.TwoDots, ".."},
-                                                                       {TokenType.EqualGreater, "=>"},
-                                                                       {TokenType.Plus, "+"},
-                                                                       {TokenType.Sub, "-"},
-                                                                       {TokenType.Mult, "*"},
-                                                                       {TokenType.Div, "/"},
-                                                                       {TokenType.Pow, "^"},
-                                                                       {TokenType.Dot, "."},
-                                                                       {TokenType.Greater, ">"},
-                                                                       {TokenType.Equal, "="},
-                                                                       {TokenType.Less, "<"}
-                                                                   };
         
         public List<Token> Lex(string source)
         {
@@ -81,10 +58,32 @@ namespace Kiwi.Lexer
                                                       {TokenType.IfKeyword, "if"},
                                                       {TokenType.ElseKeyword, "else"},
                                                   };
+            var specialCharacters = new Dictionary<TokenType, string>()
+                                                                   {
+                                                                       {TokenType.OpenBracket, "{"},
+                                                                       {TokenType.ClosingBracket, "}"},
+                                                                       {TokenType.OpenParenth, "("},
+                                                                       {TokenType.ClosingParenth, ")"},
+                                                                       {TokenType.HypenGreater, "->"},
+                                                                       {TokenType.LessHypen, "<-"},
+                                                                       {TokenType.Semicolon, ";"},
+                                                                       {TokenType.Comma, ","},
+                                                                       {TokenType.TwoDots, ".."},
+                                                                       {TokenType.EqualGreater, "=>"},
+                                                                       {TokenType.Plus, "+"},
+                                                                       {TokenType.Sub, "-"},
+                                                                       {TokenType.Mult, "*"},
+                                                                       {TokenType.Div, "/"},
+                                                                       {TokenType.Pow, "^"},
+                                                                       {TokenType.Dot, "."},
+                                                                       {TokenType.Greater, ">"},
+                                                                       {TokenType.Equal, "="},
+                                                                       {TokenType.Less, "<"}
+                                                                   };
 
             var forbiddenSymbolNames = keywords.Select(x => x.Value).ToList();
             var keywordLexerStrategies = keywords.Select(keyword => new SyntaxLexerStrategy(keyword.Key, keyword.Value));
-            var specialCharacterLexerStrategies = _specialCharacters.Select(character => new SyntaxLexerStrategy(character.Key, character.Value));
+            var specialCharacterLexerStrategies = specialCharacters.Select(character => new SyntaxLexerStrategy(character.Key, character.Value));
 
             var strategies = new List<TokenLexerStrategyBase>();
             strategies.Add(new SyntaxCommentLexerStrategy());

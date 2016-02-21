@@ -8,7 +8,8 @@ namespace Kiwi.Common
         private readonly List<TItem> _items;
         private int _index;
         private readonly Stack<int> _snapshotIndexes;
-        public TransactableStreamBase(Func<List<TItem>> getStreamItems)
+
+        protected TransactableStreamBase(Func<List<TItem>> getStreamItems)
         {
             _items = getStreamItems();
             _index = 0;
