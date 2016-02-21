@@ -53,16 +53,21 @@ namespace Kiwi.Tests
         [TestCase(TokenType.NewLine, "\r\n")]
         [TestCase(TokenType.Symbol, "MyVariableName")]
         [TestCase(TokenType.Int, "12312312")]
+        [TestCase(TokenType.Float, "123123f")]
+        [TestCase(TokenType.Float, "123123F")]
+        [TestCase(TokenType.Float, "123123.111f")]
+        [TestCase(TokenType.Float, "123123.111F")]
         [TestCase(TokenType.Float, "123123.111")]
         [TestCase(TokenType.Comment, "//Comment")]
         [TestCase(TokenType.Comment, "/*Dudiledu\r\nDada bu*/")]
         [TestCase(TokenType.String, "\"Hallo\"")]
-        public void TestSingleTokenTypes(TokenType expectedTokenType, string source)
+        public void TestSingleToken(TokenType expectedTokenType, string source)
         {
             var lexer = new Lexer.Lexer();
             var result = lexer.Lex(source);
             Assert.IsTrue(result.Count == 1);
             Assert.AreEqual(expectedTokenType, result[0].Type);
+            Assert.AreEqual(source, result[0].Value);
         }
 
         [Test]
