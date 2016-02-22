@@ -40,6 +40,7 @@ namespace Kiwi.Lexer
                                                       {TokenType.IntKeyword, "int"},
                                                       {TokenType.FloatKeyword, "float"},
                                                       {TokenType.ConstKeyword, "const"},
+                                                      {TokenType.CaseKeyword, "case"},
                                                       {TokenType.StringKeyword, "string"},
                                                       {TokenType.VarKeyword, "var"},
                                                       {TokenType.ClassKeyword, "class"},
@@ -60,6 +61,8 @@ namespace Kiwi.Lexer
                                                   };
             var specialCharacters = new Dictionary<TokenType, string>()
                                                                    {
+                                                                       {TokenType.LeftSquareBracket, "["},
+                                                                       {TokenType.RightSquareBracket, "]"},
                                                                        {TokenType.OpenBracket, "{"},
                                                                        {TokenType.ClosingBracket, "}"},
                                                                        {TokenType.OpenParenth, "("},

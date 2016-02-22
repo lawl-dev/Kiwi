@@ -50,6 +50,9 @@ namespace Kiwi.Lexer
         Mult,
         Div,
         Pow,
-        String
+        String,
+        LeftSquareBracket,
+        RightSquareBracket,
+        CaseKeyword
     }
 }

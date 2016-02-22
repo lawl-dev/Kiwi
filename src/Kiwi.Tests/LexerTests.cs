@@ -13,6 +13,7 @@ namespace Kiwi.Tests
         [TestCase(TokenType.IntKeyword, "int")]
         [TestCase(TokenType.FloatKeyword, "float")]
         [TestCase(TokenType.ConstKeyword, "const")]
+        [TestCase(TokenType.CaseKeyword, "case")]
         [TestCase(TokenType.StringKeyword, "string")]
         [TestCase(TokenType.VarKeyword, "var")]
         [TestCase(TokenType.OpenBracket, "{")]
@@ -30,6 +31,8 @@ namespace Kiwi.Tests
         [TestCase(TokenType.EqualGreater, "=>")]
         [TestCase(TokenType.Plus, "+")]
         [TestCase(TokenType.Sub, "-")]
+        [TestCase(TokenType.LeftSquareBracket, "[")]
+        [TestCase(TokenType.RightSquareBracket, "]")]
         [TestCase(TokenType.Mult, "*")]
         [TestCase(TokenType.Div, "/")]
         [TestCase(TokenType.Pow, "^")]
@@ -298,6 +301,47 @@ namespace Kiwi.Tests
                                       TokenType.ClosingBracket,
                                   };
             ValidateLexerResults(whenSource, tokenTypeSource);
+        }
+
+        [Test]
+        public void TestSwitch()
+        {
+            const string swtichSource = "switch(result[0])" + "\r\n" +
+                                        "{" + "\r\n" +
+                                        "   case 1  ->" + "\r\n" +
+                                        "       {" + "\r\n" +
+                                        "           //code" + "\r\n" +
+                                        "       }" + "\r\n" +
+                                        "   case 2  -> //code" + "\r\n" +
+                                        "   default -> //code" + "\r\n" +
+                                        "}";
+            var tokenTypeSource = new[]
+                                  {
+                                      TokenType.SwitchKeyword,
+                                      TokenType.OpenParenth,
+                                      TokenType.Symbol,
+                                      TokenType.LeftSquareBracket,
+                                      TokenType.Int,
+                                      TokenType.RightSquareBracket,
+                                      TokenType.ClosingParenth,
+                                      TokenType.OpenBracket,
+                                      TokenType.CaseKeyword,
+                                      TokenType.Int,
+                                      TokenType.HypenGreater,
+                                      TokenType.OpenBracket,
+                                      TokenType.Comment,
+                                      TokenType.ClosingBracket,
+                                      TokenType.CaseKeyword,
+                                      TokenType.Int,
+                                      TokenType.HypenGreater,
+                                      TokenType.Comment,
+                                      TokenType.DefaultKeyword,
+                                      TokenType.HypenGreater,
+                                      TokenType.Comment,
+                                      TokenType.ClosingBracket
+                                  };
+
+            ValidateLexerResults(swtichSource, tokenTypeSource);
         }
 
         private static void ValidateLexerResults(string source, TokenType[] tokenizedSourceWithoutWhitespaceAndNewLine)
