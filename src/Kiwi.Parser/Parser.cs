@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Kiwi.Common;
 using Kiwi.Lexer;
 using Kiwi.Parser.Nodes;
@@ -208,7 +209,14 @@ namespace Kiwi.Parser
 
         private IExpressionSyntax ParseNewExpression()
         {
-            throw new NotImplementedException();
+            if (_tokenStream.Current.Type != TokenType.NewKeyword)
+            {
+                return null;
+            }
+
+            var typeName = Consume(TokenType.Symbol);
+            var parameter = ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpressionSyntax, true);
+            return new ObjectCreationExpressionSyntax(typeName, parameter);
         }
 
         private FunctionSyntax ParseFunctionSyntax()
@@ -510,6 +518,18 @@ namespace Kiwi.Parser
             }
             _tokenStream.Consume();
             return currentToken;
+        }
+    }
+
+    internal class ObjectCreationExpressionSyntax : IExpressionSyntax
+    {
+        public Token TypeName { get; }
+        public List<ISyntaxBase> Parameter { get; }
+
+        public ObjectCreationExpressionSyntax(Token typeName, List<ISyntaxBase> parameter)
+        {
+            TypeName = typeName;
+            Parameter = parameter;
         }
     }
 }
