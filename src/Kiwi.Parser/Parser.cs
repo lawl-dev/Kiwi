@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Kiwi.Common;
 using Kiwi.Lexer;
 using Kiwi.Parser.Nodes;
@@ -167,24 +166,25 @@ namespace Kiwi.Parser
                                 TokenType.Add,
                                 TokenType.Sub
                             };
+            
+            var current = _tokenStream.Current;
 
-            if (signOperators.Contains(_tokenStream.Current.Type))
+            if (signOperators.Contains(current.Type))
             {
                 _tokenStream.Consume();
-                return new SignExpressionSyntax(_tokenStream.Current, ParseExpressionSyntax());
+                return new SignExpressionSyntax(current, ParseSingleExpression());
             }
 
-            if (_tokenStream.Current.Type == TokenType.NewKeyword)
+            if (current.Type == TokenType.NewKeyword)
             {
                 return ParseNewExpression();
             }
 
-            if (_tokenStream.Current.Type == TokenType.OpenParenth)
+            if (current.Type == TokenType.OpenParenth)
             {
                 return (IExpressionSyntax)ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpressionSyntax).Single();
             }
 
-            var current = _tokenStream.Current;
             switch (current.Type)
             {
                 case TokenType.Int:
