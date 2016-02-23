@@ -1,6 +1,7 @@
 ﻿using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using Kiwi.Common;
 using Kiwi.Lexer.Strategies;
 
 namespace Kiwi.Lexer
@@ -34,6 +35,8 @@ namespace Kiwi.Lexer
         {
             var keywords = new Dictionary<TokenType, string>()
                                                   {
+                                                      {TokenType.UsingKeyword, "using"},
+                                                      {TokenType.NamespaceKeyword, "namespace"},
                                                       {TokenType.FuncKeyword, "func"},
                                                       {TokenType.DescriptorKeyword, "descriptor"},
                                                       {TokenType.DataKeyword, "data"},
@@ -68,7 +71,8 @@ namespace Kiwi.Lexer
                                                                        {TokenType.OpenParenth, "("},
                                                                        {TokenType.ClosingParenth, ")"},
                                                                        {TokenType.HypenGreater, "->"},
-                                                                       {TokenType.LessHypen, "<-"},
+                                                                       {TokenType.ColonAdd, ":+"},
+                                                                       {TokenType.Colon, ":"},
                                                                        {TokenType.Semicolon, ";"},
                                                                        {TokenType.Comma, ","},
                                                                        {TokenType.TwoDots, ".."},

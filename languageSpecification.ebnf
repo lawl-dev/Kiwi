@@ -1,3 +1,9 @@
+using <namespaceName>
+
+namespace <namespaceName>
+{
+}
+
 //Descriptor
 descriptor <DescriptorName>
 {
@@ -26,7 +32,7 @@ new <ClassName>(<paramerter>);
 
 enum <EnumName>
 {
-	<ValueName1> [ = <Value1>],
+	<ValueName1> [ : <Value1>],
 	<ValueNameN>
 }
 
@@ -53,7 +59,7 @@ VariableDdeclaration:
 var <variableName>
 
 VariableInit:
-<variableName> <- <expression>
+<variableName> : <expression>
 
 for(<singleItem> in <collection>)
 {

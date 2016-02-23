@@ -35,6 +35,7 @@ namespace Kiwi.Tests
         [TestCase(TokenType.RightSquareBracket, "]")]
         [TestCase(TokenType.Mult, "*")]
         [TestCase(TokenType.Div, "/")]
+        [TestCase(TokenType.ColonAdd, ":+")]
         [TestCase(TokenType.Pow, "^")]
         [TestCase(TokenType.Dot, ".")]
         [TestCase(TokenType.NewKeyword, "new")]
@@ -48,10 +49,11 @@ namespace Kiwi.Tests
         [TestCase(TokenType.InKeyword, "in")]
         [TestCase(TokenType.Less, "<")]
         [TestCase(TokenType.WhileKeyword, "while")]
+        [TestCase(TokenType.UsingKeyword, "using")]
         [TestCase(TokenType.RepeatKeyword, "repeat")]
         [TestCase(TokenType.IfKeyword, "if")]
         [TestCase(TokenType.ElseKeyword, "else")]
-        [TestCase(TokenType.LessHypen, "<-")]
+        [TestCase(TokenType.Colon, ":")]
         [TestCase(TokenType.Whitespace, " ")]
         [TestCase(TokenType.NewLine, "\r\n")]
         [TestCase(TokenType.Symbol, "MyVariableName")]
@@ -130,7 +132,7 @@ namespace Kiwi.Tests
         {
             const string classSource = "class ClassNameSample is DescriptorNameSample" + "\r\n" +
                                        "{" + "\r\n" +
-                                       "    const FieldTypeSample fieldNameSample <- \"Hallo\";" + "\r\n" +
+                                       "    const FieldTypeSample fieldNameSample : \"Hallo\";" + "\r\n" +
                                        "    FieldTypeSample2 = 1 * 2 + 3 / 4;" + "\r\n" +
                                        "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> TypeNameSample" + "\r\n"
                                        +
@@ -154,7 +156,7 @@ namespace Kiwi.Tests
                                                      TokenType.ConstKeyword, 
                                                      TokenType.Symbol, 
                                                      TokenType.Symbol, 
-                                                     TokenType.LessHypen, 
+                                                     TokenType.Colon, 
                                                      TokenType.String, 
                                                      TokenType.Semicolon, 
                                                      TokenType.Symbol, 
@@ -229,7 +231,7 @@ namespace Kiwi.Tests
                              "{" + "\r\n" +
                              "  First," + "\r\n" +
                              "  Second," + "\r\n" +
-                             "  Last <- 1337" + "\r\n" +
+                             "  Last : 1337" + "\r\n" +
                              "}";
 
             var tokenTypeSource = new[]
@@ -242,7 +244,7 @@ namespace Kiwi.Tests
                                       TokenType.Symbol,
                                       TokenType.Comma,
                                       TokenType.Symbol,
-                                      TokenType.LessHypen,
+                                      TokenType.Colon,
                                       TokenType.Int,
                                       TokenType.ClosingBracket
                                   };
@@ -250,6 +252,59 @@ namespace Kiwi.Tests
             ValidateLexerResults(enumSource, tokenTypeSource);
         }
 
+        [Test]
+        public void TestForIn()
+        {
+            const string forInSource = "for(i in ints)" + "\r\n" +
+                                       "{" + "\r\n" +
+                                       "    //code" + "\r\n" +
+                                       "}";
+            var tokenTypeSource = new[]
+                                  {
+                                      TokenType.ForKeyword,
+                                      TokenType.OpenParenth,
+                                      TokenType.Symbol,
+                                      TokenType.InKeyword,
+                                      TokenType.Symbol,
+                                      TokenType.ClosingParenth,
+                                      TokenType.OpenBracket,
+                                      TokenType.Comment,
+                                      TokenType.ClosingBracket
+                                  };
+            ValidateLexerResults(forInSource, tokenTypeSource);
+        }
+
+        [Test]
+        public void TestFor()
+        {
+            const string forSource = "for(int i : 1; i < 100; i :+ 1)" + "\r\n" +
+                                     "{" + "\r\n" +
+                                     "  //code" + "\r\n" +
+                                     "}";
+
+            var tokenTypeSource = new[]
+                                  {
+                                      TokenType.ForKeyword,
+                                      TokenType.OpenParenth,
+                                      TokenType.IntKeyword,
+                                      TokenType.Symbol,
+                                      TokenType.Colon,
+                                      TokenType.Int,
+                                      TokenType.Semicolon,
+                                      TokenType.Symbol,
+                                      TokenType.Less,
+                                      TokenType.Int,
+                                      TokenType.Semicolon,
+                                      TokenType.Symbol,
+                                      TokenType.ColonAdd,
+                                      TokenType.Int,
+                                      TokenType.ClosingParenth,
+                                      TokenType.OpenBracket,
+                                      TokenType.Comment,
+                                      TokenType.ClosingBracket
+                                  };
+            ValidateLexerResults(forSource, tokenTypeSource);
+        }
 
         [Test]
         public void TestWhen()
@@ -342,6 +397,22 @@ namespace Kiwi.Tests
                                   };
 
             ValidateLexerResults(swtichSource, tokenTypeSource);
+        }
+
+        [Test]
+        public void TestNamespace()
+        {
+            const string namespaceSource = "namespace" + "\r\n" +
+                                           "{" + "\r\n" +
+                                           "}";
+            var tokenTypeSource = new[]
+                                  {
+                                      TokenType.NamespaceKeyword,
+                                      TokenType.OpenBracket,
+                                      TokenType.ClosingBracket
+                                  };
+
+            ValidateLexerResults(namespaceSource, tokenTypeSource);
         }
 
         private static void ValidateLexerResults(string source, TokenType[] tokenizedSourceWithoutWhitespaceAndNewLine)

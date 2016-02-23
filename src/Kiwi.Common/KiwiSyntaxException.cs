@@ -1,8 +1,8 @@
 using System;
 
-namespace Kiwi.Lexer
+namespace Kiwi.Common
 {
-    internal class KiwiSyntaxException : Exception
+    public class KiwiSyntaxException : Exception
     {
         public KiwiSyntaxException(string message) : base(message)
         {

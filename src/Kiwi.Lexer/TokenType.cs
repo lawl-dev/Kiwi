@@ -38,7 +38,7 @@ namespace Kiwi.Lexer
         RepeatKeyword,
         IfKeyword,
         ElseKeyword,
-        LessHypen,
+        Colon,
         Whitespace,
         NewLine,
         Float,
@@ -53,6 +53,9 @@ namespace Kiwi.Lexer
         String,
         LeftSquareBracket,
         RightSquareBracket,
-        CaseKeyword
+        CaseKeyword,
+        ColonAdd,
+        NamespaceKeyword,
+        UsingKeyword
     }
 }

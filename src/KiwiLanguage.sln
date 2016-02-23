@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiwi.Tests", "Kiwi.Tests\Ki
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiwi.Common", "Kiwi.Common\Kiwi.Common.csproj", "{A221E521-1C96-4C78-9757-F8A08686FF23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiwi.Parser", "Kiwi.Parser\Kiwi.Parser.csproj", "{79632D97-4DB1-441B-B446-8C77C93BB4C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A221E521-1C96-4C78-9757-F8A08686FF23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A221E521-1C96-4C78-9757-F8A08686FF23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A221E521-1C96-4C78-9757-F8A08686FF23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79632D97-4DB1-441B-B446-8C77C93BB4C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79632D97-4DB1-441B-B446-8C77C93BB4C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79632D97-4DB1-441B-B446-8C77C93BB4C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79632D97-4DB1-441B-B446-8C77C93BB4C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
