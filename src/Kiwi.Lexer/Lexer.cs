@@ -1,5 +1,4 @@
-﻿using System.CodeDom;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Kiwi.Common;
 using Kiwi.Lexer.Strategies;
@@ -9,7 +8,7 @@ namespace Kiwi.Lexer
     public sealed class Lexer
     {
         private TransactableTokenStream _tokenStream;
-        
+
         public List<Token> Lex(string source)
         {
             var result = new List<Token>();
@@ -33,64 +32,65 @@ namespace Kiwi.Lexer
 
         private List<TokenLexerStrategyBase> CreateLexerStrategies()
         {
-            var keywords = new Dictionary<TokenType, string>()
-                                                  {
-                                                      {TokenType.UsingKeyword, "using"},
-                                                      {TokenType.NamespaceKeyword, "namespace"},
-                                                      {TokenType.FuncKeyword, "func"},
-                                                      {TokenType.DescriptorKeyword, "descriptor"},
-                                                      {TokenType.DataKeyword, "data"},
-                                                      {TokenType.IntKeyword, "int"},
-                                                      {TokenType.FloatKeyword, "float"},
-                                                      {TokenType.ConstKeyword, "const"},
-                                                      {TokenType.CaseKeyword, "case"},
-                                                      {TokenType.StringKeyword, "string"},
-                                                      {TokenType.VarKeyword, "var"},
-                                                      {TokenType.ClassKeyword, "class"},
-                                                      {TokenType.IsKeyword, "is"},
-                                                      {TokenType.ConstructorKeyword, "Constructor"},
-                                                      {TokenType.ReturnKeyword, "return"},
-                                                      {TokenType.NewKeyword, "new"},
-                                                      {TokenType.EnumKeyword, "enum"},
-                                                      {TokenType.WhenKeyword, "when"},
-                                                      {TokenType.SwitchKeyword, "switch"},
-                                                      {TokenType.DefaultKeyword, "default"},
-                                                      {TokenType.ForKeyword, "for"},
-                                                      {TokenType.InKeyword, "in"},
-                                                      {TokenType.WhileKeyword, "while"},
-                                                      {TokenType.RepeatKeyword, "repeat"},
-                                                      {TokenType.IfKeyword, "if"},
-                                                      {TokenType.ElseKeyword, "else"},
-                                                  };
-            var specialCharacters = new Dictionary<TokenType, string>()
-                                                                   {
-                                                                       {TokenType.LeftSquareBracket, "["},
-                                                                       {TokenType.RightSquareBracket, "]"},
-                                                                       {TokenType.OpenBracket, "{"},
-                                                                       {TokenType.ClosingBracket, "}"},
-                                                                       {TokenType.OpenParenth, "("},
-                                                                       {TokenType.ClosingParenth, ")"},
-                                                                       {TokenType.HypenGreater, "->"},
-                                                                       {TokenType.ColonAdd, ":+"},
-                                                                       {TokenType.Colon, ":"},
-                                                                       {TokenType.Semicolon, ";"},
-                                                                       {TokenType.Comma, ","},
-                                                                       {TokenType.TwoDots, ".."},
-                                                                       {TokenType.EqualGreater, "=>"},
-                                                                       {TokenType.Plus, "+"},
-                                                                       {TokenType.Sub, "-"},
-                                                                       {TokenType.Mult, "*"},
-                                                                       {TokenType.Div, "/"},
-                                                                       {TokenType.Pow, "^"},
-                                                                       {TokenType.Dot, "."},
-                                                                       {TokenType.Greater, ">"},
-                                                                       {TokenType.Equal, "="},
-                                                                       {TokenType.Less, "<"}
-                                                                   };
+            var keywords = new Dictionary<TokenType, string>
+                           {
+                               { TokenType.UsingKeyword, "using" },
+                               { TokenType.NamespaceKeyword, "namespace" },
+                               { TokenType.FuncKeyword, "func" },
+                               { TokenType.DescriptorKeyword, "descriptor" },
+                               { TokenType.DataKeyword, "data" },
+                               { TokenType.IntKeyword, "int" },
+                               { TokenType.FloatKeyword, "float" },
+                               { TokenType.ConstKeyword, "const" },
+                               { TokenType.CaseKeyword, "case" },
+                               { TokenType.StringKeyword, "string" },
+                               { TokenType.VarKeyword, "var" },
+                               { TokenType.ClassKeyword, "class" },
+                               { TokenType.IsKeyword, "is" },
+                               { TokenType.ConstructorKeyword, "Constructor" },
+                               { TokenType.ReturnKeyword, "return" },
+                               { TokenType.NewKeyword, "new" },
+                               { TokenType.EnumKeyword, "enum" },
+                               { TokenType.WhenKeyword, "when" },
+                               { TokenType.SwitchKeyword, "switch" },
+                               { TokenType.DefaultKeyword, "default" },
+                               { TokenType.ForKeyword, "for" },
+                               { TokenType.InKeyword, "in" },
+                               { TokenType.WhileKeyword, "while" },
+                               { TokenType.RepeatKeyword, "repeat" },
+                               { TokenType.IfKeyword, "if" },
+                               { TokenType.ElseKeyword, "else" }
+                           };
+            var specialCharacters = new Dictionary<TokenType, string>
+                                    {
+                                        { TokenType.LeftSquareBracket, "[" },
+                                        { TokenType.RightSquareBracket, "]" },
+                                        { TokenType.OpenBracket, "{" },
+                                        { TokenType.ClosingBracket, "}" },
+                                        { TokenType.OpenParenth, "(" },
+                                        { TokenType.ClosingParenth, ")" },
+                                        { TokenType.HypenGreater, "->" },
+                                        { TokenType.ColonAdd, ":+" },
+                                        { TokenType.Colon, ":" },
+                                        { TokenType.Semicolon, ";" },
+                                        { TokenType.Comma, "," },
+                                        { TokenType.TwoDots, ".." },
+                                        { TokenType.EqualGreater, "=>" },
+                                        { TokenType.Add, "+" },
+                                        { TokenType.Sub, "-" },
+                                        { TokenType.Mult, "*" },
+                                        { TokenType.Div, "/" },
+                                        { TokenType.Pow, "^" },
+                                        { TokenType.Dot, "." },
+                                        { TokenType.Greater, ">" },
+                                        { TokenType.Equal, "=" },
+                                        { TokenType.Less, "<" }
+                                    };
 
             var forbiddenSymbolNames = keywords.Select(x => x.Value).ToList();
             var keywordLexerStrategies = keywords.Select(keyword => new SyntaxLexerStrategy(keyword.Key, keyword.Value));
-            var specialCharacterLexerStrategies = specialCharacters.Select(character => new SyntaxLexerStrategy(character.Key, character.Value));
+            var specialCharacterLexerStrategies =
+                specialCharacters.Select(character => new SyntaxLexerStrategy(character.Key, character.Value));
 
             var strategies = new List<TokenLexerStrategyBase>();
             strategies.Add(new SyntaxCommentLexerStrategy());

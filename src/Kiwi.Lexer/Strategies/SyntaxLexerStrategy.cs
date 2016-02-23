@@ -14,7 +14,7 @@ namespace Kiwi.Lexer.Strategies
         public override Token GetToken(TransactableTokenStream stream)
         {
             stream.TakeSnapshot();
-            
+
             foreach (var character in _syntaxLiteral)
             {
                 if (stream.Current == null || stream.Current != character.ToString())

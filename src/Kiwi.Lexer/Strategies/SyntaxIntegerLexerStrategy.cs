@@ -16,7 +16,7 @@ namespace Kiwi.Lexer.Strategies
         public override Token GetToken(TransactableTokenStream stream)
         {
             stream.TakeSnapshot();
-            
+
             var number = LexInteger(stream);
             if (number == string.Empty)
             {

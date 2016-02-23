@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Kiwi.Common;
 using Kiwi.Lexer;
 using Kiwi.Parser.Nodes;
@@ -13,94 +12,481 @@ namespace Kiwi.Parser
     {
         private readonly TransactableTokenStream _tokenStream;
 
-        public Parser(List<Token> tokens)
+        public Parser(List<Token> token)
         {
-            _tokenStream = new TransactableTokenStream(tokens);
+            var cleanedToken = token.Where(x => x.Type != TokenType.Whitespace)
+                                    .Where(x => x.Type != TokenType.NewLine)
+                                    .ToList();
+
+            _tokenStream = new TransactableTokenStream(cleanedToken);
         }
 
-
-        public SyntaxCompilationUnitAst Parse()
+        public CompilationUnitSyntax Parse()
         {
-            var results = new List<SyntaxAstBase>();
+            var syntax = new List<ISyntaxBase>();
             while (_tokenStream.Current != null)
             {
-                var result = ParsePossible(ParseUsingSyntax, ParseNamespaceSyntax);
+                var result = Parse(ParseUsingSyntax, ParseNamespaceSyntax);
                 if (result == null)
                 {
                     throw new KiwiSyntaxException("Unexpected Syntax. Expected UsingSyntax or NamespaceSyntax");
                 }
-                results.Add(result);
+                syntax.Add(result);
             }
-            return new SyntaxCompilationUnitAst(results);
+            return new CompilationUnitSyntax(syntax);
         }
 
-        private SyntaxNamespaceAst ParseNamespaceSyntax()
+        private NamespaceSyntax ParseNamespaceSyntax()
         {
-            List<SyntaxAstBase> innerSyntax = ParseInner(
+            if (_tokenStream.Current.Type != TokenType.NamespaceKeyword)
+            {
+                return null;
+            }
+
+            Consume(TokenType.NamespaceKeyword);
+            var namespaceName = Consume(TokenType.Symbol);
+
+            Func<ISyntaxBase> namespaceBodyParser =
+                () => Parse(ParseClassSyntax, ParseDataClassDeclarationSyntax, ParseEnumSyntax);
+            var bodySyntax = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, namespaceBodyParser);
+            return new NamespaceSyntax(namespaceName, bodySyntax);
+        }
+
+        private UsingSyntax ParseUsingSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.UsingKeyword)
+            {
+                return null;
+            }
+
+            Consume(TokenType.UsingKeyword);
+            var namespaceName = Consume(TokenType.Symbol);
+            return new UsingSyntax(namespaceName);
+        }
+
+        private ClassSyntax ParseClassSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.ClassKeyword)
+            {
+                return null;
+            }
+
+            Consume(TokenType.ClassKeyword);
+            var className = Consume(TokenType.Symbol);
+            var inherit = _tokenStream.Current.Type == TokenType.IsKeyword;
+            Token descriptorName = null;
+
+            if (inherit)
+            {
+                Consume(TokenType.IsKeyword);
+                descriptorName = Consume(TokenType.Symbol);
+            }
+
+            Func<ISyntaxBase> classBodyParser =
+                () => Parse(ParseConstructorSyntax, ParseFunctionSyntax, ParseFieldSyntax);
+            var inner = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, classBodyParser);
+            return new ClassSyntax(className, descriptorName, inner);
+        }
+
+        private FieldSyntax ParseFieldSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.ConstKeyword && _tokenStream.Current.Type != TokenType.VarKeyword)
+            {
+                return null;
+            }
+
+            var isConst = _tokenStream.Current.Type == TokenType.ConstKeyword;
+            var fieldTypeQualifier = Consume(isConst ? TokenType.ConstKeyword : TokenType.VarKeyword);
+            var fieldType = Consume(TokenType.Symbol);
+            var fieldName = Consume(TokenType.Symbol);
+            IExpressionSyntax fieldInitializer = null;
+            if (isConst)
+            {
+                Consume(TokenType.Colon);
+                fieldInitializer = (IExpressionSyntax)ParseExpressionSyntax();
+            }
+
+            return new FieldSyntax(fieldTypeQualifier, fieldType, fieldName, fieldInitializer);
+        }
+
+        private IExpressionSyntax ParseExpressionSyntax()
+        {
+            var operators = new[]
+                            {
+                                TokenType.Mult,
+                                TokenType.Div,
+                                TokenType.Add,
+                                TokenType.Sub,
+                                TokenType.Pow,
+                            };
+
+            var firstExpression = ParseSingleExpression();
+            if (!operators.Contains(_tokenStream.Current.Type))
+            {
+                return firstExpression;
+            }
+            var expressionOperatorChain = new List<Tuple<Token, IExpressionSyntax>>();
+            expressionOperatorChain.Add(new Tuple<Token, IExpressionSyntax>(null, firstExpression));
+
+            while (operators.Contains(_tokenStream.Current.Type))
+            {
+                var @operator = _tokenStream.Current;
+                expressionOperatorChain.Add(new Tuple<Token, IExpressionSyntax>(@operator, null));
+                _tokenStream.Consume();
+                var nExpression = ParseSingleExpression();
+                expressionOperatorChain.Add(new Tuple<Token, IExpressionSyntax>(null, nExpression));
+            }
+
+            foreach (var @operator in operators)
+            {
+                for (int index = 0; index < expressionOperatorChain.Count; index++)
+                {
+                    var expressionOrOperator = expressionOperatorChain[index];
+                    if (expressionOrOperator.Item1 != null && expressionOrOperator.Item1.Type == @operator)
+                    {
+                        var leftExpression = expressionOperatorChain[index-1].Item2;
+                        var rightExpression = expressionOperatorChain[index+1].Item2;
+
+                        var binaryExpressionSyntax = new BinaryExpressionSyntax(leftExpression, rightExpression, expressionOrOperator.Item1);
+                        expressionOperatorChain[index - 1] = new Tuple<Token, IExpressionSyntax>(null, binaryExpressionSyntax);
+                        expressionOperatorChain.RemoveAt(index);
+                        expressionOperatorChain.RemoveAt(index);
+                    }
+                }
+            }
+
+            Debug.Assert(expressionOperatorChain.Count == 1);
+            return expressionOperatorChain[0].Item2;
+        }
+
+        private IExpressionSyntax ParseSingleExpression()
+        {
+            var signOperators = new[]
+                            {
+                                TokenType.Add,
+                                TokenType.Sub
+                            };
+
+            if (signOperators.Contains(_tokenStream.Current.Type))
+            {
+                _tokenStream.Consume();
+                return new SignExpressionSyntax(_tokenStream.Current, ParseExpressionSyntax());
+            }
+
+            if (_tokenStream.Current.Type == TokenType.NewKeyword)
+            {
+                return ParseNewExpression();
+            }
+
+            if (_tokenStream.Current.Type == TokenType.OpenParenth)
+            {
+                return (IExpressionSyntax)ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpressionSyntax).Single();
+            }
+
+            var current = _tokenStream.Current;
+            switch (current.Type)
+            {
+                case TokenType.Int:
+                    Consume(TokenType.Int);
+                    return new IntExpressionSyntax(current);
+                case TokenType.Float:
+                    Consume(TokenType.Float);
+                    return new FloatExpression(current);
+                case TokenType.String:
+                    Consume(TokenType.String);
+                    return new StringExpression(current);
+                case TokenType.Symbol:
+                    Consume(TokenType.Symbol);
+                    return new MemberAccessExpression(current);
+                default:
+                    throw new KiwiSyntaxException(
+                        $"Unexpected Token {current}. Expected Sign Operator, New, Int, Float, String or Symbol Expression.");
+
+
+            }
+        }
+
+        private IExpressionSyntax ParseNewExpression()
+        {
+            throw new NotImplementedException();
+        }
+
+        private FunctionSyntax ParseFunctionSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.FuncKeyword)
+            {
+                return null;
+            }
+
+            Consume(TokenType.FuncKeyword);
+            var functionName = Consume(TokenType.Symbol);
+
+            Func<ISyntaxBase> functionParameterParser = () => Parse(ParseParameterSyntax, ParseParamsParameterSyntax);
+            var parameterList = ParseInnerCommmaSeperated(
+                TokenType.OpenParenth,
+                TokenType.ClosingParenth,
+                functionParameterParser);
+
+            var isVoid = _tokenStream.Current.Type != TokenType.HypenGreater;
+            ISyntaxBase dataClassDeclarationSyntax = null;
+            Token returnTypeName = null;
+            if (!isVoid)
+            {
+                Consume(TokenType.HypenGreater);
+                var withDataClassDeclaration = _tokenStream.Current.Type == TokenType.DataKeyword;
+                if (withDataClassDeclaration)
+                {
+                    dataClassDeclarationSyntax = ParseDataClassDeclarationSyntax();
+                }
+                else
+                {
+                    returnTypeName = ParseSymbolOrBuildInTypeName();
+                }
+            }
+
+            Func<ISyntaxBase> functionBodyParser = () => Parse(
+                ParseReturnStatementSyntax,
+                ParseIfStatementSyntax,
+                ParseWhenStatementSyntax,
+                ParseSwitchStatementSyntax,
+                ParseVariableStatementSyntax,
+                ParseForStatementSyntax,
+                ParseForInStatementSyntax);
+
+            var functionBody = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, functionBodyParser);
+            return new FunctionSyntax(
+                functionName,
+                parameterList,
+                dataClassDeclarationSyntax,
+                returnTypeName,
+                functionBody);
+        }
+
+        private ReturnStatementSyntax ParseReturnStatementSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.ReturnKeyword)
+            {
+                return null;
+            }
+
+            Consume(TokenType.ReturnKeyword);
+            var returnExpression = ParseExpressionSyntax();
+            return new ReturnStatementSyntax(returnExpression);
+        }
+
+        private ISyntaxBase ParseDataClassDeclarationSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.DataKeyword)
+            {
+                return null;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private ConstructorSyntax ParseConstructorSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.ConstructorKeyword)
+            {
+                return null;
+            }
+
+            Consume(TokenType.ConstructorKeyword);
+
+            Func<ISyntaxBase> constructorParameterParser = () => Parse(ParseParameterSyntax, ParseParamsParameterSyntax);
+            var argList = ParseInnerCommmaSeperated(
+                TokenType.OpenParenth,
+                TokenType.ClosingParenth,
+                constructorParameterParser);
+
+            Func<ISyntaxBase> constructorBodyParser = () =>
+                                                     Parse(
+                                                         ParseIfStatementSyntax,
+                                                         ParseWhenStatementSyntax,
+                                                         ParseSwitchStatementSyntax,
+                                                         ParseVariableStatementSyntax,
+                                                         ParseForStatementSyntax,
+                                                         ParseForInStatementSyntax);
+            var bodySyntax = ParseInner(
                 TokenType.OpenBracket,
-                TokenType.ClosingBracket, () => ParsePossible(ParseClassSyntax, ParseDataClassDeclarationSyntax, ParseEnumSyntax));
-            
-            return new SyntaxNamespaceAst(innerSyntax);
+                TokenType.ClosingBracket,
+                constructorBodyParser);
+
+            return new ConstructorSyntax(argList, bodySyntax);
         }
 
-        
+        private ISyntaxBase ParseForInStatementSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.ForKeyword)
+            {
+                return null;
+            }
 
-        private List<SyntaxAstBase> ParseInner(
+            throw new NotImplementedException();
+        }
+
+        private ISyntaxBase ParseForStatementSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.ForKeyword)
+            {
+                return null;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private ISyntaxBase ParseVariableStatementSyntax()
+        {
+            throw new NotImplementedException();
+        }
+
+        private ISyntaxBase ParseSwitchStatementSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.SwitchKeyword)
+            {
+                return null;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private ISyntaxBase ParseWhenStatementSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.WhenKeyword)
+            {
+                return null;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private ISyntaxBase ParseIfStatementSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.IfKeyword)
+            {
+                return null;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private ParameterSyntax ParseParameterSyntax()
+        {
+            var typeName = ParseSymbolOrBuildInTypeName();
+
+            var parameterName = Consume(TokenType.Symbol);
+            return new ParameterSyntax(typeName, parameterName);
+        }
+
+        private Token ParseSymbolOrBuildInTypeName()
+        {
+            var buildInTypeNames = new[]
+                                   {
+                                       TokenType.IntKeyword,
+                                       TokenType.FloatKeyword,
+                                   };
+
+            var current = _tokenStream.Current;
+            Token typeName;
+            if (buildInTypeNames.Contains(current.Type))
+            {
+                _tokenStream.Consume();
+                typeName = current;
+            }
+            else
+            {
+                typeName = Consume(TokenType.Symbol);
+            }
+            return typeName;
+        }
+
+        private ParameterSyntax ParseParamsParameterSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.TwoDots)
+            {
+                return null;
+            }
+
+            Consume(TokenType.TwoDots);
+            var typeName = Consume(TokenType.Symbol);
+            var parameterName = Consume(TokenType.Symbol);
+            return new ParameterSyntax(typeName, parameterName);
+        }
+
+        private EnumSyntax ParseEnumSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.EnumKeyword)
+            {
+                return null;
+            }
+
+            Consume(TokenType.EnumKeyword);
+            var enumName = Consume(TokenType.Symbol);
+            var memberSyntax = ParseInnerCommmaSeperated(
+                TokenType.OpenBracket,
+                TokenType.ClosingBracket,
+                ParseEnumMemberSyntax);
+            return new EnumSyntax(enumName, memberSyntax);
+        }
+
+        private ISyntaxBase ParseEnumMemberSyntax()
+        {
+            var memberName = Consume(TokenType.Symbol);
+            var hasExplicitValue = _tokenStream.Current.Type == TokenType.Colon;
+            IExpressionSyntax initializer = null;
+            if (hasExplicitValue)
+            {
+                Consume(TokenType.Colon);
+                initializer = (IExpressionSyntax)ParseExpressionSyntax();
+            }
+            return new EnumMemberSyntax(memberName, initializer);
+        }
+
+        private List<ISyntaxBase> ParseInner(TokenType opening, TokenType closing, Func<ISyntaxBase> parser)
+        {
+            return ParseInner(opening, closing, parser, false);
+        }
+
+        private List<ISyntaxBase> ParseInnerCommmaSeperated(
             TokenType opening,
             TokenType closing,
-            Func<SyntaxAstBase> getter)
+            Func<ISyntaxBase> parser)
         {
-            return ParseInner(opening, closing, getter, false);
+            return ParseInner(opening, closing, parser, true);
         }
 
-        private List<SyntaxAstBase> ParseInnerCommmaSeperated(
+        private List<ISyntaxBase> ParseInner(
             TokenType opening,
             TokenType closing,
-            Func<SyntaxAstBase> getter)
+            Func<ISyntaxBase> parser,
+            bool commaSeperated)
         {
-            return ParseInner(opening, closing, getter, true);
-        }
-
-        private List<SyntaxAstBase> ParseInner(TokenType opening, TokenType closing, Func<SyntaxAstBase> getter, bool commaSeperated)
-        {
-            var innerSyntax = new List<SyntaxAstBase>();
-            Take(opening);
+            var innerSyntax = new List<ISyntaxBase>();
+            Consume(opening);
             while (_tokenStream.Current.Type != closing)
             {
-                var inner = getter();
+                var inner = parser();
                 if (inner == null)
                 {
                     throw new KiwiSyntaxException("Unexpected Syntax in Sope");
                 }
 
                 innerSyntax.Add(inner);
-
-                if (commaSeperated)
+                if (_tokenStream.Current.Type != closing && commaSeperated)
                 {
-                    Take(TokenType.Comma);
+                    Consume(TokenType.Comma);
                 }
             }
 
-            Take(closing);
+            Consume(closing);
             return innerSyntax;
         }
 
-        private Token Take(TokenType tokenType)
+        private ISyntaxBase Parse(params Func<ISyntaxBase>[] possibleParseFunctions)
         {
-            var currentToken = _tokenStream.Current;
-            if (currentToken.Type != tokenType)
-            {
-                throw new KiwiSyntaxException($"Unexepted TokenType {currentToken.Type}. Excepted {tokenType}");
-            }
-            _tokenStream.Consume();
-            return currentToken;
-        }
-
-        private SyntaxAstBase ParsePossible(params Func<SyntaxAstBase>[] possibleParseFunctions)
-        {
-            _tokenStream.TakeSnapshot();
             foreach (var parseFunction in possibleParseFunctions)
             {
+                _tokenStream.TakeSnapshot();
                 var result = parseFunction();
                 if (result == null)
                 {
@@ -112,186 +498,18 @@ namespace Kiwi.Parser
                     return result;
                 }
             }
-            _tokenStream.RollbackSnapshot();
             return null;
         }
 
-        private SyntaxUsingAst ParseUsingSyntax()
+        private Token Consume(TokenType tokenType)
         {
-            Take(TokenType.UsingKeyword);
-            var namespaceName = Take(TokenType.Symbol);
-            return new SyntaxUsingAst(namespaceName);
-        }
-
-        private SyntaxClassAst ParseClassSyntax()
-        {
-            Take(TokenType.ClassKeyword);
-            var className = Take(TokenType.Symbol);
-            var inherit = _tokenStream.Current.Type == TokenType.IsKeyword;
-            Token descriptorName = null;
-
-            if (inherit)
+            var currentToken = _tokenStream.Current;
+            if (currentToken.Type != tokenType)
             {
-                Take(TokenType.IsKeyword);
-                descriptorName = Take(TokenType.Symbol);
+                throw new KiwiSyntaxException($"Unexepted TokenType {currentToken.Type}. Excepted {tokenType}");
             }
-            
-            var inner = ParseInner(
-                TokenType.OpenBracket,
-                TokenType.ClosingBracket,
-                () => ParsePossible(ParseConstructorSyntax, ParseFunctionSyntax, ParseFieldSyntax));
-
-            return new SyntaxClassAst(className, inherit, descriptorName, inner);
-        }
-
-        private SyntaxFieldAst ParseFieldSyntax()
-        {
-            var isConst = _tokenStream.Current.Type == TokenType.ConstKeyword;
-            var fieldTypeQualifier = Take(isConst ? TokenType.ConstKeyword : TokenType.VarKeyword);
-            var fieldType = Take(TokenType.Symbol);
-            var fieldName = Take(TokenType.Symbol);
-            SyntaxAstBase fieldInitializer = null;
-            if (isConst)
-            {
-                Take(TokenType.Colon);
-                fieldInitializer = ParseExpressionSyntax();
-            }
-
-            return new SyntaxFieldAst(fieldTypeQualifier, fieldType, fieldName, fieldInitializer);
-        }
-
-        private SyntaxAstBase ParseExpressionSyntax()
-        {
-            throw new NotImplementedException();
-        }
-
-        private SyntaxFunctionAst ParseFunctionSyntax()
-        {
-            Take(TokenType.FuncKeyword);
-            var functionName = Take(TokenType.Symbol);
-            var parameterList = ParseInnerCommmaSeperated(
-                TokenType.OpenParenth,
-                TokenType.ClosingParenth,
-                () => ParsePossible(ParseParameterSyntax, ParseParamsParameterSyntax));
-
-            var isVoid = _tokenStream.Current.Type != TokenType.HypenGreater;
-            SyntaxAstBase dataClassDeclarationSyntax = null;
-            Token returnTypeName = null;
-            if (!isVoid)
-            {
-                Take(TokenType.HypenGreater);
-                var withDataClassDeclaration = _tokenStream.Current.Type == TokenType.DataKeyword;
-                if (withDataClassDeclaration)
-                {
-                    dataClassDeclarationSyntax = ParseDataClassDeclarationSyntax();
-                }
-                else
-                {
-                    returnTypeName = Take(TokenType.Symbol);
-                }
-            }
-            var innerSyntax = ParseInner(
-                TokenType.OpenBracket,
-                TokenType.ClosingBracket,
-                () => ParsePossible(
-                    ParseIfStatementSyntax,
-                    ParseWhenStatementSyntax,
-                    ParseSwitchStatementSyntax,
-                    ParseVariableStatementSyntax,
-                    ParseForStatementSyntax,
-                    ParseForInStatementSyntax));
-
-            return new SyntaxFunctionAst(functionName, parameterList, isVoid, dataClassDeclarationSyntax, returnTypeName, innerSyntax);
-        }
-
-        private SyntaxAstBase ParseDataClassDeclarationSyntax()
-        {
-            throw new NotImplementedException();
-        }
-
-        private SyntaxConstructorAst ParseConstructorSyntax()
-        {
-            Take(TokenType.ConstructorKeyword);
-            var argList = ParseInnerCommmaSeperated(TokenType.OpenParenth, TokenType.ClosingParenth, () => ParsePossible(ParseParameterSyntax, ParseParamsParameterSyntax));
-            var innerSyntax = ParseInner(
-                TokenType.OpenBracket,
-                TokenType.ClosingBracket,
-                () =>
-                ParsePossible(
-                    ParseIfStatementSyntax,
-                    ParseWhenStatementSyntax,
-                    ParseSwitchStatementSyntax,
-                    ParseVariableStatementSyntax,
-                    ParseForStatementSyntax,
-                    ParseForInStatementSyntax));
-
-            return new SyntaxConstructorAst(argList, innerSyntax);
-        }
-
-        private SyntaxAstBase ParseForInStatementSyntax()
-        {
-            throw new NotImplementedException();
-        }
-
-        private SyntaxAstBase ParseForStatementSyntax()
-        {
-            throw new NotImplementedException();
-        }
-
-        private SyntaxAstBase ParseVariableStatementSyntax()
-        {
-            throw new NotImplementedException();
-        }
-
-        private SyntaxAstBase ParseSwitchStatementSyntax()
-        {
-            throw new NotImplementedException();
-        }
-
-        private SyntaxAstBase ParseWhenStatementSyntax()
-        {
-            throw new NotImplementedException();
-        }
-
-        private SyntaxAstBase ParseIfStatementSyntax()
-        {
-            throw new NotImplementedException();
-        }
-
-        private SyntaxParameterAst ParseParameterSyntax()
-        {
-            var typeName = Take(TokenType.Symbol);
-            var parameterName = Take(TokenType.Symbol);
-            return new SyntaxParameterAst(typeName, parameterName);
-        }
-
-        private SyntaxParameterAst ParseParamsParameterSyntax()
-        {
-            Take(TokenType.TwoDots);
-            var typeName = Take(TokenType.Symbol);
-            var parameterName = Take(TokenType.Symbol);
-            return new SyntaxParameterAst(typeName, parameterName);
-        }
-
-        private SyntaxEnumAst ParseEnumSyntax()
-        {
-            Take(TokenType.EnumKeyword);
-            var enumName = Take(TokenType.Symbol);
-            var memberSyntax = ParseInnerCommmaSeperated(TokenType.OpenBracket, TokenType.ClosingBracket, ParseEnumMemberSyntax);
-            return new SyntaxEnumAst(enumName, memberSyntax);
-        }
-
-        private SyntaxAstBase ParseEnumMemberSyntax()
-        {
-            var memberName = Take(TokenType.Symbol);
-            var hasExplicitValue = _tokenStream.Current.Type == TokenType.Colon;
-            SyntaxAstBase initializer = null;
-            if (hasExplicitValue)
-            {
-                Take(TokenType.Colon);
-                initializer = ParseExpressionSyntax();
-            }
-            return new SyntaxEnumMemberAst(memberName, initializer);
+            _tokenStream.Consume();
+            return currentToken;
         }
     }
 }

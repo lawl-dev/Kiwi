@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Kiwi.Lexer;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace Kiwi.Tests
 {
@@ -29,7 +28,7 @@ namespace Kiwi.Tests
         [TestCase(TokenType.ConstructorKeyword, "Constructor")]
         [TestCase(TokenType.ReturnKeyword, "return")]
         [TestCase(TokenType.EqualGreater, "=>")]
-        [TestCase(TokenType.Plus, "+")]
+        [TestCase(TokenType.Add, "+")]
         [TestCase(TokenType.Sub, "-")]
         [TestCase(TokenType.LeftSquareBracket, "[")]
         [TestCase(TokenType.RightSquareBracket, "]")]
@@ -80,50 +79,52 @@ namespace Kiwi.Tests
         {
             const string descriptorSource = "descriptor DescriptorSample" + "\r\n" +
                                             "{" + "\r\n" +
-                                            "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> TypeNameSample;" + "\r\n"
+                                            "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> TypeNameSample;"
+                                            + "\r\n"
                                             +
-                                            "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> data ReturnDataSample(TypeNameSample parameterNameSample);" + "\r\n"
+                                            "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> data ReturnDataSample(TypeNameSample parameterNameSample);"
+                                            + "\r\n"
                                             +
                                             "}";
 
             var tokenTypesSource = new[]
-                                                 {
-                                                     TokenType.DescriptorKeyword,
-                                                     TokenType.Symbol, 
-                                                     TokenType.OpenBracket, 
-                                                     TokenType.FuncKeyword, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.OpenParenth, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Comma, 
-                                                     TokenType.TwoDots, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.ClosingParenth, 
-                                                     TokenType.HypenGreater, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Semicolon,
-                                                     TokenType.FuncKeyword,
-                                                     TokenType.Symbol,
-                                                     TokenType.OpenParenth,
-                                                     TokenType.Symbol,
-                                                     TokenType.Symbol,
-                                                     TokenType.Comma,
-                                                     TokenType.TwoDots,
-                                                     TokenType.Symbol,
-                                                     TokenType.Symbol,
-                                                     TokenType.ClosingParenth,
-                                                     TokenType.HypenGreater,
-                                                     TokenType.DataKeyword,
-                                                     TokenType.Symbol, 
-                                                     TokenType.OpenParenth, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.ClosingParenth, 
-                                                     TokenType.Semicolon, 
-                                                     TokenType.ClosingBracket
-                                                 };
+                                   {
+                                       TokenType.DescriptorKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.OpenBracket,
+                                       TokenType.FuncKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.OpenParenth,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.Comma,
+                                       TokenType.TwoDots,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.ClosingParenth,
+                                       TokenType.HypenGreater,
+                                       TokenType.Symbol,
+                                       TokenType.Semicolon,
+                                       TokenType.FuncKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.OpenParenth,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.Comma,
+                                       TokenType.TwoDots,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.ClosingParenth,
+                                       TokenType.HypenGreater,
+                                       TokenType.DataKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.OpenParenth,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.ClosingParenth,
+                                       TokenType.Semicolon,
+                                       TokenType.ClosingBracket
+                                   };
             ValidateLexerResults(descriptorSource, tokenTypesSource);
         }
 
@@ -134,7 +135,8 @@ namespace Kiwi.Tests
                                        "{" + "\r\n" +
                                        "    const FieldTypeSample fieldNameSample : \"Hallo\";" + "\r\n" +
                                        "    FieldTypeSample2 = 1 * 2 + 3 / 4;" + "\r\n" +
-                                       "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> TypeNameSample" + "\r\n"
+                                       "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> TypeNameSample"
+                                       + "\r\n"
                                        +
                                        "    {" + "\r\n" +
                                        "        return new TypeNameSample();" + "\r\n" +
@@ -144,83 +146,83 @@ namespace Kiwi.Tests
                                        + "\r\n" +
                                        "    {" + "\r\n" +
                                        "        return new TypeNameSample(), 1;" + "\r\n" +
-                                       "    }" + "\r\n"+
+                                       "    }" + "\r\n" +
                                        "}";
             var tokenTypesSource = new[]
-                                                 {
-                                                     TokenType.ClassKeyword,
-                                                     TokenType.Symbol, 
-                                                     TokenType.IsKeyword, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.OpenBracket, 
-                                                     TokenType.ConstKeyword, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Colon, 
-                                                     TokenType.String, 
-                                                     TokenType.Semicolon, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Equal, 
-                                                     TokenType.Int, 
-                                                     TokenType.Mult, 
-                                                     TokenType.Int, 
-                                                     TokenType.Plus,
-                                                     TokenType.Int, 
-                                                     TokenType.Div, 
-                                                     TokenType.Int, 
-                                                     TokenType.Semicolon, 
-                                                     TokenType.FuncKeyword, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.OpenParenth, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Comma, 
-                                                     TokenType.TwoDots, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.ClosingParenth, 
-                                                     TokenType.HypenGreater, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.OpenBracket, 
-                                                     TokenType.ReturnKeyword, 
-                                                     TokenType.NewKeyword, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.OpenParenth, 
-                                                     TokenType.ClosingParenth, 
-                                                     TokenType.Semicolon, 
-                                                     TokenType.ClosingBracket, 
-                                                     TokenType.FuncKeyword, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.OpenParenth, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Comma, 
-                                                     TokenType.TwoDots, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.ClosingParenth, 
-                                                     TokenType.HypenGreater, 
-                                                     TokenType.DataKeyword, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.OpenParenth, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.Comma, 
-                                                     TokenType.IntKeyword, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.ClosingParenth, 
-                                                     TokenType.OpenBracket, 
-                                                     TokenType.ReturnKeyword, 
-                                                     TokenType.NewKeyword, 
-                                                     TokenType.Symbol, 
-                                                     TokenType.OpenParenth, 
-                                                     TokenType.ClosingParenth, 
-                                                     TokenType.Comma, 
-                                                     TokenType.Int,
-                                                     TokenType.Semicolon, 
-                                                     TokenType.ClosingBracket,  
-                                                     TokenType.ClosingBracket,  
-                                                 };
+                                   {
+                                       TokenType.ClassKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.IsKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.OpenBracket,
+                                       TokenType.ConstKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.Colon,
+                                       TokenType.String,
+                                       TokenType.Semicolon,
+                                       TokenType.Symbol,
+                                       TokenType.Equal,
+                                       TokenType.Int,
+                                       TokenType.Mult,
+                                       TokenType.Int,
+                                       TokenType.Add,
+                                       TokenType.Int,
+                                       TokenType.Div,
+                                       TokenType.Int,
+                                       TokenType.Semicolon,
+                                       TokenType.FuncKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.OpenParenth,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.Comma,
+                                       TokenType.TwoDots,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.ClosingParenth,
+                                       TokenType.HypenGreater,
+                                       TokenType.Symbol,
+                                       TokenType.OpenBracket,
+                                       TokenType.ReturnKeyword,
+                                       TokenType.NewKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.OpenParenth,
+                                       TokenType.ClosingParenth,
+                                       TokenType.Semicolon,
+                                       TokenType.ClosingBracket,
+                                       TokenType.FuncKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.OpenParenth,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.Comma,
+                                       TokenType.TwoDots,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.ClosingParenth,
+                                       TokenType.HypenGreater,
+                                       TokenType.DataKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.OpenParenth,
+                                       TokenType.Symbol,
+                                       TokenType.Symbol,
+                                       TokenType.Comma,
+                                       TokenType.IntKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.ClosingParenth,
+                                       TokenType.OpenBracket,
+                                       TokenType.ReturnKeyword,
+                                       TokenType.NewKeyword,
+                                       TokenType.Symbol,
+                                       TokenType.OpenParenth,
+                                       TokenType.ClosingParenth,
+                                       TokenType.Comma,
+                                       TokenType.Int,
+                                       TokenType.Semicolon,
+                                       TokenType.ClosingBracket,
+                                       TokenType.ClosingBracket
+                                   };
             ValidateLexerResults(classSource, tokenTypesSource);
         }
 
@@ -228,11 +230,11 @@ namespace Kiwi.Tests
         public void TestEnum()
         {
             const string enumSource = "enum EnumSample" + "\r\n" +
-                             "{" + "\r\n" +
-                             "  First," + "\r\n" +
-                             "  Second," + "\r\n" +
-                             "  Last : 1337" + "\r\n" +
-                             "}";
+                                      "{" + "\r\n" +
+                                      "  First," + "\r\n" +
+                                      "  Second," + "\r\n" +
+                                      "  Last : 1337" + "\r\n" +
+                                      "}";
 
             var tokenTypeSource = new[]
                                   {
@@ -353,7 +355,7 @@ namespace Kiwi.Tests
                                       TokenType.ElseKeyword,
                                       TokenType.HypenGreater,
                                       TokenType.Comment,
-                                      TokenType.ClosingBracket,
+                                      TokenType.ClosingBracket
                                   };
             ValidateLexerResults(whenSource, tokenTypeSource);
         }

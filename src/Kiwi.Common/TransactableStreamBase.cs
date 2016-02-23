@@ -28,7 +28,7 @@ namespace Kiwi.Common
                 return _items[_index];
             }
         }
-                
+
         public void Consume()
         {
             _index++;

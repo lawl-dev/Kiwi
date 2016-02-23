@@ -2,11 +2,11 @@
 
 namespace Kiwi.Parser.Nodes
 {
-    internal class SyntaxUsingAst : SyntaxAstBase
+    public class UsingSyntax : ISyntaxBase
     {
         public Token NamespaceName { get; private set; }
 
-        public SyntaxUsingAst(Token namespaceName)
+        public UsingSyntax(Token namespaceName)
         {
             NamespaceName = namespaceName;
         }

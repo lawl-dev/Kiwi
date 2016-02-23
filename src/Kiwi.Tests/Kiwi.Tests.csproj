@@ -45,12 +45,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LexerTests.cs" />
+    <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Lexer\Kiwi.Lexer.csproj">
       <Project>{87fae805-1868-467e-9c1f-5e0cdce8a284}</Project>
       <Name>Kiwi.Lexer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kiwi.Parser\Kiwi.Parser.csproj">
+      <Project>{79632D97-4DB1-441B-B446-8C77C93BB4C1}</Project>
+      <Name>Kiwi.Parser</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

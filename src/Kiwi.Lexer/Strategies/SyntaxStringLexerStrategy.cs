@@ -25,7 +25,7 @@ namespace Kiwi.Lexer.Strategies
                     return null;
                 }
             }
-            
+
             tokenValue += stream.Current;
             stream.Consume();
 
