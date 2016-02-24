@@ -93,15 +93,19 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0];
+
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
-            var binaryExpressionSyntax = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
-            Assert.IsInstanceOf<IntExpressionSyntax>(binaryExpressionSyntax.LeftExpression);
-            Assert.IsInstanceOf<BinaryExpressionSyntax>(binaryExpressionSyntax.RightExpression);
-            Assert.AreEqual(binaryExpressionSyntax.Operator.Type, TokenType.Add);
-            var binaryExpressionSyntax2 = (BinaryExpressionSyntax)binaryExpressionSyntax.RightExpression;
-            Assert.IsInstanceOf<IntExpressionSyntax>(binaryExpressionSyntax2.LeftExpression);
-            Assert.IsInstanceOf<IntExpressionSyntax>(binaryExpressionSyntax2.RightExpression);
-            Assert.AreEqual(binaryExpressionSyntax2.Operator.Type, TokenType.Mult);
+            var leftBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
+
+            Assert.IsInstanceOf<IntExpressionSyntax>(leftBinaryExpression.LeftExpression);
+            Assert.IsInstanceOf<BinaryExpressionSyntax>(leftBinaryExpression.RightExpression);
+            Assert.AreEqual(leftBinaryExpression.Operator.Type, TokenType.Add);
+
+            var rightBinaryExpression = (BinaryExpressionSyntax)leftBinaryExpression.RightExpression;
+            Assert.IsInstanceOf<IntExpressionSyntax>(rightBinaryExpression.LeftExpression);
+            Assert.IsInstanceOf<IntExpressionSyntax>(rightBinaryExpression.RightExpression);
+
+            Assert.AreEqual(rightBinaryExpression.Operator.Type, TokenType.Mult);
         }
 
         [Test]
@@ -115,20 +119,25 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0];
+
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
-            var binaryExpressionSyntax = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
-            Assert.IsInstanceOf<SignExpressionSyntax>(binaryExpressionSyntax.LeftExpression);
-            var signExpressionSyntax = ((SignExpressionSyntax)binaryExpressionSyntax.LeftExpression);
-            Assert.AreEqual(TokenType.Add, signExpressionSyntax.Operator.Type);
-            Assert.IsInstanceOf<IntExpressionSyntax>(signExpressionSyntax.Expression);
-            Assert.IsInstanceOf<BinaryExpressionSyntax>(binaryExpressionSyntax.RightExpression);
-            Assert.AreEqual(binaryExpressionSyntax.Operator.Type, TokenType.Add);
-            var binaryExpressionSyntax2 = (BinaryExpressionSyntax)binaryExpressionSyntax.RightExpression;
-            Assert.IsInstanceOf<IntExpressionSyntax>(binaryExpressionSyntax2.LeftExpression);
-            Assert.IsInstanceOf<SignExpressionSyntax>(binaryExpressionSyntax2.RightExpression);
-            var signExpressionSyntax2 = (SignExpressionSyntax)binaryExpressionSyntax2.RightExpression;
-            Assert.AreEqual(TokenType.Sub, signExpressionSyntax2.Operator.Type);
-            Assert.AreEqual(binaryExpressionSyntax2.Operator.Type, TokenType.Mult);
+            var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
+            Assert.AreEqual(addBinaryExpression.Operator.Type, TokenType.Add);
+            Assert.IsInstanceOf<SignExpressionSyntax>(addBinaryExpression.LeftExpression);
+
+            var firstSignExpressionSyntax = (SignExpressionSyntax)addBinaryExpression.LeftExpression;
+            Assert.AreEqual(TokenType.Add, firstSignExpressionSyntax.Operator.Type);
+            Assert.IsInstanceOf<IntExpressionSyntax>(firstSignExpressionSyntax.Expression);
+
+            Assert.IsInstanceOf<BinaryExpressionSyntax>(addBinaryExpression.RightExpression);
+            var multBinaryExpression = (BinaryExpressionSyntax)addBinaryExpression.RightExpression;
+
+            Assert.IsInstanceOf<IntExpressionSyntax>(multBinaryExpression.LeftExpression);
+            Assert.IsInstanceOf<SignExpressionSyntax>(multBinaryExpression.RightExpression);
+
+            var secondSignExpressionSyntax2 = (SignExpressionSyntax)multBinaryExpression.RightExpression;
+            Assert.AreEqual(TokenType.Sub, secondSignExpressionSyntax2.Operator.Type);
+            Assert.AreEqual(multBinaryExpression.Operator.Type, TokenType.Mult);
         }
 
         [Test]
@@ -142,25 +151,67 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0];
+
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
-            var binaryExpressionSyntax = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
-            Assert.IsInstanceOf<SignExpressionSyntax>(binaryExpressionSyntax.LeftExpression);
-            var signExpressionSyntax = ((SignExpressionSyntax)binaryExpressionSyntax.LeftExpression);
+            var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
+
+            Assert.IsInstanceOf<SignExpressionSyntax>(addBinaryExpression.LeftExpression);
+            var signExpressionSyntax = (SignExpressionSyntax)addBinaryExpression.LeftExpression;
+
             Assert.AreEqual(TokenType.Add, signExpressionSyntax.Operator.Type);
             Assert.IsInstanceOf<SignExpressionSyntax>(signExpressionSyntax.Expression);
-            var signExpressionSyntax3 = (SignExpressionSyntax)signExpressionSyntax.Expression;
-            Assert.AreEqual(TokenType.Add, signExpressionSyntax3.Operator.Type);
-            Assert.IsInstanceOf<IntExpressionSyntax>(signExpressionSyntax3.Expression);
-            Assert.IsInstanceOf<BinaryExpressionSyntax>(binaryExpressionSyntax.RightExpression);
-            Assert.AreEqual(binaryExpressionSyntax.Operator.Type, TokenType.Add);
-            var binaryExpressionSyntax2 = (BinaryExpressionSyntax)binaryExpressionSyntax.RightExpression;
-            Assert.IsInstanceOf<IntExpressionSyntax>(binaryExpressionSyntax2.LeftExpression);
-            Assert.IsInstanceOf<SignExpressionSyntax>(binaryExpressionSyntax2.RightExpression);
-            var signExpressionSyntax2 = (SignExpressionSyntax)binaryExpressionSyntax2.RightExpression;
-            Assert.AreEqual(TokenType.Sub, signExpressionSyntax2.Operator.Type);
-            Assert.AreEqual(TokenType.Mult, binaryExpressionSyntax2.Operator.Type);
-            Assert.IsInstanceOf<SignExpressionSyntax>(signExpressionSyntax2.Expression);
-            Assert.AreEqual(TokenType.Sub, ((SignExpressionSyntax)signExpressionSyntax2.Expression).Operator.Type);
+            var signOfSignExpression = (SignExpressionSyntax)signExpressionSyntax.Expression;
+            Assert.AreEqual(TokenType.Add, signOfSignExpression.Operator.Type);
+
+            Assert.IsInstanceOf<IntExpressionSyntax>(signOfSignExpression.Expression);
+            Assert.IsInstanceOf<BinaryExpressionSyntax>(addBinaryExpression.RightExpression);
+            Assert.AreEqual(addBinaryExpression.Operator.Type, TokenType.Add);
+            var multBinaryExpression = (BinaryExpressionSyntax)addBinaryExpression.RightExpression;
+            Assert.IsInstanceOf<IntExpressionSyntax>(multBinaryExpression.LeftExpression);
+            Assert.IsInstanceOf<SignExpressionSyntax>(multBinaryExpression.RightExpression);
+
+            var secondSignExpression = (SignExpressionSyntax)multBinaryExpression.RightExpression;
+            Assert.AreEqual(TokenType.Sub, secondSignExpression.Operator.Type);
+            Assert.AreEqual(TokenType.Mult, multBinaryExpression.Operator.Type);
+            Assert.IsInstanceOf<SignExpressionSyntax>(secondSignExpression.Expression);
+            Assert.AreEqual(TokenType.Sub, ((SignExpressionSyntax)secondSignExpression.Expression).Operator.Type);
+        }
+
+        [Test]
+        public void TestMultipleSignOperatorWithInnerExpession()
+        {
+            var lexer = new Lexer.Lexer();
+            var tokens =
+                lexer.Lex(
+                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, "return ++1 + (2 * --3)"), string.Empty, string.Empty)));
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0];
+
+            Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
+            var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
+
+            Assert.IsInstanceOf<SignExpressionSyntax>(addBinaryExpression.LeftExpression);
+            var signExpressionSyntax = (SignExpressionSyntax)addBinaryExpression.LeftExpression;
+
+            Assert.AreEqual(TokenType.Add, signExpressionSyntax.Operator.Type);
+            Assert.IsInstanceOf<SignExpressionSyntax>(signExpressionSyntax.Expression);
+            var signOfSignExpression = (SignExpressionSyntax)signExpressionSyntax.Expression;
+            Assert.AreEqual(TokenType.Add, signOfSignExpression.Operator.Type);
+
+            Assert.IsInstanceOf<IntExpressionSyntax>(signOfSignExpression.Expression);
+            Assert.IsInstanceOf<BinaryExpressionSyntax>(addBinaryExpression.RightExpression);
+            Assert.AreEqual(addBinaryExpression.Operator.Type, TokenType.Add);
+            var multBinaryExpression = (BinaryExpressionSyntax)addBinaryExpression.RightExpression;
+            Assert.IsInstanceOf<IntExpressionSyntax>(multBinaryExpression.LeftExpression);
+            Assert.IsInstanceOf<SignExpressionSyntax>(multBinaryExpression.RightExpression);
+
+            var secondSignExpression = (SignExpressionSyntax)multBinaryExpression.RightExpression;
+            Assert.AreEqual(TokenType.Sub, secondSignExpression.Operator.Type);
+            Assert.AreEqual(TokenType.Mult, multBinaryExpression.Operator.Type);
+            Assert.IsInstanceOf<SignExpressionSyntax>(secondSignExpression.Expression);
+            Assert.AreEqual(TokenType.Sub, ((SignExpressionSyntax)secondSignExpression.Expression).Operator.Type);
         }
     }
 }

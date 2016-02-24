@@ -56,6 +56,10 @@ namespace Kiwi.Lexer
         CaseKeyword,
         ColonAdd,
         NamespaceKeyword,
-        UsingKeyword
+        UsingKeyword,
+        ColonSub,
+        ColonDiv,
+        ColonMult,
+        ColonPow
     }
 }

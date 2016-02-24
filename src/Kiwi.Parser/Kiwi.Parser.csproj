@@ -46,6 +46,7 @@
     <Compile Include="IntExpressionSyntax.cs" />
     <Compile Include="IStatetementSyntax.cs" />
     <Compile Include="MemberAccessExpression.cs" />
+    <Compile Include="ObjectCreationExpressionSyntax.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Nodes\ISyntaxBase.cs" />
@@ -64,6 +65,8 @@
     <Compile Include="SignExpressionSyntax.cs" />
     <Compile Include="StringExpression.cs" />
     <Compile Include="TransactableTokenStream.cs" />
+    <Compile Include="VariableAssignmentStatementSyntax.cs" />
+    <Compile Include="VariableDeclarationStatementSyntax.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Common\Kiwi.Common.csproj">

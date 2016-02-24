@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -202,8 +203,6 @@ namespace Kiwi.Parser
                 default:
                     throw new KiwiSyntaxException(
                         $"Unexpected Token {current}. Expected Sign Operator, New, Int, Float, String or Symbol Expression.");
-
-
             }
         }
 
@@ -257,7 +256,8 @@ namespace Kiwi.Parser
                 ParseIfStatementSyntax,
                 ParseWhenStatementSyntax,
                 ParseSwitchStatementSyntax,
-                ParseVariableStatementSyntax,
+                ParseVariableDeclarationSyntax,
+                ParseVariableAssignmentStatementSyntax,
                 ParseForStatementSyntax,
                 ParseForInStatementSyntax);
 
@@ -268,6 +268,26 @@ namespace Kiwi.Parser
                 dataClassDeclarationSyntax,
                 returnTypeName,
                 functionBody);
+        }
+
+        private VariableDeclarationStatementSyntax ParseVariableDeclarationSyntax()
+        {
+            var current = _tokenStream.Current;
+            Token variableQualifier = null;
+            switch (current.Type)
+            {
+                case TokenType.VarKeyword:
+                case TokenType.ConstKeyword:
+                    variableQualifier = current;
+                    break;
+                default:
+                    return null;
+            }
+
+            var variableName = Consume(TokenType.Symbol);
+            Consume(TokenType.Colon);
+            var initializer = ParseExpressionSyntax();
+            return new VariableDeclarationStatementSyntax(variableQualifier, variableName, initializer);
         }
 
         private ReturnStatementSyntax ParseReturnStatementSyntax()
@@ -312,7 +332,8 @@ namespace Kiwi.Parser
                                                          ParseIfStatementSyntax,
                                                          ParseWhenStatementSyntax,
                                                          ParseSwitchStatementSyntax,
-                                                         ParseVariableStatementSyntax,
+                                                         ParseVariableDeclarationSyntax,
+                                                         ParseVariableAssignmentStatementSyntax,
                                                          ParseForStatementSyntax,
                                                          ParseForInStatementSyntax);
             var bodySyntax = ParseInner(
@@ -339,14 +360,39 @@ namespace Kiwi.Parser
             {
                 return null;
             }
-
+            
             throw new NotImplementedException();
         }
 
-        private ISyntaxBase ParseVariableStatementSyntax()
+        private VariableAssignmentStatementSyntax ParseVariableAssignmentStatementSyntax()
         {
-            throw new NotImplementedException();
-        }
+            if (_tokenStream.Current.Type != TokenType.Symbol)
+            {
+                return null;
+
+            }
+
+            var assignOperators = new[]
+                             {
+                                 TokenType.Colon,
+                                 TokenType.ColonDiv, 
+                                 TokenType.ColonMult, 
+                                 TokenType.ColonAdd, 
+                                 TokenType.ColonPow, 
+                                 TokenType.ColonSub
+                             };
+
+            var variableName = Consume(TokenType.Symbol);
+
+            var @operator = _tokenStream.Current;
+            if (!assignOperators.Contains(@operator.Type))
+            {
+                throw new KiwiSyntaxException("Unexpected assign operator {0}. Expected :, :+, :-, :/, :* or :^.");
+            }
+
+            var intializer = ParseExpressionSyntax();
+            return new VariableAssignmentStatementSyntax(variableName, @operator, intializer);
+        }   
 
         private ISyntaxBase ParseSwitchStatementSyntax()
         {
@@ -518,18 +564,6 @@ namespace Kiwi.Parser
             }
             _tokenStream.Consume();
             return currentToken;
-        }
-    }
-
-    internal class ObjectCreationExpressionSyntax : IExpressionSyntax
-    {
-        public Token TypeName { get; }
-        public List<ISyntaxBase> Parameter { get; }
-
-        public ObjectCreationExpressionSyntax(Token typeName, List<ISyntaxBase> parameter)
-        {
-            TypeName = typeName;
-            Parameter = parameter;
         }
     }
 }
