@@ -1,6 +1,17 @@
+using System.Collections.Generic;
+using Kiwi.Lexer;
+
 namespace Kiwi.Parser.Nodes
 {
-    internal class DataSyntax : ISyntaxBase
+    public class DataSyntax : ISyntaxBase
     {
+        public Token TypeName { get; }
+        public List<ParameterSyntax> Parameter { get; }
+
+        public DataSyntax(Token typeName, List<ParameterSyntax> parameter)
+        {
+            TypeName = typeName;
+            Parameter = parameter;
+        }
     }
 }

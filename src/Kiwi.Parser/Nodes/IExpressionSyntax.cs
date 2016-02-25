@@ -1,6 +1,4 @@
-using Kiwi.Parser.Nodes;
-
-namespace Kiwi.Parser
+namespace Kiwi.Parser.Nodes
 {
     public interface IExpressionSyntax : ISyntaxBase
     {

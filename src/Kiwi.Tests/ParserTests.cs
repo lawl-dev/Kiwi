@@ -1,7 +1,5 @@
-using System.Diagnostics;
-using System.Linq.Expressions;
+using System;
 using Kiwi.Lexer;
-using Kiwi.Parser;
 using Kiwi.Parser.Nodes;
 using NUnit.Framework;
 
@@ -69,17 +67,56 @@ namespace Kiwi.Tests
             Assert.AreEqual("FunctionSample", ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].FunctionName.Value);
         }
 
-        [Test]
-        public void TestReturn()
+        [TestCase("return 1", typeof(ReturnStatementSyntax))]
+        [TestCase("var i : 1", typeof(VariableDeclarationStatementSyntax))]
+        [TestCase("i : 1", typeof(VariableAssignmentStatementSyntax))]
+        [TestCase("i :+ 1", typeof(VariableAssignmentStatementSyntax))]
+        [TestCase("i :- 1", typeof(VariableAssignmentStatementSyntax))]
+        [TestCase("i :* 1", typeof(VariableAssignmentStatementSyntax))]
+        [TestCase("i :/ 1", typeof(VariableAssignmentStatementSyntax))]
+        [TestCase("i :^ 1", typeof(VariableAssignmentStatementSyntax))]
+        [TestCase("if(i = 1)" + "\r\n" +
+                  "{" + "\r\n" +
+                  "     //code" + "\r\n" +
+                  "}", typeof(IfStatementSyntax))]
+        [TestCase("if(i = 1)" + "\r\n" +
+                  "{" + "\r\n" +
+                  "     //code" + "\r\n" +
+                  "}" + "\r\n" +
+                  "else" + "\r\n" +
+                  "{" + "\r\n" +
+                  "     //code" + "\r\n" +
+                  "}", typeof(IfElseStatementSyntax))]
+        public void TestStatements(string statementSource, Type type)
         {
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, "return 1"), string.Empty, string.Empty)));
+                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, statementSource), string.Empty, string.Empty)));
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            Assert.IsInstanceOf<ReturnStatementSyntax>(ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0]);
+            Assert.IsInstanceOf(type, ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0]);
+        }
+
+        [TestCase("return if(1 = 2 * 5) 1 else 2", typeof(IfElseExpressionSyntax))]
+        [TestCase("return 1 * 2", typeof(BinaryExpressionSyntax))]
+        [TestCase("return 12f", typeof(FloatExpressionSyntax))]
+        [TestCase("return 12", typeof(IntExpressionSyntax))]
+        [TestCase("return variable", typeof(MemberAccessExpressionSyntax))]
+        [TestCase("return new Object()", typeof(ObjectCreationExpressionSyntax))]
+        [TestCase("return -1", typeof(SignExpressionSyntax))]
+        [TestCase("return \"Hallo\"", typeof(StringExpressionSyntax))]
+        public void TestExpressions(string statementSource, Type type)
+        {
+            var lexer = new Lexer.Lexer();
+            var tokens =
+                lexer.Lex(
+                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, statementSource), string.Empty, string.Empty)));
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+            Assert.IsInstanceOf(type, ((ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0]).Expression);
         }
 
         [Test]

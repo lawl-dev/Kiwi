@@ -40,13 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinaryExpressionSyntax.cs" />
-    <Compile Include="FloatExpression.cs" />
-    <Compile Include="IExpressionSyntax.cs" />
-    <Compile Include="IntExpressionSyntax.cs" />
-    <Compile Include="IStatetementSyntax.cs" />
-    <Compile Include="MemberAccessExpression.cs" />
-    <Compile Include="ObjectCreationExpressionSyntax.cs" />
+    <Compile Include="Nodes\IfElseExpressionSyntax.cs" />
+    <Compile Include="Nodes\IfElseStatementSyntax.cs" />
+    <Compile Include="Nodes\IfStatementSyntax.cs" />
+    <Compile Include="Nodes\BinaryExpressionSyntax.cs" />
+    <Compile Include="Nodes\FloatExpressionSyntax.cs" />
+    <Compile Include="Nodes\IExpressionSyntax.cs" />
+    <Compile Include="Nodes\IntExpressionSyntax.cs" />
+    <Compile Include="Nodes\IStatetementSyntax.cs" />
+    <Compile Include="Nodes\MemberAccessExpressionSyntax.cs" />
+    <Compile Include="Nodes\ObjectCreationExpressionSyntax.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Nodes\ISyntaxBase.cs" />
@@ -61,12 +64,12 @@
     <Compile Include="Nodes\NamespaceSyntax.cs" />
     <Compile Include="Nodes\ParameterSyntax.cs" />
     <Compile Include="Nodes\UsingSyntax.cs" />
-    <Compile Include="ReturnStatementSyntax.cs" />
-    <Compile Include="SignExpressionSyntax.cs" />
-    <Compile Include="StringExpression.cs" />
+    <Compile Include="Nodes\ReturnStatementSyntax.cs" />
+    <Compile Include="Nodes\SignExpressionSyntax.cs" />
+    <Compile Include="Nodes\StringExpressionSyntax.cs" />
     <Compile Include="TransactableTokenStream.cs" />
-    <Compile Include="VariableAssignmentStatementSyntax.cs" />
-    <Compile Include="VariableDeclarationStatementSyntax.cs" />
+    <Compile Include="Nodes\VariableAssignmentStatementSyntax.cs" />
+    <Compile Include="Nodes\VariableDeclarationStatementSyntax.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Common\Kiwi.Common.csproj">

@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Kiwi.Lexer;
-using Kiwi.Parser.Nodes;
 
-namespace Kiwi.Parser
+namespace Kiwi.Parser.Nodes
 {
-    internal class ObjectCreationExpressionSyntax : IExpressionSyntax
+    public class ObjectCreationExpressionSyntax : IExpressionSyntax
     {
         public Token TypeName { get; }
         public List<ISyntaxBase> Parameter { get; }

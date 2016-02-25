@@ -1,4 +1,4 @@
-namespace Kiwi.Parser
+namespace Kiwi.Parser.Nodes
 {
     public class ReturnStatementSyntax : IStatetementSyntax
     {

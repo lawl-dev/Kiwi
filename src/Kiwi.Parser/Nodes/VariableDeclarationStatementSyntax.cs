@@ -1,8 +1,8 @@
 using Kiwi.Lexer;
 
-namespace Kiwi.Parser
+namespace Kiwi.Parser.Nodes
 {
-    internal class VariableDeclarationStatementSyntax : IStatetementSyntax
+    public class VariableDeclarationStatementSyntax : IStatetementSyntax
     {
         public Token VariableQualifier { get; }
         public Token VariableName { get; }

@@ -2,7 +2,7 @@
 
 namespace Kiwi.Parser.Nodes
 {
-    internal class ParameterSyntax : ISyntaxBase
+    public class ParameterSyntax : ISyntaxBase
     {
         public Token TypeName { get; private set; }
         public Token ParameterName { get; private set; }

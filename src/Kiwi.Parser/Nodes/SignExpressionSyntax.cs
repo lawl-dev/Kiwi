@@ -1,6 +1,6 @@
 using Kiwi.Lexer;
 
-namespace Kiwi.Parser
+namespace Kiwi.Parser.Nodes
 {
     public class SignExpressionSyntax : IExpressionSyntax
     {
