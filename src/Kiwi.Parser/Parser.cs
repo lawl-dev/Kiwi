@@ -248,8 +248,8 @@ namespace Kiwi.Parser
             }
 
             Consume(TokenType.NewKeyword);
-            var typeName = Consume(TokenType.Symbol);
-            var parameter = ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpressionSyntax, true);
+            var typeName = ParseSymbolOrBuildInType();
+            var parameter = typeName is ArrayTypeSyntax ? null : ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpressionSyntax, true);
             return new ObjectCreationExpressionSyntax(typeName, parameter);
         }
 
@@ -284,7 +284,7 @@ namespace Kiwi.Parser
                 return ParseDataFunctionSyntax(functionName, functionParameter);
             }
 
-            var returnType = ParseSymbolOrBuildInTypeName();
+            var returnType = ParseSymbolOrBuildInType();
             var body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
             return new ReturnFunctionSyntax(functionName, functionParameter.Cast<ParameterSyntax>().ToList(), body, returnType);
         }
@@ -574,13 +574,13 @@ namespace Kiwi.Parser
 
         private ParameterSyntax ParseParameterSyntax()
         {
-            var typeName = ParseSymbolOrBuildInTypeName();
+            var typeName = ParseSymbolOrBuildInType();
 
             var parameterName = Consume(TokenType.Symbol);
             return new ParameterSyntax(typeName, parameterName);
         }
 
-        private Token ParseSymbolOrBuildInTypeName()
+        private TypeSyntax ParseSymbolOrBuildInType()
         {
             var buildInTypeNames = new[]
                                    {
@@ -599,7 +599,20 @@ namespace Kiwi.Parser
             {
                 typeName = Consume(TokenType.Symbol);
             }
-            return typeName;
+
+            if (_tokenStream.Current.Type != TokenType.LeftSquareBracket)
+            {
+                return new TypeSyntax(typeName);
+            }
+
+            int dimension = 0;
+            for (; _tokenStream.Current.Type == TokenType.LeftSquareBracket; dimension++)
+            {
+                Consume(TokenType.LeftSquareBracket);
+                Consume(TokenType.RightSquareBracket);
+            }
+
+            return new ArrayTypeSyntax(typeName, dimension);
         }
 
         private ParameterSyntax ParseParamsParameterSyntax()
@@ -610,7 +623,7 @@ namespace Kiwi.Parser
             }
 
             Consume(TokenType.TwoDots);
-            var typeName = Consume(TokenType.Symbol);
+            var typeName = ParseSymbolOrBuildInType();
             var parameterName = Consume(TokenType.Symbol);
             return new ParameterSyntax(typeName, parameterName);
         }

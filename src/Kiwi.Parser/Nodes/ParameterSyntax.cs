@@ -4,12 +4,12 @@ namespace Kiwi.Parser.Nodes
 {
     public class ParameterSyntax : ISyntaxBase
     {
-        public Token TypeName { get; private set; }
+        public TypeSyntax Type { get; private set; }
         public Token ParameterName { get; private set; }
 
-        public ParameterSyntax(Token typeName, Token parameterName)
+        public ParameterSyntax(TypeSyntax type, Token parameterName)
         {
-            TypeName = typeName;
+            Type = type;
             ParameterName = parameterName;
         }
     }

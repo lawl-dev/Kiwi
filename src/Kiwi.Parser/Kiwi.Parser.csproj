@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArrayTypeSyntax.cs" />
     <Compile Include="CallExpressionSyntax.cs" />
     <Compile Include="CaseSyntax.cs" />
     <Compile Include="DefaultSyntax.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="TransactableTokenStream.cs" />
     <Compile Include="Nodes\VariableAssignmentStatementSyntax.cs" />
     <Compile Include="Nodes\VariableDeclarationStatementSyntax.cs" />
+    <Compile Include="TypeSyntax.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Common\Kiwi.Common.csproj">

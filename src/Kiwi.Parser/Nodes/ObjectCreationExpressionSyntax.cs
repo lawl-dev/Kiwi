@@ -5,12 +5,12 @@ namespace Kiwi.Parser.Nodes
 {
     public class ObjectCreationExpressionSyntax : IExpressionSyntax
     {
-        public Token TypeName { get; }
+        public TypeSyntax Type { get; }
         public List<ISyntaxBase> Parameter { get; }
 
-        public ObjectCreationExpressionSyntax(Token typeName, List<ISyntaxBase> parameter)
+        public ObjectCreationExpressionSyntax(TypeSyntax type, List<ISyntaxBase> parameter)
         {
-            TypeName = typeName;
+            Type = type;
             Parameter = parameter;
         }
     }
