@@ -138,6 +138,8 @@ namespace Kiwi.Parser
                                 TokenType.Add,
                                 TokenType.Sub,
                                 TokenType.Pow,
+                                TokenType.Less,
+                                TokenType.Greater
                             };
 
             var firstExpression = ParseSingleExpression();
@@ -365,14 +367,59 @@ namespace Kiwi.Parser
             throw new NotImplementedException();
         }
 
-        private ISyntaxBase ParseForStatementSyntax()
+        private ForStatementSyntax ParseForStatementSyntax()
         {
             if (_tokenStream.Current.Type != TokenType.ForKeyword)
             {
                 return null;
             }
             
-            throw new NotImplementedException();
+            Consume(TokenType.ForKeyword);
+            Consume(TokenType.OpenParenth);
+
+            var initExpression = ParseForInitExpression();
+            Consume(TokenType.Semicolon);
+            var condExpression = ParseExpressionSyntax();
+            Consume(TokenType.Semicolon);
+            var loopExpression = ParseForInitExpression();
+            Consume(TokenType.ClosingParenth);
+
+            var hasScope = _tokenStream.Current.Type == TokenType.OpenBracket;
+            List<ISyntaxBase> body;
+            if (hasScope)
+            {
+                body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+            }
+            else
+            {
+                body = new List<ISyntaxBase>() { _functionBodyParser() };
+            }
+
+            return new ForStatementSyntax(initExpression, condExpression, loopExpression, body);
+        }
+
+        private ISyntaxBase ParseForInitExpression()
+        {
+            var result = Parse(
+                ParseVariableDeclarationSyntax,
+                ParseVariableAssignmentStatementSyntax,
+                ParseExpressionSyntax);
+
+            var allowedSyntax = new[]
+                                {
+                                    typeof(VariableAssignmentStatementSyntax),
+                                    typeof(VariableDeclarationStatementSyntax),
+                                    typeof(CallExpressionSyntax),
+                                    typeof(ObjectCreationExpressionSyntax)
+                                };
+
+            if (!allowedSyntax.Contains(result.GetType()))
+            {
+                throw new KiwiSyntaxException(
+                    "Only assignment call increment decrement and new object expressions can be used.");
+            }
+
+            return result;
         }
 
         private VariableAssignmentStatementSyntax ParseVariableAssignmentStatementSyntax()

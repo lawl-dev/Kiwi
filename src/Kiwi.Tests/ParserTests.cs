@@ -1,5 +1,6 @@
 using System;
 using Kiwi.Lexer;
+using Kiwi.Parser;
 using Kiwi.Parser.Nodes;
 using NUnit.Framework;
 
@@ -87,6 +88,10 @@ namespace Kiwi.Tests
                   "{" + "\r\n" +
                   "     //code" + "\r\n" +
                   "}", typeof(IfElseStatementSyntax))]
+        [TestCase("for(var i : 0; i < 100; i:+1)" + "\r\n" +
+                  "{" + "\r\n" +
+                  "     return 1" + "\r\n" +
+                  "}", typeof(ForStatementSyntax))]
         public void TestStatements(string statementSource, Type type)
         {
             var lexer = new Lexer.Lexer();

@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CallExpressionSyntax.cs" />
+    <Compile Include="ForStatementSyntax.cs" />
     <Compile Include="Nodes\IfElseExpressionSyntax.cs" />
     <Compile Include="Nodes\IfElseStatementSyntax.cs" />
     <Compile Include="Nodes\IfStatementSyntax.cs" />
