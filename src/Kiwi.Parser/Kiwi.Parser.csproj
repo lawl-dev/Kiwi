@@ -41,7 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallExpressionSyntax.cs" />
+    <Compile Include="CaseSyntax.cs" />
+    <Compile Include="DefaultSyntax.cs" />
     <Compile Include="ForStatementSyntax.cs" />
+    <Compile Include="IConstExpression.cs" />
     <Compile Include="Nodes\IfElseExpressionSyntax.cs" />
     <Compile Include="Nodes\IfElseStatementSyntax.cs" />
     <Compile Include="Nodes\IfStatementSyntax.cs" />
@@ -69,6 +72,7 @@
     <Compile Include="Nodes\ReturnStatementSyntax.cs" />
     <Compile Include="Nodes\SignExpressionSyntax.cs" />
     <Compile Include="Nodes\StringExpressionSyntax.cs" />
+    <Compile Include="SwitchStatementSyntax.cs" />
     <Compile Include="TransactableTokenStream.cs" />
     <Compile Include="Nodes\VariableAssignmentStatementSyntax.cs" />
     <Compile Include="Nodes\VariableDeclarationStatementSyntax.cs" />

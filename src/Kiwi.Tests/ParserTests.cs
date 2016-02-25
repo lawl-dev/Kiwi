@@ -92,6 +92,14 @@ namespace Kiwi.Tests
                   "{" + "\r\n" +
                   "     return 1" + "\r\n" +
                   "}", typeof(ForStatementSyntax))]
+        [TestCase("Switch(variable)" + "\r\n" +
+                  "{" + "\r\n" +
+                  "     case 1 -> return 1" + "\r\n" +
+                  "     case 2 -> {" + "\r\n" +
+                  "                     return 2" + "\r\n" +
+                  "               }" + "\r\n" +
+                  "     default -> return 1337" + "\r\n" +
+                  "}", typeof(SwitchStatementSyntax))]
         public void TestStatements(string statementSource, Type type)
         {
             var lexer = new Lexer.Lexer();

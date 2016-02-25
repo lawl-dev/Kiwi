@@ -451,14 +451,84 @@ namespace Kiwi.Parser
             return new VariableAssignmentStatementSyntax(variableName, @operator, intializer);
         }   
 
-        private ISyntaxBase ParseSwitchStatementSyntax()
+        private SwitchStatementSyntax ParseSwitchStatementSyntax()
         {
             if (_tokenStream.Current.Type != TokenType.SwitchKeyword)
             {
                 return null;
             }
 
-            throw new NotImplementedException();
+            Consume(TokenType.SwitchKeyword);
+            Consume(TokenType.OpenParenth);
+            var condition = ParseExpressionSyntax();
+            Consume(TokenType.ClosingParenth);
+            var caseAndDefaultSyntax = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, () => Parse(ParseCase, ParseDefault));
+
+            DefaultSyntax defaultSyntax;
+            try
+            {
+                defaultSyntax = caseAndDefaultSyntax.SingleOrDefault(x => x is DefaultSyntax) as DefaultSyntax;
+            }
+            catch
+            {
+                throw new KiwiSyntaxException("Duplicate default label");
+            }
+
+            return new SwitchStatementSyntax(condition, caseAndDefaultSyntax.OfType<CaseSyntax>(), defaultSyntax);
+        }
+
+        private DefaultSyntax ParseDefault()
+        {
+            if (_tokenStream.Current.Type != TokenType.DefaultKeyword)
+            {
+                return null;
+            }
+
+            Consume(TokenType.DefaultKeyword);
+            Consume(TokenType.HypenGreater);
+
+            var hasScope = _tokenStream.Current.Type == TokenType.OpenBracket;
+            List<ISyntaxBase> body;
+            if (hasScope)
+            {
+                body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+            }
+            else
+            {
+                body = new List<ISyntaxBase>() { _functionBodyParser() };
+            }
+
+            return new DefaultSyntax(body);
+        }
+
+        private ISyntaxBase ParseCase()
+        {
+            if (_tokenStream.Current.Type != TokenType.CaseKeyword)
+            {
+                return null;
+            }
+
+            Consume(TokenType.CaseKeyword);
+            var expression = ParseExpressionSyntax();
+            if (!(expression is IConstExpression))
+            {
+                throw new KiwiSyntaxException("A constant value is expected.");
+            }
+
+            Consume(TokenType.HypenGreater);
+
+            var hasScope = _tokenStream.Current.Type == TokenType.OpenBracket;
+            List<ISyntaxBase> body;
+            if (hasScope)
+            {
+                body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+            }
+            else
+            {
+                body = new List<ISyntaxBase>() { _functionBodyParser() };
+            }
+
+            return new CaseSyntax(expression, body);
         }
 
         private ISyntaxBase ParseWhenStatementSyntax()
