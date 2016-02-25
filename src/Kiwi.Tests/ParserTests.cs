@@ -92,7 +92,7 @@ namespace Kiwi.Tests
                   "{" + "\r\n" +
                   "     return 1" + "\r\n" +
                   "}", typeof(ForStatementSyntax))]
-        [TestCase("Switch(variable)" + "\r\n" +
+        [TestCase("switch(variable)" + "\r\n" +
                   "{" + "\r\n" +
                   "     case 1 -> return 1" + "\r\n" +
                   "     case 2 -> {" + "\r\n" +
@@ -120,6 +120,7 @@ namespace Kiwi.Tests
         [TestCase("return new Object()", typeof(ObjectCreationExpressionSyntax))]
         [TestCase("return -1", typeof(SignExpressionSyntax))]
         [TestCase("return \"Hallo\"", typeof(StringExpressionSyntax))]
+        [TestCase("return 1..1337", typeof(RangeExpressionSyntax))]
         public void TestExpressions(string statementSource, Type type)
         {
             var lexer = new Lexer.Lexer();

@@ -72,6 +72,7 @@
     <Compile Include="Nodes\ReturnStatementSyntax.cs" />
     <Compile Include="Nodes\SignExpressionSyntax.cs" />
     <Compile Include="Nodes\StringExpressionSyntax.cs" />
+    <Compile Include="RangeExpressionSyntax.cs" />
     <Compile Include="SwitchStatementSyntax.cs" />
     <Compile Include="TransactableTokenStream.cs" />
     <Compile Include="Nodes\VariableAssignmentStatementSyntax.cs" />

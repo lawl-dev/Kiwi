@@ -201,7 +201,14 @@ namespace Kiwi.Parser
             {
                 case TokenType.Int:
                     Consume(TokenType.Int);
-                    return new IntExpressionSyntax(current);
+                    var intExpression = new IntExpressionSyntax(current);
+                    if (_tokenStream.Current.Type != TokenType.TwoDots)
+                    {
+                        return intExpression;
+                    }
+                    Consume(TokenType.TwoDots);
+                    var rightIntExpression = Consume(TokenType.Int);
+                    return new RangeExpressionSyntax(intExpression, rightIntExpression);
                 case TokenType.Float:
                     Consume(TokenType.Float);
                     return new FloatExpressionSyntax(current);
