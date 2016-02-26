@@ -100,6 +100,14 @@ namespace Kiwi.Tests
                   "               }" + "\r\n" +
                   "     default -> return 1337" + "\r\n" +
                   "}", typeof(SwitchStatementSyntax))]
+        [TestCase("for(i in GetInts(1*2+3))" + "\r\n" +
+                  "{" + "\r\n" +
+                  "     //code" + "\r\n" +
+                  "}", typeof(ForInStatementSyntax))]
+        [TestCase("forr(i in GetInts(1*2+3))" + "\r\n" +
+                  "{" + "\r\n" +
+                  "     //code" + "\r\n" +
+                  "}", typeof(ReverseForInStatementSyntax))]
         public void TestStatements(string statementSource, Type type)
         {
             var lexer = new Lexer.Lexer();

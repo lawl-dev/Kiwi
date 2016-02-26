@@ -66,6 +66,11 @@ for(<singleItem> in <collection>)
 	<statements>
 }
 
+forr(<singleItem> in <collection>)
+{
+	<statements>
+}
+
 for(<variableInit>; <expesssion>; <exoression>)
 {
 	<statements>

@@ -45,6 +45,7 @@ namespace Kiwi.Tests
         [TestCase(TokenType.SwitchKeyword, "switch")]
         [TestCase(TokenType.DefaultKeyword, "default")]
         [TestCase(TokenType.ForKeyword, "for")]
+        [TestCase(TokenType.ForReverseKeyword, "forr")]
         [TestCase(TokenType.InKeyword, "in")]
         [TestCase(TokenType.Less, "<")]
         [TestCase(TokenType.WhileKeyword, "while")]

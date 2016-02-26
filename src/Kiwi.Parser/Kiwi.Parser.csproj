@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ForInStatementSyntax.cs" />
     <Compile Include="Nodes\ArrayTypeSyntax.cs" />
     <Compile Include="Nodes\CallExpressionSyntax.cs" />
     <Compile Include="Nodes\CaseSyntax.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Nodes\StringExpressionSyntax.cs" />
     <Compile Include="Nodes\RangeExpressionSyntax.cs" />
     <Compile Include="Nodes\SwitchStatementSyntax.cs" />
+    <Compile Include="ReverseForInStatementSyntax.cs" />
     <Compile Include="TransactableTokenStream.cs" />
     <Compile Include="Nodes\VariableAssignmentStatementSyntax.cs" />
     <Compile Include="Nodes\VariableDeclarationStatementSyntax.cs" />

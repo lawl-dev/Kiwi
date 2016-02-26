@@ -39,8 +39,9 @@ namespace Kiwi.Parser
                 ParseSwitchStatementSyntax,
                 ParseVariableDeclarationSyntax,
                 ParseVariableAssignmentStatementSyntax,
-                ParseForStatementSyntax,
-                ParseForInStatementSyntax);
+                ParseForInStatementSyntax,
+                ParseReverseForInStatementSyntax,
+                ParseForStatementSyntax);
         }
 
         public CompilationUnitSyntax Parse()
@@ -68,7 +69,7 @@ namespace Kiwi.Parser
             Consume(TokenType.NamespaceKeyword);
             var namespaceName = Consume(TokenType.Symbol);
             
-            var bodySyntax = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _namespaceBodyParser);
+            var bodySyntax = ParseScope(_namespaceBodyParser);
             return new NamespaceSyntax(namespaceName, bodySyntax);
         }
 
@@ -102,7 +103,7 @@ namespace Kiwi.Parser
                 descriptorName = Consume(TokenType.Symbol);
             }
             
-            var inner = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _classBodyParser);
+            var inner = ParseScope(_classBodyParser);
             return new ClassSyntax(className, descriptorName, inner);
         }
 
@@ -297,7 +298,7 @@ namespace Kiwi.Parser
                 return ParseFunctionThatReturnValue(functionName, functionParameter);
             }
 
-            var body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+            var body = ParseScope(_functionBodyParser);
 
             return new FunctionSyntax(functionName, functionParameter.Cast<ParameterSyntax>().ToList(), body);
         }
@@ -312,14 +313,14 @@ namespace Kiwi.Parser
             }
 
             var returnType = ParseSymbolOrBuildInType();
-            var body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+            var body = ParseScope(_functionBodyParser);
             return new ReturnFunctionSyntax(functionName, functionParameter.Cast<ParameterSyntax>().ToList(), body, returnType);
         }
 
         private FunctionSyntax ParseDataFunctionSyntax(Token functionName, List<ISyntaxBase> functionParameter)
         {
             var dataClass = ParseDataClassSyntax();
-            var body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+            var body = ParseScope(_functionBodyParser);
             return new DataClassFunctionSyntax(functionName, functionParameter.Cast<ParameterSyntax>().ToList(), body, dataClass);
         }
 
@@ -383,22 +384,77 @@ namespace Kiwi.Parser
                 TokenType.ClosingParenth,
                 _functionParameterParser);
 
-            var bodySyntax = ParseInner(
-                TokenType.OpenBracket,
-                TokenType.ClosingBracket,
-                _functionBodyParser);
+            var bodySyntax = ParseScope(_functionBodyParser);
 
             return new ConstructorSyntax(argList, bodySyntax);
         }
 
-        private ISyntaxBase ParseForInStatementSyntax()
+        private ForInStatementSyntax ParseForInStatementSyntax()
         {
             if (_tokenStream.Current.Type != TokenType.ForKeyword)
             {
                 return null;
             }
+            _tokenStream.TakeSnapshot();
 
-            throw new NotImplementedException();
+            Consume(TokenType.ForKeyword);
+            IExpressionSyntax itemExpression;
+            IExpressionSyntax collectionExpression;
+            List<ISyntaxBase> body;
+            bool declareItemInnerScope;
+            if (!TryParseForIn(out itemExpression, out declareItemInnerScope, out collectionExpression, out body))
+            {
+                _tokenStream.RollbackSnapshot();
+                return null;
+            }
+            return new ForInStatementSyntax(itemExpression, declareItemInnerScope, collectionExpression, body);
+        }
+
+        private ForInStatementSyntax ParseReverseForInStatementSyntax()
+        {
+            if (_tokenStream.Current.Type != TokenType.ForReverseKeyword)
+            {
+                return null;
+            }
+            _tokenStream.TakeSnapshot();
+
+            Consume(TokenType.ForReverseKeyword);
+            IExpressionSyntax itemExpression;
+            IExpressionSyntax collectionExpression;
+            List<ISyntaxBase> body;
+            bool declareItemInnerScope;
+            if (!TryParseForIn(out itemExpression, out declareItemInnerScope, out collectionExpression, out body))
+            {
+                _tokenStream.RollbackSnapshot();
+                return null;
+            }
+            return new ReverseForInStatementSyntax(itemExpression, declareItemInnerScope, collectionExpression, body);
+        }
+
+        private bool TryParseForIn(out IExpressionSyntax itemExpression, out bool declareItemInnerScope, out IExpressionSyntax collectionExpression, out List<ISyntaxBase> body)
+        {
+            Consume(TokenType.OpenParenth);
+
+            declareItemInnerScope = _tokenStream.Current.Type == TokenType.VarKeyword;
+            if (declareItemInnerScope)
+            {
+                Consume(TokenType.VarKeyword);
+            }
+
+            itemExpression = ParseExpressionSyntax();
+
+            if (_tokenStream.Current.Type != TokenType.InKeyword)
+            {
+                collectionExpression = null;
+                body = null;
+                return false;
+            }
+
+            Consume(TokenType.InKeyword);
+            collectionExpression = ParseExpressionSyntax();
+            Consume(TokenType.ClosingParenth);
+            body = ParseScope(_functionBodyParser);
+            return true;
         }
 
         private ForStatementSyntax ParseForStatementSyntax()
@@ -422,7 +478,7 @@ namespace Kiwi.Parser
             List<ISyntaxBase> body;
             if (hasScope)
             {
-                body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+                body = ParseScope(_functionBodyParser);
             }
             else
             {
@@ -496,7 +552,7 @@ namespace Kiwi.Parser
             Consume(TokenType.OpenParenth);
             var condition = ParseExpressionSyntax();
             Consume(TokenType.ClosingParenth);
-            var caseAndDefaultSyntax = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, () => Parse(ParseCase, ParseDefault));
+            var caseAndDefaultSyntax = ParseScope(() => Parse(ParseCase, ParseDefault));
 
             DefaultSyntax defaultSyntax;
             try
@@ -508,7 +564,7 @@ namespace Kiwi.Parser
                 throw new KiwiSyntaxException("Duplicate default label");
             }
 
-            return new SwitchStatementSyntax(condition, caseAndDefaultSyntax.OfType<CaseSyntax>(), defaultSyntax);
+            return new SwitchStatementSyntax(condition, caseAndDefaultSyntax.OfType<CaseSyntax>().ToList(), defaultSyntax);
         }
 
         private DefaultSyntax ParseDefault()
@@ -525,7 +581,7 @@ namespace Kiwi.Parser
             List<ISyntaxBase> body;
             if (hasScope)
             {
-                body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+                body = ParseScope(_functionBodyParser);
             }
             else
             {
@@ -555,7 +611,7 @@ namespace Kiwi.Parser
             List<ISyntaxBase> body;
             if (hasScope)
             {
-                body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+                body = ParseScope(_functionBodyParser);
             }
             else
             {
@@ -584,7 +640,7 @@ namespace Kiwi.Parser
 
             Consume(TokenType.IfKeyword);
             var condition = ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpressionSyntax);
-            var body = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+            var body = ParseScope(_functionBodyParser);
             if (_tokenStream.Current.Type == TokenType.ElseKeyword)
             {
                 return ParseIfElseStatementSyntax(condition, body);
@@ -595,7 +651,7 @@ namespace Kiwi.Parser
         private IfElseStatementSyntax ParseIfElseStatementSyntax(List<ISyntaxBase> condition, List<ISyntaxBase> body)
         {
             Consume(TokenType.ElseKeyword);
-            var elseBody = ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, _functionBodyParser);
+            var elseBody = ParseScope(_functionBodyParser);
             return new IfElseStatementSyntax(condition, body.Cast<IStatetementSyntax>().ToList(), elseBody.Cast<IStatetementSyntax>().ToList());
         }
 
@@ -682,6 +738,11 @@ namespace Kiwi.Parser
                 initializer = ParseExpressionSyntax();
             }
             return new EnumMemberSyntax(memberName, initializer);
+        }
+
+        private List<ISyntaxBase> ParseScope(Func<ISyntaxBase> parser)
+        {
+            return ParseInner(TokenType.OpenBracket, TokenType.ClosingBracket, parser);
         }
 
         private List<ISyntaxBase> ParseInnerCommmaSeperated(

@@ -54,6 +54,7 @@ namespace Kiwi.Lexer
                                { TokenType.WhenKeyword, "when" },
                                { TokenType.SwitchKeyword, "switch" },
                                { TokenType.DefaultKeyword, "default" },
+                               { TokenType.ForReverseKeyword, "forr" },
                                { TokenType.ForKeyword, "for" },
                                { TokenType.InKeyword, "in" },
                                { TokenType.WhileKeyword, "while" },
