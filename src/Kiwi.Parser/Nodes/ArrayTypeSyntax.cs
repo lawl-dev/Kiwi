@@ -1,7 +1,6 @@
 using Kiwi.Lexer;
-using Kiwi.Parser.Nodes;
 
-namespace Kiwi.Parser
+namespace Kiwi.Parser.Nodes
 {
     public class ArrayTypeSyntax : TypeSyntax
     {

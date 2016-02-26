@@ -116,11 +116,15 @@ namespace Kiwi.Tests
         [TestCase("return 1 * 2", typeof(BinaryExpressionSyntax))]
         [TestCase("return 12f", typeof(FloatExpressionSyntax))]
         [TestCase("return 12", typeof(IntExpressionSyntax))]
-        [TestCase("return variable", typeof(MemberAccessExpressionSyntax))]
+        [TestCase("return variable", typeof(MemberExpressionSyntax))]
         [TestCase("return new Object()", typeof(ObjectCreationExpressionSyntax))]
         [TestCase("return -1", typeof(SignExpressionSyntax))]
         [TestCase("return \"Hallo\"", typeof(StringExpressionSyntax))]
         [TestCase("return 1..1337", typeof(RangeExpressionSyntax))]
+        [TestCase("return variable.Member", typeof(MemberAccessExpressionSyntax))]
+        [TestCase("return variable.Function()", typeof(InvocationExpressionSyntax))]
+        [TestCase("return Function()", typeof(InvocationExpressionSyntax))]
+        [TestCase("return Function(a, b, 10)", typeof(InvocationExpressionSyntax))]
         public void TestExpressions(string statementSource, Type type)
         {
             var lexer = new Lexer.Lexer();

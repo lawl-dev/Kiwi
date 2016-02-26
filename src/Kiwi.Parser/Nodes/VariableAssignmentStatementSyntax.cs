@@ -6,13 +6,13 @@ namespace Kiwi.Parser.Nodes
     {
         public Token VariableName { get; }
         public Token Operator { get; }
-        public IExpressionSyntax Intializer { get; }
+        public IExpressionSyntax ToAssign { get; }
 
-        public VariableAssignmentStatementSyntax(Token variableName, Token @operator, IExpressionSyntax intializer)
+        public VariableAssignmentStatementSyntax(Token variableName, Token @operator, IExpressionSyntax toAssign)
         {
             VariableName = variableName;
             Operator = @operator;
-            Intializer = intializer;
+            ToAssign = toAssign;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Kiwi.Parser.Nodes;
 
-namespace Kiwi.Parser
+namespace Kiwi.Parser.Nodes
 {
     public class ForStatementSyntax : IStatetementSyntax
     {

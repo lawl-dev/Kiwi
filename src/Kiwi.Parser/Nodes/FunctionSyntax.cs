@@ -21,24 +21,4 @@ namespace Kiwi.Parser.Nodes
             Member = member;
         }
     }
-
-    public class DataClassFunctionSyntax : FunctionSyntax
-    {
-        public DataSyntax DataClassSyntax { get; }
-
-        public DataClassFunctionSyntax(Token functionName, List<ParameterSyntax> parameter, List<ISyntaxBase> member, DataSyntax dataClassSyntax) : base(functionName, parameter, member)
-        {
-            DataClassSyntax = dataClassSyntax;
-        }
-    }
-
-    public class ReturnFunctionSyntax : FunctionSyntax
-    {
-        public TypeSyntax ReturnType { get; }
-
-        public ReturnFunctionSyntax(Token functionName, List<ParameterSyntax> parameterList, List<ISyntaxBase> member, TypeSyntax returnType) : base(functionName, parameterList, member)
-        {
-            ReturnType = returnType;
-        }
-    }
 }

@@ -143,13 +143,14 @@ namespace Kiwi.Parser
                             };
 
             var firstExpression = ParseSingleExpression();
+            
             if (!operators.Contains(_tokenStream.Current.Type))
             {
                 return firstExpression;
             }
+
             var expressionOperatorChain = new List<Tuple<Token, IExpressionSyntax>>();
             expressionOperatorChain.Add(new Tuple<Token, IExpressionSyntax>(null, firstExpression));
-
             while (operators.Contains(_tokenStream.Current.Type))
             {
                 var @operator = _tokenStream.Current;
@@ -197,37 +198,63 @@ namespace Kiwi.Parser
                 return new SignExpressionSyntax(current, ParseSingleExpression());
             }
             
+            IExpressionSyntax expression = null;
             switch (current.Type)
             {
                 case TokenType.Int:
                     Consume(TokenType.Int);
                     var intExpression = new IntExpressionSyntax(current);
-                    if (_tokenStream.Current.Type != TokenType.TwoDots)
+                    if (_tokenStream.Current.Type == TokenType.TwoDots)
                     {
-                        return intExpression;
+                        Consume(TokenType.TwoDots);
+                        var rightIntExpression = Consume(TokenType.Int);
+                        expression = new RangeExpressionSyntax(intExpression, rightIntExpression);
                     }
-                    Consume(TokenType.TwoDots);
-                    var rightIntExpression = Consume(TokenType.Int);
-                    return new RangeExpressionSyntax(intExpression, rightIntExpression);
+                    else
+                    {
+                        expression = intExpression;
+                    }
+                    break;
                 case TokenType.Float:
                     Consume(TokenType.Float);
-                    return new FloatExpressionSyntax(current);
+                    expression =  new FloatExpressionSyntax(current);
+                    break;
                 case TokenType.String:
                     Consume(TokenType.String);
-                    return new StringExpressionSyntax(current);
+                    expression = new StringExpressionSyntax(current);
+                    break;
                 case TokenType.Symbol:
                     Consume(TokenType.Symbol);
-                    return new MemberAccessExpressionSyntax(current);
+                    expression = new MemberExpressionSyntax(current);
+                    break;
                 case TokenType.OpenParenth:
-                    return (IExpressionSyntax)ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpressionSyntax).Single();
+                    expression = (IExpressionSyntax)ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpressionSyntax).Single();
+                    break;
                 case TokenType.NewKeyword:
-                    return ParseNewExpression();
+                    expression = ParseNewExpression();
+                    break;
                 case TokenType.IfKeyword:
-                    return ParseIfElseExpression();
+                    expression = ParseIfElseExpression();
+                    break;
                 default:
                     throw new KiwiSyntaxException(
                         $"Unexpected Token {current}. Expected Sign Operator, New, Int, Float, String or Symbol Expression.");
             }
+
+            if (_tokenStream.Current.Type == TokenType.Dot)
+            {
+                Consume(TokenType.Dot);
+                var memberName = Consume(TokenType.Symbol);
+                expression = new MemberAccessExpressionSyntax(expression, memberName);
+            }
+
+            if (_tokenStream.Current.Type == TokenType.OpenParenth)
+            {
+                var parameter = ParseInnerCommmaSeperated(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpressionSyntax).Cast<IExpressionSyntax>().ToList();
+                expression = new InvocationExpressionSyntax(expression, parameter);
+            }
+
+            return expression;
         }
 
         private IfElseExpressionSyntax ParseIfElseExpression()
@@ -517,7 +544,7 @@ namespace Kiwi.Parser
 
             Consume(TokenType.CaseKeyword);
             var expression = ParseExpressionSyntax();
-            if (!(expression is IConstExpression))
+            if (!(expression is IConstExpressionSyntax))
             {
                 throw new KiwiSyntaxException("A constant value is expected.");
             }

@@ -40,12 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayTypeSyntax.cs" />
-    <Compile Include="CallExpressionSyntax.cs" />
-    <Compile Include="CaseSyntax.cs" />
-    <Compile Include="DefaultSyntax.cs" />
-    <Compile Include="ForStatementSyntax.cs" />
-    <Compile Include="IConstExpression.cs" />
+    <Compile Include="Nodes\ArrayTypeSyntax.cs" />
+    <Compile Include="Nodes\CallExpressionSyntax.cs" />
+    <Compile Include="Nodes\CaseSyntax.cs" />
+    <Compile Include="Nodes\DataClassFunctionSyntax.cs" />
+    <Compile Include="Nodes\DefaultSyntax.cs" />
+    <Compile Include="Nodes\ForStatementSyntax.cs" />
+    <Compile Include="Nodes\IConstExpressionSyntax.cs" />
+    <Compile Include="Nodes\InvocationExpressionSyntax.cs" />
+    <Compile Include="Nodes\MemberAccessExpressionSyntax.cs" />
     <Compile Include="Nodes\IfElseExpressionSyntax.cs" />
     <Compile Include="Nodes\IfElseStatementSyntax.cs" />
     <Compile Include="Nodes\IfStatementSyntax.cs" />
@@ -54,8 +57,9 @@
     <Compile Include="Nodes\IExpressionSyntax.cs" />
     <Compile Include="Nodes\IntExpressionSyntax.cs" />
     <Compile Include="Nodes\IStatetementSyntax.cs" />
-    <Compile Include="Nodes\MemberAccessExpressionSyntax.cs" />
+    <Compile Include="Nodes\MemberExpressionSyntax.cs" />
     <Compile Include="Nodes\ObjectCreationExpressionSyntax.cs" />
+    <Compile Include="Nodes\ReturnFunctionSyntax.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Nodes\ISyntaxBase.cs" />
@@ -73,12 +77,12 @@
     <Compile Include="Nodes\ReturnStatementSyntax.cs" />
     <Compile Include="Nodes\SignExpressionSyntax.cs" />
     <Compile Include="Nodes\StringExpressionSyntax.cs" />
-    <Compile Include="RangeExpressionSyntax.cs" />
-    <Compile Include="SwitchStatementSyntax.cs" />
+    <Compile Include="Nodes\RangeExpressionSyntax.cs" />
+    <Compile Include="Nodes\SwitchStatementSyntax.cs" />
     <Compile Include="TransactableTokenStream.cs" />
     <Compile Include="Nodes\VariableAssignmentStatementSyntax.cs" />
     <Compile Include="Nodes\VariableDeclarationStatementSyntax.cs" />
-    <Compile Include="TypeSyntax.cs" />
+    <Compile Include="Nodes\TypeSyntax.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Common\Kiwi.Common.csproj">

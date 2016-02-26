@@ -2,7 +2,7 @@ using Kiwi.Lexer;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class StringExpressionSyntax : IExpressionSyntax, IConstExpression
+    public class StringExpressionSyntax : IExpressionSyntax, IConstExpressionSyntax
     {
         public Token Value { get; }
 

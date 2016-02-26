@@ -2,7 +2,7 @@
 
 namespace Kiwi.Parser.Nodes
 {
-    public class IntExpressionSyntax : IExpressionSyntax, IConstExpression
+    public class IntExpressionSyntax : IExpressionSyntax, IConstExpressionSyntax
     {
         public Token Value { get; }
 
