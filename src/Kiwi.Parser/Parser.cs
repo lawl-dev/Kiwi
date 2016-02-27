@@ -242,18 +242,38 @@ namespace Kiwi.Parser
                         $"Unexpected Token {current}. Expected Sign Operator, New, Int, Float, String or Symbol Expression.");
             }
 
-            if (_tokenStream.Current.Type == TokenType.Dot)
+            var memberOperators = new[] { TokenType.Dot, TokenType.OpenParenth, TokenType.LeftSquareBracket };
+            while (memberOperators.Contains(_tokenStream.Current.Type))
             {
-                Consume(TokenType.Dot);
-                var memberName = Consume(TokenType.Symbol);
-                expression = new MemberAccessExpressionSyntax(expression, memberName);
+                switch (_tokenStream.Current.Type)
+                {
+                    case TokenType.Dot:
+                        Consume(TokenType.Dot);
+                        var memberName = Consume(TokenType.Symbol);
+                        expression = new MemberAccessExpressionSyntax(expression, memberName);
+                        break;
+                    case TokenType.OpenParenth:
+                        var invokeParameter =
+                            ParseInnerCommmaSeperated(
+                                TokenType.OpenParenth,
+                                TokenType.ClosingParenth,
+                                ParseExpressionSyntax).Cast<IExpressionSyntax>().ToList();
+                        expression = new InvocationExpressionSyntax(expression, invokeParameter);
+                        break;
+                    case TokenType.LeftSquareBracket:
+                        var arrayParameter = new List<IExpressionSyntax>();
+                        for (;
+                            _tokenStream.Current.Type == TokenType.LeftSquareBracket;
+                            Consume(TokenType.RightSquareBracket))
+                        {
+                            Consume(TokenType.LeftSquareBracket);
+                            arrayParameter.Add(ParseExpressionSyntax());
+                        }
+                        expression = new ArrayAccessExpression(expression, arrayParameter);
+                        break;
+                }
             }
 
-            if (_tokenStream.Current.Type == TokenType.OpenParenth)
-            {
-                var parameter = ParseInnerCommmaSeperated(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpressionSyntax).Cast<IExpressionSyntax>().ToList();
-                expression = new InvocationExpressionSyntax(expression, parameter);
-            }
 
             return expression;
         }

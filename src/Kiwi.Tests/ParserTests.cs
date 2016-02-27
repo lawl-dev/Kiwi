@@ -131,6 +131,8 @@ namespace Kiwi.Tests
         [TestCase("return 1..1337", typeof(RangeExpressionSyntax))]
         [TestCase("return variable.Member", typeof(MemberAccessExpressionSyntax))]
         [TestCase("return variable.Function()", typeof(InvocationExpressionSyntax))]
+        [TestCase("return variable[0]", typeof(ArrayAccessExpression))]
+        [TestCase("return variable.Member[0].Function()[1]", typeof(ArrayAccessExpression))]
         [TestCase("return Function()", typeof(InvocationExpressionSyntax))]
         [TestCase("return Function(a, b, 10)", typeof(InvocationExpressionSyntax))]
         public void TestExpressions(string statementSource, Type type)

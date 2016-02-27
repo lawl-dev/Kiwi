@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ForInStatementSyntax.cs" />
+    <Compile Include="Nodes\ArrayAccessExpression.cs" />
     <Compile Include="Nodes\ArrayTypeSyntax.cs" />
     <Compile Include="Nodes\CallExpressionSyntax.cs" />
     <Compile Include="Nodes\CaseSyntax.cs" />
