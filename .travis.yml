@@ -5,4 +5,4 @@ before_install:
 before_script:
   - nuget restore src/KiwiLanguage.sln
 after_script:
-  - nunit-console src/Kiwi.Tests/bin/Release/Kiwi.Tests.dll
+  - nunit-console Kiwi.Tests/bin/Release/Kiwi.Tests.dll
