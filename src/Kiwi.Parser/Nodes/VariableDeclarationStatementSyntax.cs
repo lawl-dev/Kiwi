@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Kiwi.Lexer;
 
 namespace Kiwi.Parser.Nodes
@@ -5,13 +6,13 @@ namespace Kiwi.Parser.Nodes
     public class VariableDeclarationStatementSyntax : IStatetementSyntax
     {
         public Token VariableQualifier { get; }
-        public Token VariableName { get; }
+        public List<Token> VariableNames { get; }
         public IExpressionSyntax Initializer { get; }
 
-        public VariableDeclarationStatementSyntax(Token variableQualifier, Token variableName, IExpressionSyntax initializer)
+        public VariableDeclarationStatementSyntax(Token variableQualifier, List<Token> variableNames, IExpressionSyntax initializer)
         {
             VariableQualifier = variableQualifier;
-            VariableName = variableName;
+            VariableNames = variableNames;
             Initializer = initializer;
         }
     }

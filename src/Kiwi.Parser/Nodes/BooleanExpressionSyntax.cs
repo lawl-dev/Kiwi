@@ -2,11 +2,11 @@
 
 namespace Kiwi.Parser.Nodes
 {
-    public class IntExpressionSyntax : IExpressionSyntax
+    public class BooleanExpressionSyntax : IExpressionSyntax
     {
         public Token Value { get; }
 
-        public IntExpressionSyntax(Token value)
+        public BooleanExpressionSyntax(Token value)
         {
             Value = value;
         }

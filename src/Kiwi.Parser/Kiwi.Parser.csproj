@@ -40,13 +40,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ForInStatementSyntax.cs" />
     <Compile Include="Nodes\ArrayAccessExpression.cs" />
     <Compile Include="Nodes\ArrayTypeSyntax.cs" />
+    <Compile Include="Nodes\BooleanExpressionSyntax.cs" />
     <Compile Include="Nodes\CallExpressionSyntax.cs" />
     <Compile Include="Nodes\CaseSyntax.cs" />
     <Compile Include="Nodes\DataClassFunctionSyntax.cs" />
     <Compile Include="Nodes\DefaultSyntax.cs" />
+    <Compile Include="Nodes\ForInStatementSyntax.cs" />
     <Compile Include="Nodes\ForStatementSyntax.cs" />
     <Compile Include="Nodes\IConstExpressionSyntax.cs" />
     <Compile Include="Nodes\InvocationExpressionSyntax.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Nodes\MemberExpressionSyntax.cs" />
     <Compile Include="Nodes\ObjectCreationExpressionSyntax.cs" />
     <Compile Include="Nodes\ReturnFunctionSyntax.cs" />
+    <Compile Include="Nodes\ReverseForInStatementSyntax.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Nodes\ISyntaxBase.cs" />
@@ -81,9 +83,8 @@
     <Compile Include="Nodes\StringExpressionSyntax.cs" />
     <Compile Include="Nodes\RangeExpressionSyntax.cs" />
     <Compile Include="Nodes\SwitchStatementSyntax.cs" />
-    <Compile Include="ReverseForInStatementSyntax.cs" />
     <Compile Include="TransactableTokenStream.cs" />
-    <Compile Include="Nodes\VariableAssignmentStatementSyntax.cs" />
+    <Compile Include="Nodes\AssignmentStatementSyntax.cs" />
     <Compile Include="Nodes\VariableDeclarationStatementSyntax.cs" />
     <Compile Include="Nodes\TypeSyntax.cs" />
   </ItemGroup>

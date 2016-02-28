@@ -7,6 +7,8 @@ namespace Kiwi.Tests
     public class LexerTests
     {
         [TestCase(TokenType.FuncKeyword, "func")]
+        [TestCase(TokenType.TrueKeyword, "true")]
+        [TestCase(TokenType.FalseKeyword, "false")]
         [TestCase(TokenType.DescriptorKeyword, "descriptor")]
         [TestCase(TokenType.DataKeyword, "data")]
         [TestCase(TokenType.IntKeyword, "int")]
@@ -29,6 +31,7 @@ namespace Kiwi.Tests
         [TestCase(TokenType.ReturnKeyword, "return")]
         [TestCase(TokenType.EqualGreater, "=>")]
         [TestCase(TokenType.Add, "+")]
+        [TestCase(TokenType.Or, "||")]
         [TestCase(TokenType.Sub, "-")]
         [TestCase(TokenType.LeftSquareBracket, "[")]
         [TestCase(TokenType.RightSquareBracket, "]")]
@@ -59,6 +62,7 @@ namespace Kiwi.Tests
         [TestCase(TokenType.ColonMult, ":*")]
         [TestCase(TokenType.ColonPow, ":^")]
         [TestCase(TokenType.Whitespace, " ")]
+        [TestCase(TokenType.Tab, "	")]
         [TestCase(TokenType.NewLine, "\r\n")]
         [TestCase(TokenType.Symbol, "MyVariableName")]
         [TestCase(TokenType.Int, "12312312")]
@@ -431,6 +435,7 @@ namespace Kiwi.Tests
             var tokenTypes =
                 result.Select(x => x.Type)
                       .Where(x => x != TokenType.Whitespace)
+                      .Where(x => x != TokenType.Tab)
                       .Where(x => x != TokenType.NewLine)
                       .ToList();
             Assert.AreEqual(tokenizedSourceWithoutWhitespaceAndNewLine.Length, tokenTypes.Count);

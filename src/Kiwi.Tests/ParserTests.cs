@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Kiwi.Lexer;
 using Kiwi.Parser;
 using Kiwi.Parser.Nodes;
@@ -70,12 +71,12 @@ namespace Kiwi.Tests
 
         [TestCase("return 1", typeof(ReturnStatementSyntax))]
         [TestCase("var i : 1", typeof(VariableDeclarationStatementSyntax))]
-        [TestCase("i : 1", typeof(VariableAssignmentStatementSyntax))]
-        [TestCase("i :+ 1", typeof(VariableAssignmentStatementSyntax))]
-        [TestCase("i :- 1", typeof(VariableAssignmentStatementSyntax))]
-        [TestCase("i :* 1", typeof(VariableAssignmentStatementSyntax))]
-        [TestCase("i :/ 1", typeof(VariableAssignmentStatementSyntax))]
-        [TestCase("i :^ 1", typeof(VariableAssignmentStatementSyntax))]
+        [TestCase("i : 1", typeof(AssignmentStatementSyntax))]
+        [TestCase("i :+ 1", typeof(AssignmentStatementSyntax))]
+        [TestCase("i :- 1", typeof(AssignmentStatementSyntax))]
+        [TestCase("i :* 1", typeof(AssignmentStatementSyntax))]
+        [TestCase("i :/ 1", typeof(AssignmentStatementSyntax))]
+        [TestCase("i :^ 1", typeof(AssignmentStatementSyntax))]
         [TestCase("if(i = 1)" + "\r\n" +
                   "{" + "\r\n" +
                   "     //code" + "\r\n" +
@@ -146,7 +147,7 @@ namespace Kiwi.Tests
             var ast = parser.Parse();
             Assert.IsInstanceOf(type, ((ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0]).Expression);
         }
-
+        
         [Test]
         public void TestSimpleOperatorPrecedence()
         {

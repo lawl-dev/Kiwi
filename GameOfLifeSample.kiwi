@@ -1,50 +1,53 @@
+namespace Gol
+{
 class GameOfLife
 {
 	func GetUpdatedGrid(bool[][] grid) -> bool[][]
 	{
-		var newGrid : new bool[grid.Length(0)][grid.Length(1)];
-		for(int x : 0; x < grid.Length(0); x :+ 1)
+		var newGrid : new bool[grid.Length(0)][grid.Length(1)]
+		for(var x : 0; x < grid.Length(0); x :+ 1)
 		{
-			for(int y : 0; y < grid.Length(1); y :+ 1)
+			for(var y : 0; y < grid.Length(1); y :+ 1)
 			{
 				var livingNeighbours : GetLivingNeighboursCount(grid, x, y)
-				if(grid[x, y])
+				if(grid[x][y])
 				{
-					newGrid[x,y] : if(livingNeighbours < 2) false 
-								   else if(livingNeighbours == 2 || livingNeighbours == 3) true 
+					newGrid[x][y] : if(livingNeighbours < 2) false 
+								   else if(livingNeighbours = 2 || livingNeighbours = 3) true 
 								   else if(livingNeighbours > 3) false 
-								   else true;
+								   else true
 				}
 				else
 				{
-					newGrid[x,y] : if(livingNeighbours = 3) true else false;
+					newGrid[x][y] : livingNeighbours = 3
 				}	
 			}
 		}
-		
-		return newGrid;
+	
+		return newGrid
 	}
 	
 	func GetLivingNeighboursCount(bool[][] grid, int x, int y) -> int
 	{
-		var result : 0;
+		var result : 0
 		for(x1 : x-1; x1 < x + 1; x :+ 1)
 		{
 			for(y1 : y-1; y1 < y + 1; y :+ 1)
 			{
-				result :+ if(GetIsIndexOutOfRange(grid, x1, y1)) 0 else if(grid[x1, y1]) 1 else 0;
+				result :+ if(GetIsIndexOutOfRange(grid, x1, y1)) 0 else if(grid[x1][y1]) 1 else 0
 			}
 		}
 		
-		return result;
+		return result
 	}
 	
 	func GetIsIndexOutOfRange(bool[][] grid, int x, int y) -> bool
 	{
-		var xMin, yMin : 0;
-		var xMax : grid.Length(0);
-		var yMax : grid.Length(1);
+		var xMin, yMin : 0
+		var xMax : grid.Length(0)
+		var yMax : grid.Length(1)
 		
-		return x < xMin || y < yMin || x > xMax || y > yMax;
+		return x < xMin || y < yMin || x > xMax || y > yMax
 	}
+}
 }

@@ -60,6 +60,8 @@ namespace Kiwi.Lexer
                                { TokenType.WhileKeyword, "while" },
                                { TokenType.RepeatKeyword, "repeat" },
                                { TokenType.IfKeyword, "if" },
+                               { TokenType.TrueKeyword, "true" },
+                               { TokenType.FalseKeyword, "false" },
                                { TokenType.ElseKeyword, "else" }
                            };
             var specialCharacters = new Dictionary<TokenType, string>
@@ -71,6 +73,7 @@ namespace Kiwi.Lexer
                                         { TokenType.OpenParenth, "(" },
                                         { TokenType.ClosingParenth, ")" },
                                         { TokenType.HypenGreater, "->" },
+                                        { TokenType.Or, "||" },
                                         { TokenType.ColonAdd, ":+" },
                                         { TokenType.ColonSub, ":-" },
                                         { TokenType.ColonDiv, ":/" },
@@ -101,6 +104,7 @@ namespace Kiwi.Lexer
             strategies.Add(new SyntaxCommentLexerStrategy());
             strategies.Add(new SyntaxSymbolLexerStrategy(forbiddenSymbolNames));
             strategies.Add(new SyntaxLexerStrategy(TokenType.Whitespace, " "));
+            strategies.Add(new SyntaxLexerStrategy(TokenType.Tab, "\t"));
             strategies.Add(new SyntaxLexerStrategy(TokenType.NewLine, "\r\n"));
             strategies.AddRange(keywordLexerStrategies);
             strategies.AddRange(specialCharacterLexerStrategies);

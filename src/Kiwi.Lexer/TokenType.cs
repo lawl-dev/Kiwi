@@ -61,6 +61,10 @@ namespace Kiwi.Lexer
         ColonDiv,
         ColonMult,
         ColonPow,
-        ForReverseKeyword
+        ForReverseKeyword,
+        Tab,
+        Or,
+        TrueKeyword,
+        FalseKeyword
     }
 }
