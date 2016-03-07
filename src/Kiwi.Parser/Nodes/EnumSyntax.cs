@@ -15,5 +15,10 @@ namespace Kiwi.Parser.Nodes
             EnumName = enumName;
             Member = member;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

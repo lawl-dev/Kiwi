@@ -14,5 +14,10 @@ namespace Kiwi.Parser.Nodes
             ArgList = argList;
             Member = member;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

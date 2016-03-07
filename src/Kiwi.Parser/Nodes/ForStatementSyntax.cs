@@ -16,5 +16,10 @@ namespace Kiwi.Parser.Nodes
             LoopExpression = loopExpression;
             Body = body;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -16,5 +16,10 @@ namespace Kiwi.Parser.Nodes
             NamespaceName = namespaceName;
             Member = member;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

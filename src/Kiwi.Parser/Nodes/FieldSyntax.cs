@@ -16,5 +16,10 @@ namespace Kiwi.Parser.Nodes
             FieldName = fieldName;
             FieldInitializer = fieldInitializer;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

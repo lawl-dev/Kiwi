@@ -14,5 +14,10 @@ namespace Kiwi.Parser.Nodes
             RightExpression = rightExpression;
             Operator = @operator;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

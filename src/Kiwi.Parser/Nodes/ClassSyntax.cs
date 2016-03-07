@@ -19,5 +19,10 @@ namespace Kiwi.Parser.Nodes
             DescriptorName = descriptorName;
             Member = member;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

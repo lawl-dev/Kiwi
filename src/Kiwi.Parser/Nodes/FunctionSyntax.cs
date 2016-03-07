@@ -20,5 +20,10 @@ namespace Kiwi.Parser.Nodes
             ParameterList = parameterList;
             Member = member;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

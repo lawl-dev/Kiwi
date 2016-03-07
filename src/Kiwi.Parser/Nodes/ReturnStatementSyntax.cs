@@ -8,5 +8,10 @@ namespace Kiwi.Parser.Nodes
         {
             Expression = expression;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

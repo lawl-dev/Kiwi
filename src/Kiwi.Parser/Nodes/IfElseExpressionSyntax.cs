@@ -12,5 +12,10 @@ namespace Kiwi.Parser.Nodes
             IfTrueExpression = ifTrueExpression;
             IfFalseExpression = ifFalseExpression;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

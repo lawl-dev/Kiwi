@@ -12,5 +12,10 @@ namespace Kiwi.Parser.Nodes
             Expression = expression;
             Body = body;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

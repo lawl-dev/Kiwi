@@ -12,5 +12,10 @@ namespace Kiwi.Parser.Nodes
             FromIntExpression = fromIntExpression;
             ToIntExpression = toIntExpression;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

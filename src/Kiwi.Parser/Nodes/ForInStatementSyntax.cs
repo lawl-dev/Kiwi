@@ -16,5 +16,10 @@ namespace Kiwi.Parser.Nodes
             CollectionExpression = collectionExpression;
             Body = body;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

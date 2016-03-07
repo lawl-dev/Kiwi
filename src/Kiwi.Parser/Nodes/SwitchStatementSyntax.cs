@@ -14,5 +14,10 @@ namespace Kiwi.Parser.Nodes
             Cases = cases;
             Default = @default;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

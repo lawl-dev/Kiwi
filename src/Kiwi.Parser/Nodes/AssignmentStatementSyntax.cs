@@ -14,5 +14,10 @@ namespace Kiwi.Parser.Nodes
             Operator = @operator;
             ToAssign = toAssign;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -12,5 +12,10 @@ namespace Kiwi.Parser.Nodes
             MemberName = memberName;
             Initializer = initializer;
         }
+
+        public void Accept(ISyntaxVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
