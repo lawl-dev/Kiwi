@@ -17,8 +17,8 @@ namespace Kiwi.Tests
         [TestCase(TokenType.CaseKeyword, "case")]
         [TestCase(TokenType.StringKeyword, "string")]
         [TestCase(TokenType.VarKeyword, "var")]
-        [TestCase(TokenType.OpenBracket, "{")]
-        [TestCase(TokenType.ClosingBracket, "}")]
+        [TestCase(TokenType.OpenBrace, "{")]
+        [TestCase(TokenType.ClosingBrace, "}")]
         [TestCase(TokenType.OpenParenth, "(")]
         [TestCase(TokenType.ClosingParenth, ")")]
         [TestCase(TokenType.HypenGreater, "->")]
@@ -33,8 +33,8 @@ namespace Kiwi.Tests
         [TestCase(TokenType.Add, "+")]
         [TestCase(TokenType.Or, "||")]
         [TestCase(TokenType.Sub, "-")]
-        [TestCase(TokenType.LeftSquareBracket, "[")]
-        [TestCase(TokenType.RightSquareBracket, "]")]
+        [TestCase(TokenType.OpenBracket, "[")]
+        [TestCase(TokenType.ClosingBracket, "]")]
         [TestCase(TokenType.Mult, "*")]
         [TestCase(TokenType.Div, "/")]
         [TestCase(TokenType.ColonAdd, ":+")]
@@ -100,7 +100,7 @@ namespace Kiwi.Tests
                                    {
                                        TokenType.DescriptorKeyword,
                                        TokenType.Symbol,
-                                       TokenType.OpenBracket,
+                                       TokenType.OpenBrace,
                                        TokenType.FuncKeyword,
                                        TokenType.Symbol,
                                        TokenType.OpenParenth,
@@ -132,7 +132,7 @@ namespace Kiwi.Tests
                                        TokenType.Symbol,
                                        TokenType.ClosingParenth,
                                        TokenType.Semicolon,
-                                       TokenType.ClosingBracket
+                                       TokenType.ClosingBrace
                                    };
             ValidateLexerResults(descriptorSource, tokenTypesSource);
         }
@@ -163,7 +163,7 @@ namespace Kiwi.Tests
                                        TokenType.Symbol,
                                        TokenType.IsKeyword,
                                        TokenType.Symbol,
-                                       TokenType.OpenBracket,
+                                       TokenType.OpenBrace,
                                        TokenType.ConstKeyword,
                                        TokenType.Symbol,
                                        TokenType.Symbol,
@@ -192,14 +192,14 @@ namespace Kiwi.Tests
                                        TokenType.ClosingParenth,
                                        TokenType.HypenGreater,
                                        TokenType.Symbol,
-                                       TokenType.OpenBracket,
+                                       TokenType.OpenBrace,
                                        TokenType.ReturnKeyword,
                                        TokenType.NewKeyword,
                                        TokenType.Symbol,
                                        TokenType.OpenParenth,
                                        TokenType.ClosingParenth,
                                        TokenType.Semicolon,
-                                       TokenType.ClosingBracket,
+                                       TokenType.ClosingBrace,
                                        TokenType.FuncKeyword,
                                        TokenType.Symbol,
                                        TokenType.OpenParenth,
@@ -220,7 +220,7 @@ namespace Kiwi.Tests
                                        TokenType.IntKeyword,
                                        TokenType.Symbol,
                                        TokenType.ClosingParenth,
-                                       TokenType.OpenBracket,
+                                       TokenType.OpenBrace,
                                        TokenType.ReturnKeyword,
                                        TokenType.NewKeyword,
                                        TokenType.Symbol,
@@ -229,8 +229,8 @@ namespace Kiwi.Tests
                                        TokenType.Comma,
                                        TokenType.Int,
                                        TokenType.Semicolon,
-                                       TokenType.ClosingBracket,
-                                       TokenType.ClosingBracket
+                                       TokenType.ClosingBrace,
+                                       TokenType.ClosingBrace
                                    };
             ValidateLexerResults(classSource, tokenTypesSource);
         }
@@ -249,7 +249,7 @@ namespace Kiwi.Tests
                                   {
                                       TokenType.EnumKeyword,
                                       TokenType.Symbol,
-                                      TokenType.OpenBracket,
+                                      TokenType.OpenBrace,
                                       TokenType.Symbol,
                                       TokenType.Comma,
                                       TokenType.Symbol,
@@ -257,7 +257,7 @@ namespace Kiwi.Tests
                                       TokenType.Symbol,
                                       TokenType.Colon,
                                       TokenType.Int,
-                                      TokenType.ClosingBracket
+                                      TokenType.ClosingBrace
                                   };
 
             ValidateLexerResults(enumSource, tokenTypeSource);
@@ -278,9 +278,9 @@ namespace Kiwi.Tests
                                       TokenType.InKeyword,
                                       TokenType.Symbol,
                                       TokenType.ClosingParenth,
-                                      TokenType.OpenBracket,
+                                      TokenType.OpenBrace,
                                       TokenType.Comment,
-                                      TokenType.ClosingBracket
+                                      TokenType.ClosingBrace
                                   };
             ValidateLexerResults(forInSource, tokenTypeSource);
         }
@@ -310,9 +310,9 @@ namespace Kiwi.Tests
                                       TokenType.ColonAdd,
                                       TokenType.Int,
                                       TokenType.ClosingParenth,
-                                      TokenType.OpenBracket,
+                                      TokenType.OpenBrace,
                                       TokenType.Comment,
-                                      TokenType.ClosingBracket
+                                      TokenType.ClosingBrace
                                   };
             ValidateLexerResults(forSource, tokenTypeSource);
         }
@@ -337,13 +337,13 @@ namespace Kiwi.Tests
                                       TokenType.OpenParenth,
                                       TokenType.Symbol,
                                       TokenType.ClosingParenth,
-                                      TokenType.OpenBracket,
+                                      TokenType.OpenBrace,
                                       TokenType.IsKeyword,
                                       TokenType.Symbol,
                                       TokenType.HypenGreater,
-                                      TokenType.OpenBracket,
+                                      TokenType.OpenBrace,
                                       TokenType.Comment,
-                                      TokenType.ClosingBracket,
+                                      TokenType.ClosingBrace,
                                       TokenType.Int,
                                       TokenType.HypenGreater,
                                       TokenType.Comment,
@@ -364,7 +364,7 @@ namespace Kiwi.Tests
                                       TokenType.ElseKeyword,
                                       TokenType.HypenGreater,
                                       TokenType.Comment,
-                                      TokenType.ClosingBracket
+                                      TokenType.ClosingBrace
                                   };
             ValidateLexerResults(whenSource, tokenTypeSource);
         }
@@ -386,17 +386,17 @@ namespace Kiwi.Tests
                                       TokenType.SwitchKeyword,
                                       TokenType.OpenParenth,
                                       TokenType.Symbol,
-                                      TokenType.LeftSquareBracket,
-                                      TokenType.Int,
-                                      TokenType.RightSquareBracket,
-                                      TokenType.ClosingParenth,
                                       TokenType.OpenBracket,
+                                      TokenType.Int,
+                                      TokenType.ClosingBracket,
+                                      TokenType.ClosingParenth,
+                                      TokenType.OpenBrace,
                                       TokenType.CaseKeyword,
                                       TokenType.Int,
                                       TokenType.HypenGreater,
-                                      TokenType.OpenBracket,
+                                      TokenType.OpenBrace,
                                       TokenType.Comment,
-                                      TokenType.ClosingBracket,
+                                      TokenType.ClosingBrace,
                                       TokenType.CaseKeyword,
                                       TokenType.Int,
                                       TokenType.HypenGreater,
@@ -404,7 +404,7 @@ namespace Kiwi.Tests
                                       TokenType.DefaultKeyword,
                                       TokenType.HypenGreater,
                                       TokenType.Comment,
-                                      TokenType.ClosingBracket
+                                      TokenType.ClosingBrace
                                   };
 
             ValidateLexerResults(swtichSource, tokenTypeSource);
@@ -419,8 +419,8 @@ namespace Kiwi.Tests
             var tokenTypeSource = new[]
                                   {
                                       TokenType.NamespaceKeyword,
-                                      TokenType.OpenBracket,
-                                      TokenType.ClosingBracket
+                                      TokenType.OpenBrace,
+                                      TokenType.ClosingBrace
                                   };
 
             ValidateLexerResults(namespaceSource, tokenTypeSource);

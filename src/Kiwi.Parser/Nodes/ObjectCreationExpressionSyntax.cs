@@ -6,15 +6,15 @@ namespace Kiwi.Parser.Nodes
     public class ObjectCreationExpressionSyntax : IExpressionSyntax
     {
         public TypeSyntax Type { get; }
-        public List<ISyntaxBase> Parameter { get; }
+        public List<IExpressionSyntax> Parameter { get; }
 
-        public ObjectCreationExpressionSyntax(TypeSyntax type, List<ISyntaxBase> parameter)
+        public ObjectCreationExpressionSyntax(TypeSyntax type, List<IExpressionSyntax> parameter)
         {
             Type = type;
             Parameter = parameter;
         }
 
-        public void Accept(ISyntaxVisitor visitor)
+        public virtual void Accept(ISyntaxVisitor visitor)
         {
             throw new System.NotImplementedException();
         }

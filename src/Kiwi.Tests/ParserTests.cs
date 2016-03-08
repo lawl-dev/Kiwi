@@ -129,7 +129,7 @@ namespace Kiwi.Tests
         [TestCase("return new Object()", typeof(ObjectCreationExpressionSyntax))]
         [TestCase("return -1", typeof(SignExpressionSyntax))]
         [TestCase("return \"Hallo\"", typeof(StringExpressionSyntax))]
-        [TestCase("return 1..1337", typeof(RangeExpressionSyntax))]
+        [TestCase("return 1..1337", typeof(BinaryExpressionSyntax))]
         [TestCase("return variable.Member", typeof(MemberAccessExpressionSyntax))]
         [TestCase("return variable.Function()", typeof(InvocationExpressionSyntax))]
         [TestCase("return variable[0]", typeof(ArrayAccessExpression))]

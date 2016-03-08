@@ -66,10 +66,10 @@ namespace Kiwi.Lexer
                            };
             var specialCharacters = new Dictionary<TokenType, string>
                                     {
-                                        { TokenType.LeftSquareBracket, "[" },
-                                        { TokenType.RightSquareBracket, "]" },
-                                        { TokenType.OpenBracket, "{" },
-                                        { TokenType.ClosingBracket, "}" },
+                                        { TokenType.OpenBracket, "[" },
+                                        { TokenType.ClosingBracket, "]" },
+                                        { TokenType.OpenBrace, "{" },
+                                        { TokenType.ClosingBrace, "}" },
                                         { TokenType.OpenParenth, "(" },
                                         { TokenType.ClosingParenth, ")" },
                                         { TokenType.HypenGreater, "->" },
