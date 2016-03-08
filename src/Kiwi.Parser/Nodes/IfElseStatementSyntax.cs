@@ -4,14 +4,14 @@ namespace Kiwi.Parser.Nodes
 {
     public class IfElseStatementSyntax : IfStatementSyntax
     {
-        public List<IStatetementSyntax> ElseBody { get; }
+        public List<IStatementSyntax> ElseStatements { get; }
 
         public IfElseStatementSyntax(
-            List<ISyntaxBase> condition,
-            List<IStatetementSyntax> body,
-            List<IStatetementSyntax> elseBody) : base(condition, body)
+            List<IExpressionSyntax> condition,
+            List<IStatementSyntax> statements,
+            List<IStatementSyntax> elseStatements) : base(condition, statements)
         {
-            ElseBody = elseBody;
+            ElseStatements = elseStatements;
         }
     }
 }

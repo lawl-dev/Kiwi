@@ -2,12 +2,12 @@ using System.Collections.Generic;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class IfStatementSyntax : IStatementSyntax
+    public class WhenEntry : ISyntaxBase
     {
-        public List<IExpressionSyntax> Condition { get; }
-        public List<IStatementSyntax> Statements { get; } 
+        public IExpressionSyntax Condition { get; set; }
+        public List<IStatementSyntax> Statements { get; set; }
 
-        public IfStatementSyntax(List<IExpressionSyntax> condition, List<IStatementSyntax> statements)
+        public WhenEntry(IExpressionSyntax condition, List<IStatementSyntax> statements)
         {
             Condition = condition;
             Statements = statements;

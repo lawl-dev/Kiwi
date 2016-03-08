@@ -1,6 +1,6 @@
 namespace Kiwi.Parser.Nodes
 {
-    public class ReturnStatementSyntax : IStatetementSyntax
+    public class ReturnStatementSyntax : IStatementSyntax
     {
         public IExpressionSyntax Expression { get; }
 

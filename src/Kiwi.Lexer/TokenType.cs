@@ -33,6 +33,7 @@ namespace Kiwi.Lexer
         DefaultKeyword,
         ForKeyword,
         InKeyword,
+        NotInKeyword,
         Less,
         WhileKeyword,
         RepeatKeyword,
@@ -65,6 +66,8 @@ namespace Kiwi.Lexer
         Tab,
         Or,
         TrueKeyword,
-        FalseKeyword
+        FalseKeyword,
+        NotKeyword,
+        AndKeyword
     }
 }

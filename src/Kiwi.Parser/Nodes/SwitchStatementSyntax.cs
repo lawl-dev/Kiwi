@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class SwitchStatementSyntax : IStatetementSyntax
+    public class SwitchStatementSyntax : IStatementSyntax
     {
         public IExpressionSyntax Condition { get; }
         public List<CaseSyntax> Cases { get; }

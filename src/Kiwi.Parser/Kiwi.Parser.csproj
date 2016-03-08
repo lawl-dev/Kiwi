@@ -46,10 +46,12 @@
     <Compile Include="Nodes\BooleanExpressionSyntax.cs" />
     <Compile Include="Nodes\CallExpressionSyntax.cs" />
     <Compile Include="Nodes\CaseSyntax.cs" />
+    <Compile Include="Nodes\ConditionalWhenStatementSyntax.cs" />
     <Compile Include="Nodes\DataClassFunctionSyntax.cs" />
     <Compile Include="Nodes\DefaultSyntax.cs" />
     <Compile Include="Nodes\ForInStatementSyntax.cs" />
     <Compile Include="Nodes\ForStatementSyntax.cs" />
+    <Compile Include="Nodes\InvocationStatementSyntax.cs" />
     <Compile Include="Nodes\IConstExpressionSyntax.cs" />
     <Compile Include="Nodes\InvocationExpressionSyntax.cs" />
     <Compile Include="Nodes\ISyntaxVisitor.cs" />
@@ -61,11 +63,13 @@
     <Compile Include="Nodes\FloatExpressionSyntax.cs" />
     <Compile Include="Nodes\IExpressionSyntax.cs" />
     <Compile Include="Nodes\IntExpressionSyntax.cs" />
-    <Compile Include="Nodes\IStatetementSyntax.cs" />
+    <Compile Include="Nodes\IStatementSyntax.cs" />
     <Compile Include="Nodes\MemberExpressionSyntax.cs" />
     <Compile Include="Nodes\ObjectCreationExpressionSyntax.cs" />
     <Compile Include="Nodes\ReturnFunctionSyntax.cs" />
     <Compile Include="Nodes\ReverseForInStatementSyntax.cs" />
+    <Compile Include="Nodes\SimpleWhenStatementSyntax.cs" />
+    <Compile Include="Nodes\WhenEntry.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

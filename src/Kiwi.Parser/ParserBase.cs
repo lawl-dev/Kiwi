@@ -15,17 +15,21 @@ namespace Kiwi.Parser
             TokenStream = transactableTokenStream;
         }
 
-        protected List<ISyntaxBase> ParseInnerCommmaSeperated(
+        protected List<TSyntax> ParseInnerCommmaSeperated<TSyntax>(
             TokenType opening,
             TokenType closing,
-            Func<ISyntaxBase> parser)
+            Func<TSyntax> parser) where TSyntax : ISyntaxBase
         {
             return ParseInner(opening, closing, parser, true);
         }
 
-        protected List<ISyntaxBase> ParseInner(TokenType opening, TokenType closing, Func<ISyntaxBase> parser, bool commaSeperated = false)
+        protected List<TSyntax> ParseInner<TSyntax>(
+            TokenType opening,
+            TokenType closing,
+            Func<TSyntax> parser,
+            bool commaSeperated = false) where TSyntax: ISyntaxBase
         {
-            var innerSyntax = new List<ISyntaxBase>();
+            var innerSyntax = new List<TSyntax>();
             Consume(opening);
             while (TokenStream.Current.Type != closing)
             {
@@ -46,7 +50,7 @@ namespace Kiwi.Parser
             return innerSyntax;
         }
 
-        protected ISyntaxBase Parse(params Func<ISyntaxBase>[] possibleParseFunctions)
+        protected TSyntax Parse<TSyntax>(params Func<TSyntax>[] possibleParseFunctions) where TSyntax : class, ISyntaxBase
         {
             foreach (var parseFunction in possibleParseFunctions)
             {

@@ -5,12 +5,12 @@ namespace Kiwi.Parser.Nodes
     public class CaseSyntax : ISyntaxBase
     {
         public IExpressionSyntax Expression { get; }
-        public List<ISyntaxBase> Body { get; }
+        public List<IStatementSyntax> Statements { get; }
 
-        public CaseSyntax(IExpressionSyntax expression, List<ISyntaxBase> body)
+        public CaseSyntax(IExpressionSyntax expression, List<IStatementSyntax> statements)
         {
             Expression = expression;
-            Body = body;
+            Statements = statements;
         }
 
         public void Accept(ISyntaxVisitor visitor)

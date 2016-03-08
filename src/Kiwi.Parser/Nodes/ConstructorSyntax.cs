@@ -5,14 +5,13 @@ namespace Kiwi.Parser.Nodes
 {
     public class ConstructorSyntax : ISyntaxBase
     {
-        public List<ISyntaxBase> ArgList { get; private set; }
-        public List<ISyntaxBase> Member { get; }
-        public List<IStatetementSyntax> StatementMember => Member.OfType<IStatetementSyntax>().ToList();
+        public List<ParameterSyntax> ArgList { get; private set; }
+        public List<IStatementSyntax> Statements { get; }
 
-        public ConstructorSyntax(List<ISyntaxBase> argList, List<ISyntaxBase> member)
+        public ConstructorSyntax(List<ParameterSyntax> argList, List<IStatementSyntax> statements)
         {
             ArgList = argList;
-            Member = member;
+            Statements = statements;
         }
 
         public void Accept(ISyntaxVisitor visitor)

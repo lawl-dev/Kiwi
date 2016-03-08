@@ -109,6 +109,23 @@ namespace Kiwi.Tests
                   "{" + "\r\n" +
                   "     //code" + "\r\n" +
                   "}", typeof(ReverseForInStatementSyntax))]
+        [TestCase("when" + "\r\n" +
+                  "{" + "\r\n" +
+                  "     a = b && c > d  -> {" + "\r\n" +
+                  "                 //code" + "\r\n" +
+                  "                }" + "\r\n" +
+                  "     buu > b -> dooooStuff()" + "\r\n" +
+                  "}", typeof(SimpleWhenStatementSyntax))]
+        [TestCase("when (condition)" + "\r\n" +
+                  "{" + "\r\n" +
+                  "     is Type -> Do()" + "\r\n" +
+                  "     !value  -> Do2()" + "\r\n" +
+                  "     in 1, 2, 3  -> Do3()" + "\r\n" +
+                  "     !in 0..20   -> Do4()" + "\r\n" +
+                  "     > 20    -> {" + "\r\n" +
+                  "                 //code" + "\r\n" +
+                  "                }" + "\r\n" +
+                  "}", typeof(ConditionalWhenStatementSyntax))]
         public void TestStatements(string statementSource, Type type)
         {
             var lexer = new Lexer.Lexer();
@@ -118,7 +135,7 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            Assert.IsInstanceOf(type, ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0]);
+            Assert.IsInstanceOf(type, ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].Statements[0]);
         }
 
         [TestCase("return if(1 = 2 * 5) 1 else 2", typeof(IfElseExpressionSyntax))]
@@ -145,7 +162,7 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            Assert.IsInstanceOf(type, ((ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0]).Expression);
+            Assert.IsInstanceOf(type, ((ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].Statements[0]).Expression);
         }
         
         [Test]
@@ -158,7 +175,7 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0];
+            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var leftBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -184,7 +201,7 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0];
+            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -216,7 +233,7 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0];
+            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -253,7 +270,7 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].StatementMember[0];
+            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;

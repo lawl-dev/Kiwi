@@ -3,7 +3,7 @@ using Kiwi.Lexer;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class VariableDeclarationStatementSyntax : IStatetementSyntax
+    public class VariableDeclarationStatementSyntax : IStatementSyntax
     {
         public Token VariableQualifier { get; }
         public List<Token> VariableNames { get; }

@@ -4,11 +4,11 @@ namespace Kiwi.Parser.Nodes
 {
     public class DefaultSyntax : ISyntaxBase
     {
-        public List<ISyntaxBase> Body { get; }
+        public List<IStatementSyntax> Statements { get; }
 
-        public DefaultSyntax(List<ISyntaxBase> body)
+        public DefaultSyntax(List<IStatementSyntax> statements)
         {
-            Body = body;
+            Statements = statements;
         }
 
         public void Accept(ISyntaxVisitor visitor)

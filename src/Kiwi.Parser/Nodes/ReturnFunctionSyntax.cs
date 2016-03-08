@@ -7,7 +7,7 @@ namespace Kiwi.Parser.Nodes
     {
         public TypeSyntax ReturnType { get; }
 
-        public ReturnFunctionSyntax(Token functionName, List<ParameterSyntax> parameterList, List<ISyntaxBase> member, TypeSyntax returnType) : base(functionName, parameterList, member)
+        public ReturnFunctionSyntax(Token functionName, List<ParameterSyntax> parameterList, List<IStatementSyntax> statements, TypeSyntax returnType) : base(functionName, parameterList, statements)
         {
             ReturnType = returnType;
         }
