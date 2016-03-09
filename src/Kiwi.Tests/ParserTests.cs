@@ -1,7 +1,5 @@
 using System;
-using System.IO;
 using Kiwi.Lexer;
-using Kiwi.Parser;
 using Kiwi.Parser.Nodes;
 using NUnit.Framework;
 
@@ -69,6 +67,43 @@ namespace Kiwi.Tests
             Assert.AreEqual("FunctionSample", ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].FunctionName.Value);
         }
 
+        [Test]
+        public void TestDataFunction()
+        {
+            const string functionSource = "func FunctionSample(int a, int b, int c) -> data Dto(int a, string b)" + "\r\n" +
+                                          "{{" + "\r\n" +
+                                          "     {0}" + "\r\n" + //statements placeholder
+                                          "}}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens =
+                lexer.Lex(
+                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(functionSource, string.Empty), string.Empty, string.Empty)));
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+            Assert.IsNotEmpty(ast.NamespaceMember[0].ClassMember[0].FunctionMember);
+            Assert.IsInstanceOf<DataClassFunctionSyntax>(ast.NamespaceMember[0].ClassMember[0].FunctionMember[0]);
+            Assert.AreEqual("FunctionSample", ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].FunctionName.Value);
+        }
+
+        [Test]
+        public void TestExpressionFunction()
+        {
+            const string functionSource = "func FunctionSample(int a, int b, int c) -> return a * b * c";
+
+            var lexer = new Lexer.Lexer();
+            var tokens =
+                lexer.Lex(
+                    string.Format(NamespaceSource, string.Format(ClassSource, functionSource, string.Empty, string.Empty)));
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+            Assert.IsNotEmpty(ast.NamespaceMember[0].ClassMember[0].FunctionMember);
+            Assert.IsInstanceOf<ExpressionFunctionSyntax>(ast.NamespaceMember[0].ClassMember[0].FunctionMember[0]);
+            Assert.AreEqual("FunctionSample", ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].FunctionName.Value);
+        }
+
         [TestCase("return 1", typeof(ReturnStatementSyntax))]
         [TestCase("var i : 1", typeof(VariableDeclarationStatementSyntax))]
         [TestCase("i : 1", typeof(AssignmentStatementSyntax))]
@@ -99,7 +134,7 @@ namespace Kiwi.Tests
                   "     case 2 -> {" + "\r\n" +
                   "                     return 2" + "\r\n" +
                   "               }" + "\r\n" +
-                  "     default -> return 1337" + "\r\n" +
+                  "     else -> return 1337" + "\r\n" +
                   "}", typeof(SwitchStatementSyntax))]
         [TestCase("for(i in GetInts(1*2+3))" + "\r\n" +
                   "{" + "\r\n" +
@@ -119,7 +154,7 @@ namespace Kiwi.Tests
         [TestCase("when (condition)" + "\r\n" +
                   "{" + "\r\n" +
                   "     is Type -> Do()" + "\r\n" +
-                  "     !value  -> Do2()" + "\r\n" +
+                  "     !=value  -> Do2()" + "\r\n" +
                   "     in 1, 2, 3  -> Do3()" + "\r\n" +
                   "     !in 0..20   -> Do4()" + "\r\n" +
                   "     > 20    -> {" + "\r\n" +

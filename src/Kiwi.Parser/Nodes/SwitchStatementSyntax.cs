@@ -6,13 +6,13 @@ namespace Kiwi.Parser.Nodes
     {
         public IExpressionSyntax Condition { get; }
         public List<CaseSyntax> Cases { get; }
-        public DefaultSyntax Default { get; }
+        public ElseSyntax Else { get; }
 
-        public SwitchStatementSyntax(IExpressionSyntax condition, List<CaseSyntax> cases, DefaultSyntax @default)
+        public SwitchStatementSyntax(IExpressionSyntax condition, List<CaseSyntax> cases, ElseSyntax @else)
         {
             Condition = condition;
             Cases = cases;
-            Default = @default;
+            Else = @else;
         }
 
         public void Accept(ISyntaxVisitor visitor)

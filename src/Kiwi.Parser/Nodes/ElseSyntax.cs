@@ -2,11 +2,11 @@ using System.Collections.Generic;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class DefaultSyntax : ISyntaxBase
+    public class ElseSyntax : ISyntaxBase
     {
         public List<IStatementSyntax> Statements { get; }
 
-        public DefaultSyntax(List<IStatementSyntax> statements)
+        public ElseSyntax(List<IStatementSyntax> statements)
         {
             Statements = statements;
         }

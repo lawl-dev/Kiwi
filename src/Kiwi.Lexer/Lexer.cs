@@ -54,54 +54,51 @@ namespace Kiwi.Lexer
                                { TokenType.EnumKeyword, "enum" },
                                { TokenType.WhenKeyword, "when" },
                                { TokenType.SwitchKeyword, "switch" },
-                               { TokenType.DefaultKeyword, "default" },
                                { TokenType.ForReverseKeyword, "forr" },
                                { TokenType.ForKeyword, "for" },
                                { TokenType.InKeyword, "in" },
                                { TokenType.NotInKeyword, "!in" },
-                               { TokenType.NotKeyword, "!" },
                                { TokenType.WhileKeyword, "while" },
                                { TokenType.RepeatKeyword, "repeat" },
                                { TokenType.IfKeyword, "if" },
                                { TokenType.TrueKeyword, "true" },
                                { TokenType.FalseKeyword, "false" },
-                               { TokenType.ElseKeyword, "else" }
+                               { TokenType.ElseKeyword, "else" },
+                               { TokenType.OpenBracket, "[" },
+                               { TokenType.ClosingBracket, "]" },
+                               { TokenType.OpenBrace, "{" },
+                               { TokenType.ClosingBrace, "}" },
+                               { TokenType.OpenParenth, "(" },
+                               { TokenType.ClosingParenth, ")" },
+                               { TokenType.HypenGreater, "->" },
+                               { TokenType.Or, "||" },
+                               { TokenType.ColonAdd, ":+" },
+                               { TokenType.ColonSub, ":-" },
+                               { TokenType.ColonDiv, ":/" },
+                               { TokenType.ColonMult, ":*" },
+                               { TokenType.ColonPow, ":^" },
+                               { TokenType.Colon, ":" },
+                               { TokenType.Semicolon, ";" },
+                               { TokenType.Comma, "," },
+                               { TokenType.TwoDots, ".." },
+                               { TokenType.EqualGreater, "=>" },
+                               { TokenType.Add, "+" },
+                               { TokenType.Sub, "-" },
+                               { TokenType.Mult, "*" },
+                               { TokenType.Div, "/" },
+                               { TokenType.Pow, "^" },
+                               { TokenType.Dot, "." },
+                               { TokenType.Greater, ">" },
+                               { TokenType.Equal, "=" },
+                               { TokenType.NotEqual, "!=" },
+                               { TokenType.Less, "<" },
+                               { TokenType.NotKeyword, "!" }
                            };
-            var specialCharacters = new Dictionary<TokenType, string>
-                                    {
-                                        { TokenType.OpenBracket, "[" },
-                                        { TokenType.ClosingBracket, "]" },
-                                        { TokenType.OpenBrace, "{" },
-                                        { TokenType.ClosingBrace, "}" },
-                                        { TokenType.OpenParenth, "(" },
-                                        { TokenType.ClosingParenth, ")" },
-                                        { TokenType.HypenGreater, "->" },
-                                        { TokenType.Or, "||" },
-                                        { TokenType.ColonAdd, ":+" },
-                                        { TokenType.ColonSub, ":-" },
-                                        { TokenType.ColonDiv, ":/" },
-                                        { TokenType.ColonMult, ":*" },
-                                        { TokenType.ColonPow, ":^" },
-                                        { TokenType.Colon, ":" },
-                                        { TokenType.Semicolon, ";" },
-                                        { TokenType.Comma, "," },
-                                        { TokenType.TwoDots, ".." },
-                                        { TokenType.EqualGreater, "=>" },
-                                        { TokenType.Add, "+" },
-                                        { TokenType.Sub, "-" },
-                                        { TokenType.Mult, "*" },
-                                        { TokenType.Div, "/" },
-                                        { TokenType.Pow, "^" },
-                                        { TokenType.Dot, "." },
-                                        { TokenType.Greater, ">" },
-                                        { TokenType.Equal, "=" },
-                                        { TokenType.Less, "<" }
-                                    };
+
 
             var forbiddenSymbolNames = keywords.Select(x => x.Value).ToList();
             var keywordLexerStrategies = keywords.Select(keyword => new SyntaxLexerStrategy(keyword.Key, keyword.Value));
-            var specialCharacterLexerStrategies =
-                specialCharacters.Select(character => new SyntaxLexerStrategy(character.Key, character.Value));
+            
 
             var strategies = new List<TokenLexerStrategyBase>();
             strategies.Add(new SyntaxCommentLexerStrategy());
@@ -110,7 +107,6 @@ namespace Kiwi.Lexer
             strategies.Add(new SyntaxLexerStrategy(TokenType.Tab, "\t"));
             strategies.Add(new SyntaxLexerStrategy(TokenType.NewLine, "\r\n"));
             strategies.AddRange(keywordLexerStrategies);
-            strategies.AddRange(specialCharacterLexerStrategies);
             strategies.Add(new SyntaxFloatLexerStrategy());
             strategies.Add(new SyntaxIntegerLexerStrategy());
             strategies.Add(new SyntaxStringLexerStrategy());

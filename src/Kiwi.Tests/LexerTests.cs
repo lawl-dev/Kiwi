@@ -45,9 +45,9 @@ namespace Kiwi.Tests
         [TestCase(TokenType.EnumKeyword, "enum")]
         [TestCase(TokenType.WhenKeyword, "when")]
         [TestCase(TokenType.Equal, "=")]
+        [TestCase(TokenType.NotEqual, "!=")]
         [TestCase(TokenType.Greater, ">")]
         [TestCase(TokenType.SwitchKeyword, "switch")]
-        [TestCase(TokenType.DefaultKeyword, "default")]
         [TestCase(TokenType.ForKeyword, "for")]
         [TestCase(TokenType.ForReverseKeyword, "forr")]
         [TestCase(TokenType.InKeyword, "in")]
@@ -382,7 +382,7 @@ namespace Kiwi.Tests
                                         "           //code" + "\r\n" +
                                         "       }" + "\r\n" +
                                         "   case 2  -> //code" + "\r\n" +
-                                        "   default -> //code" + "\r\n" +
+                                        "   else -> //code" + "\r\n" +
                                         "}";
             var tokenTypeSource = new[]
                                   {
@@ -404,7 +404,7 @@ namespace Kiwi.Tests
                                       TokenType.Int,
                                       TokenType.HypenGreater,
                                       TokenType.Comment,
-                                      TokenType.DefaultKeyword,
+                                      TokenType.ElseKeyword,
                                       TokenType.HypenGreater,
                                       TokenType.Comment,
                                       TokenType.ClosingBrace

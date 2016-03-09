@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Kiwi.Lexer;
 
 namespace Kiwi.Parser.Nodes
@@ -10,6 +11,11 @@ namespace Kiwi.Parser.Nodes
         public ReturnFunctionSyntax(Token functionName, List<ParameterSyntax> parameterList, List<IStatementSyntax> statements, TypeSyntax returnType) : base(functionName, parameterList, statements)
         {
             ReturnType = returnType;
+        }
+
+        public override void Accept(ISyntaxVisitor visitor)
+        {
+            throw new NotImplementedException();
         }
     }
 }

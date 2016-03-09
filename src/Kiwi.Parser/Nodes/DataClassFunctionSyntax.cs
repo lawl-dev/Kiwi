@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Kiwi.Lexer;
 
 namespace Kiwi.Parser.Nodes
@@ -10,6 +11,11 @@ namespace Kiwi.Parser.Nodes
         public DataClassFunctionSyntax(Token functionName, List<ParameterSyntax> parameter, List<IStatementSyntax> statements, DataSyntax dataClassSyntax) : base(functionName, parameter, statements)
         {
             DataClassSyntax = dataClassSyntax;
+        }
+
+        public override void Accept(ISyntaxVisitor visitor)
+        {
+            throw new NotImplementedException();
         }
     }
 }

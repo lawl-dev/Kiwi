@@ -20,10 +20,10 @@ class <ClassName> [is <DescriptorName>]
 
 	[<const / var>] <fieldType> <fieldName> [ = <expression> ]
 	
-	func <FunctionName>([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>]) [-> <returnType> | <dataClassDeclaration>]
-	{
+	func <FunctionName>([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>]) [-> <returnType> | <dataClassDeclaration> | return <expression>]
+	[{
 		[<statements>]
-	}
+	}]
 }
 
 
@@ -41,19 +41,36 @@ when [(<ExpressionOrValue>) ]{
     !<value> 	 		-> ...
     in <value1>, <valueN>  -> ...
     !in <value1>, <valueN>  -> ...
-	<range>			    -> ...
-	!<range>			    -> ...
 	<operator> <value>  -> ...
     else     			-> ...
 }
+
+var foo : when [(<ExpressionOrValue>) ]
+			{
+				is <TypeName>		-> <expression>
+				!<value> 	 		-> <expression>
+				in <value1>, <valueN>  -> <expression>
+				!in <value1>, <valueN>  -> <expression>
+				<operator> <value>  -> <expression>
+				else     			-> <expression>
+			}
+			
 
 switch(<expression>) {
 	case <const1> ->{...}
 	case <const2> ->...
 	case <constN> ->...
-	default       ->...
+	else       ->...
 }
 
+var foo : switch(<expression>) 
+		  {
+				case <const1> -> <expression>
+				case <const2> -> <expression>
+				case <constN> -> <expression>
+				else       -> <expression>
+		  }
+			
 range:
 <valueFrom>..<valueTo>
 
@@ -77,7 +94,6 @@ for(<variableInit>; <expesssion>; <exoression>)
 {
 	<statements>
 }
-
 
 Operators:
 Add: +
