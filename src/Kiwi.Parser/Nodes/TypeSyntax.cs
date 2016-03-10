@@ -2,7 +2,7 @@ using Kiwi.Lexer;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class TypeSyntax : IExpressionSyntax
+    public class TypeSyntax : ISyntaxBase
     {
         public Token TypeName { get; }
 
@@ -11,7 +11,7 @@ namespace Kiwi.Parser.Nodes
             TypeName = typeName;
         }
 
-        public void Accept(ISyntaxVisitor visitor)
+        public virtual void Accept(ISyntaxVisitor visitor)
         {
             throw new System.NotImplementedException();
         }

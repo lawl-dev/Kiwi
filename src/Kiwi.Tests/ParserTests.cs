@@ -19,7 +19,7 @@ namespace Kiwi.Tests
                                            "    {2}" + "\r\n" + //function placeholder
                                            "}}";
 
-        private const string FunctionSource = "func FunctionSample(int a, int b, int c) -> int" + "\r\n" +
+        private const string FunctionSource = "func FunctionSample(int a, int[] b, ..int c) -> int" + "\r\n" +
                                               "{{" + "\r\n" +
                                               "     {0}" + "\r\n" + //statements placeholder
                                               "}}";
@@ -188,6 +188,8 @@ namespace Kiwi.Tests
         [TestCase("return variable.Member[0].Function()[1]", typeof(ArrayAccessExpression))]
         [TestCase("return Function()", typeof(InvocationExpressionSyntax))]
         [TestCase("return Function(a, b, 10)", typeof(InvocationExpressionSyntax))]
+        [TestCase("return func(int a, int b) -> return a * b", typeof(AnonymousFunctionExpressionSyntax))]
+        [TestCase("return func(a, b) -> return a * b", typeof(ImplicitParameterTypeAnonymousFunctionExpressionSyntax))]
         public void TestExpressions(string statementSource, Type type)
         {
             var lexer = new Lexer.Lexer();

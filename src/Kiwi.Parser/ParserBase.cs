@@ -55,15 +55,15 @@ namespace Kiwi.Parser
             foreach (var parseFunction in possibleParseFunctions)
             {
                 TokenStream.TakeSnapshot();
-                var result = parseFunction();
-                if (result == null)
+                try
                 {
-                    TokenStream.RollbackSnapshot();
-                }
-                else
-                {
+                    var result = parseFunction();
                     TokenStream.CommitSnapshot();
                     return result;
+                }
+                catch
+                {
+                    TokenStream.RollbackSnapshot();
                 }
             }
             return null;

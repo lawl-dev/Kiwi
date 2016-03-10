@@ -41,8 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExpressionOperatorChain.cs" />
+    <Compile Include="Nodes\AnonymousFunctionExpressionSyntax.cs" />
     <Compile Include="Nodes\ArrayAccessExpression.cs" />
     <Compile Include="Nodes\ArrayCreationExpressionSyntax.cs" />
+    <Compile Include="Nodes\ArrayTypeSyntax.cs" />
     <Compile Include="Nodes\BooleanExpressionSyntax.cs" />
     <Compile Include="Nodes\CallExpressionSyntax.cs" />
     <Compile Include="Nodes\CaseSyntax.cs" />
@@ -53,6 +55,7 @@
     <Compile Include="Nodes\ExpressionFunctionSyntax.cs" />
     <Compile Include="Nodes\ForInStatementSyntax.cs" />
     <Compile Include="Nodes\ForStatementSyntax.cs" />
+    <Compile Include="Nodes\ImplicitParameterTypeAnonymousFunctionExpressionSyntax.cs" />
     <Compile Include="Nodes\InvocationStatementSyntax.cs" />
     <Compile Include="Nodes\IConstExpressionSyntax.cs" />
     <Compile Include="Nodes\InvocationExpressionSyntax.cs" />
