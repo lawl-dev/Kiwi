@@ -30,46 +30,23 @@ namespace Kiwi.Parser
             bool commaSeperated = false) where TSyntax: ISyntaxBase
         {
             var innerSyntax = new List<TSyntax>();
-            Consume(opening);
+            ParseExpected(opening);
             while (TokenStream.Current.Type != closing)
             {
                 var inner = parser();
-                if (inner == null)
-                {
-                    throw new KiwiSyntaxException("Unexpected Syntax in Sope");
-                }
-
                 innerSyntax.Add(inner);
                 if (TokenStream.Current.Type != closing && commaSeperated)
                 {
-                    Consume(TokenType.Comma);
+                    ParseExpected(TokenType.Comma);
                 }
             }
 
-            Consume(closing);
+            ParseExpected(closing);
             return innerSyntax;
         }
+        
 
-        protected TSyntax Parse<TSyntax>(params Func<TSyntax>[] possibleParseFunctions) where TSyntax : class, ISyntaxBase
-        {
-            foreach (var parseFunction in possibleParseFunctions)
-            {
-                TokenStream.TakeSnapshot();
-                try
-                {
-                    var result = parseFunction();
-                    TokenStream.CommitSnapshot();
-                    return result;
-                }
-                catch
-                {
-                    TokenStream.RollbackSnapshot();
-                }
-            }
-            return null;
-        }
-
-        protected Token Consume(TokenType tokenType)
+        protected Token ParseExpected(TokenType tokenType)
         {
             var currentToken = TokenStream.Current;
             if (currentToken.Type != tokenType)

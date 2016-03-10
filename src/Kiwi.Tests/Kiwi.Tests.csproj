@@ -49,6 +49,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kiwi.Common\Kiwi.Common.csproj">
+      <Project>{A221E521-1C96-4C78-9757-F8A08686FF23}</Project>
+      <Name>Kiwi.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kiwi.Lexer\Kiwi.Lexer.csproj">
       <Project>{87fae805-1868-467e-9c1f-5e0cdce8a284}</Project>
       <Name>Kiwi.Lexer</Name>
