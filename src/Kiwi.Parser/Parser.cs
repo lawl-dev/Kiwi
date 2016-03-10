@@ -189,7 +189,7 @@ namespace Kiwi.Parser
 
         private IExpressionSyntax ParseTermOrPrefixExpression()
         {
-            if (IsValidPrefixOperator(TokenStream.Current))
+            if (IsPrefixOperator(TokenStream.Current))
             {
                 return ParsePrefixExpression();
             }
@@ -330,7 +330,7 @@ namespace Kiwi.Parser
         private IExpressionSyntax ParsePrefixExpression()
         {
             var @operator = TokenStream.Current;
-            if (!IsValidPrefixOperator(@operator))
+            if (!IsPrefixOperator(@operator))
             {
                 throw new KiwiSyntaxException("Expected prefix operator");
             }
@@ -341,7 +341,7 @@ namespace Kiwi.Parser
 
         private IExpressionSyntax ParsePostfixExpression(IExpressionSyntax expression)
         {
-            while (IsValidPostfixOperator(TokenStream.Current))
+            while (IsPostfixOperator(TokenStream.Current))
             {
                 switch (TokenStream.Current.Type)
                 {
@@ -483,7 +483,7 @@ namespace Kiwi.Parser
             if (IsMemberExpression(expression))
             {
                 var current = TokenStream.Current;
-                if (!IsValidAssignOperator(current))
+                if (!IsAssignOperator(current))
                 {
                     throw new KiwiSyntaxException("Unexpected assign operator {0}. Expected :, :+, :-, :/, :* or :^.");
                 }
@@ -840,17 +840,17 @@ namespace Kiwi.Parser
                         .ToList();
         }
 
-        private static bool IsValidAssignOperator(Token token)
+        private static bool IsAssignOperator(Token token)
         {
             return AssignOperators.Contains(token.Type);
         }
 
-        private static bool IsValidPostfixOperator(Token token)
+        private static bool IsPostfixOperator(Token token)
         {
             return PostfixOperators.Contains(token.Type);
         }
 
-        private static bool IsValidPrefixOperator(Token token)
+        private static bool IsPrefixOperator(Token token)
         {
             return PrefixOperators.Contains(token.Type);
         }
