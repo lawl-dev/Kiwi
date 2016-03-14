@@ -37,21 +37,21 @@ enum <EnumName>
 }
 
 when [(<ExpressionOrValue>) ]{
-    is <TypeName>		-> {...}
-    !<value> 	 		-> ...
-    in <value1>, <valueN>  -> ...
-    !in <value1>, <valueN>  -> ...
-	<operator> <value>  -> ...
+    case is <TypeName>		-> {...}
+    case !<value> 	 		-> ...
+    case in <value1>, <valueN>  -> ...
+    case !in <value1>, <valueN>  -> ...
+	case <operator> <value>  -> ...
     else     			-> ...
 }
 
 var foo : when [(<ExpressionOrValue>) ]
 			{
-				is <TypeName>		-> <expression>
-				!<value> 	 		-> <expression>
-				in <value1>, <valueN>  -> <expression>
-				!in <value1>, <valueN>  -> <expression>
-				<operator> <value>  -> <expression>
+				case is <TypeName>		-> <expression>
+				case !<value> 	 		-> <expression>
+				case in <value1>, <valueN>  -> <expression>
+				case !in <value1>, <valueN>  -> <expression>
+				case <operator> <value>  -> <expression>
 				else     			-> <expression>
 			}
 			
@@ -87,7 +87,7 @@ var <variableName>
 VariableInit:
 <variableName> : <expression>
 
-for(<singleItem> in <collection>)
+for([var] <singleItem> in <collection>)
 {
 	<statements>
 }
@@ -97,7 +97,7 @@ forr(<singleItem> in <collection>)
 	<statements>
 }
 
-for(<variableInit>; <expesssion>; <exoression>)
+for([var] <variableInit>; <expesssion>; <exoression>)
 {
 	<statements>
 }

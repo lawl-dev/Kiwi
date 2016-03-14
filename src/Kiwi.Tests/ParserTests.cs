@@ -147,18 +147,18 @@ namespace Kiwi.Tests
                   "}", typeof(ReverseForInStatementSyntax))]
         [TestCase("when" + "\r\n" +
                   "{" + "\r\n" +
-                  "     a = b && c > d  -> {" + "\r\n" +
+                  "     case a = b && c > d  -> {" + "\r\n" +
                   "                 //code" + "\r\n" +
                   "                }" + "\r\n" +
-                  "     buu > b -> dooooStuff()" + "\r\n" +
+                  "     case buu > b -> dooooStuff()" + "\r\n" +
                   "}", typeof(SimpleWhenStatementSyntax))]
         [TestCase("when (condition)" + "\r\n" +
                   "{" + "\r\n" +
-                  "     is Type -> Do()" + "\r\n" +
-                  "     !=value  -> Do2()" + "\r\n" +
-                  "     in 1, 2, 3  -> Do3()" + "\r\n" +
-                  "     !in 0..20   -> Do4()" + "\r\n" +
-                  "     > 20    -> {" + "\r\n" +
+                  "     case is Type -> Do()" + "\r\n" +
+                  "     case !=value  -> Do2()" + "\r\n" +
+                  "     case in 1, 2, 3  -> Do3()" + "\r\n" +
+                  "     case !in 0..20   -> Do4()" + "\r\n" +
+                  "     case > 20    -> {" + "\r\n" +
                   "                 //code" + "\r\n" +
                   "                }" + "\r\n" +
                   "}", typeof(ConditionalWhenStatementSyntax))]
@@ -203,71 +203,24 @@ namespace Kiwi.Tests
             Assert.IsInstanceOf(type, ((ReturnStatementSyntax)ast.NamespaceMember[0].ClassMember[0].FunctionMember[0].Statements[0]).Expression);
         }
 
-        [TestCase("return if1 = 2 * 5) 1 else 2", typeof(KiwiSyntaxException), "")]
-        [TestCase("return 1 ö 2", typeof(KiwiSyntaxException), "")]
-        [TestCase("return 12ff", typeof(KiwiSyntaxException), "")]
-        [TestCase("return 1a2", typeof(KiwiSyntaxException), "")]
-        [TestCase("return variabl e", typeof(KiwiSyntaxException), "")]
-        [TestCase("return new Object(", typeof(KiwiSyntaxException), "")]
-        [TestCase("return -1-", typeof(KiwiSyntaxException), "")]
-        [TestCase("return 1...1337", typeof(KiwiSyntaxException), "")]
-        [TestCase("return variable.Function().", typeof(KiwiSyntaxException), "")]
-        [TestCase("return variable[]", typeof(KiwiSyntaxException), "")]
-        [TestCase("return variable.Member[0].Function()[]", typeof(KiwiSyntaxException), "")]
-        [TestCase("return Function(]", typeof(KiwiSyntaxException), "")]
-        [TestCase("return func(a, int b) -> return a * b", typeof(KiwiSyntaxException), "")]
-        [TestCase("return func(int a, b) -> return a * b", typeof(KiwiSyntaxException), "")]
-        [TestCase("return i : 1", typeof(KiwiSyntaxException), "")]
-        [TestCase("if(i = 1)" + "\r\n" +
-                  "" + "\r\n" +
-                  "     //code" + "\r\n" +
-                  "}", typeof(KiwiSyntaxException), "")]
-        [TestCase("if(i = 1)" + "\r\n" +
-                  "{" + "\r\n" +
-                  "     //code" + "\r\n" +
-                  "" + "\r\n" +
-                  "else" + "\r\n" +
-                  "{" + "\r\n" +
-                  "     //code" + "\r\n" +
-                  "}", typeof(KiwiSyntaxException), "")]
-        [TestCase("for(var i : 0; i < 100; i:+1" + "\r\n" +
-                  "{" + "\r\n" +
-                  "     return 1" + "\r\n" +
-                  "}", typeof(KiwiSyntaxException), "")]
-        [TestCase("switch(variable)" + "\r\n" +
-                  "{" + "\r\n" +
-                  "     case 1 -> return 1" + "\r\n" +
-                  "     case  -> {" + "\r\n" +
-                  "                     return 2" + "\r\n" +
-                  "               }" + "\r\n" +
-                  "     else -> return 1337" + "\r\n" +
-                  "}", typeof(KiwiSyntaxException), "")]
-        [TestCase("for(i in GetInts(1*2+3)" + "\r\n" +
-                  "{" + "\r\n" +
-                  "     //code" + "\r\n" +
-                  "}", typeof(KiwiSyntaxException), "")]
-        [TestCase("forr(i in GetInts1*2+3))" + "\r\n" +
-                  "{" + "\r\n" +
-                  "     //code" + "\r\n" +
-                  "}", typeof(KiwiSyntaxException), "")]
-        [TestCase("when" + "\r\n" +
-                  "{" + "\r\n" +
-                  "     a = b && c > d   {" + "\r\n" +
-                  "                 //code" + "\r\n" +
-                  "                }" + "\r\n" +
-                  "     buu > b -> dooooStuff()" + "\r\n" +
-                  "}", typeof(KiwiSyntaxException), "")]
-        [TestCase("when (condition)" + "\r\n" +
-                  "{" + "\r\n" +
-                  "     is Type -> Do()" + "\r\n" +
-                  "     !=value  -> Do2()" + "\r\n" +
-                  "     in 1, 2, 3  -> Do3()" + "\r\n" +
-                  "     !in 0..20   -> Do4()" + "\r\n" +
-                  "     > 20    -> {" + "\r\n" +
-                  "                 //code" + "\r\n" +
-                  "                }" + "\r\n" +
-                  "}", typeof(KiwiSyntaxException), "")]
-        public void TestExceptions(string statementSource, Type exception, string message)
+        [TestCase("return if(switch) 1 else 2", typeof(KiwiSyntaxException), "Unexpected Token switch. Expected Sign Operator, New, Int, Float, String or Symbol Expression.")]
+        [TestCase("int if(switch) 1 else 2", typeof(KiwiSyntaxException), "Unexpected Token. Expected If, Return, When, Switch, Var, Const, Symbol, For or Forr")]
+        [TestCase("for(f(); i < 1; i :+ 1){}", typeof(KiwiSyntaxException), "Unexpected Statement. Expected AssignmentStatement")]
+        [TestCase("i lol 1", typeof(KiwiSyntaxException), "Unexpected assign operator lol. Expected :, :+, :-, :/, :* or :^.")]
+        [TestCase("i + 1", typeof(KiwiSyntaxException), "Unexpected Syntax. Expected MemberAccessExpressionSyntax, ArrayAccessExpression, MemberExpressionSyntax or InvocationExpressionSyntax")]
+        [TestCase("switch(i){" +
+                  "else -> f()" +
+                  "else -> f2()" +
+                  "}", typeof(KiwiSyntaxException), "Duplicate else label")]
+        [TestCase("switch(i){" +
+                  "switch -> f()" +
+                  "else -> f2()" +
+                  "}", typeof(KiwiSyntaxException), "Unexpected Token. Expected Case or Else")]
+        [TestCase("when(i){" +
+                  "case -> f()" +
+                  "else -> f2()" +
+                  "}", typeof(KiwiSyntaxException), "Expected a binary operator")]
+        public void TestStatementExceptions(string statementSource, Type exception, string message)
         {
             var lexer = new Lexer.Lexer();
             var tokens =

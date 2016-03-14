@@ -75,6 +75,7 @@
     <Compile Include="Nodes\ReverseForInStatementSyntax.cs" />
     <Compile Include="Nodes\SimpleWhenStatementSyntax.cs" />
     <Compile Include="Nodes\WhenEntry.cs" />
+    <Compile Include="Nodes\WhenInExpressionSyntax.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Nodes\AssignmentStatementSyntax.cs" />
     <Compile Include="Nodes\VariableDeclarationStatementSyntax.cs" />
     <Compile Include="Nodes\TypeSyntax.cs" />
+    <Compile Include="VariablesDeclarationStatementSyntax.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Common\Kiwi.Common.csproj">

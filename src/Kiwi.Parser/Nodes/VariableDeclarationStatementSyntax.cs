@@ -6,14 +6,14 @@ namespace Kiwi.Parser.Nodes
     public class VariableDeclarationStatementSyntax : IStatementSyntax
     {
         public Token VariableQualifier { get; }
-        public List<Token> VariableNames { get; }
-        public IExpressionSyntax Initializer { get; }
+        public Token Identifier { get; }
+        public IExpressionSyntax InitExpression { get; }
 
-        public VariableDeclarationStatementSyntax(Token variableQualifier, List<Token> variableNames, IExpressionSyntax initializer)
+        public VariableDeclarationStatementSyntax(Token variableQualifier, Token identifier, IExpressionSyntax initExpression)
         {
             VariableQualifier = variableQualifier;
-            VariableNames = variableNames;
-            Initializer = initializer;
+            Identifier = identifier;
+            InitExpression = initExpression;
         }
 
         public void Accept(ISyntaxVisitor visitor)

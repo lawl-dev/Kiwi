@@ -117,12 +117,10 @@ namespace Kiwi.Parser
         {
             ParseExpected(TokenType.ClassKeyword);
             var className = ParseExpected(TokenType.Symbol);
-            var inherit = TokenStream.Current.Type == TokenType.IsKeyword;
-            Token descriptorName = null;
 
-            if (inherit)
+            Token descriptorName = null;
+            if (ParseOptional(TokenType.IsKeyword))
             {
-                ParseExpected(TokenType.IsKeyword);
                 descriptorName = ParseExpected(TokenType.Symbol);
             }
 
@@ -427,9 +425,8 @@ namespace Kiwi.Parser
             ParseExpected(TokenType.FuncKeyword);
             var functionName = ParseExpected(TokenType.Symbol);
             var functionParameter = ParseParameterList();
-
-            var hasReturnValue = TokenStream.Current.Type == TokenType.HypenGreater;
-            if (hasReturnValue)
+            
+            if (ParseOptional(TokenType.HypenGreater))
             {
                 return ParseFunctionThatReturnValue(functionName, functionParameter);
             }
@@ -453,7 +450,7 @@ namespace Kiwi.Parser
                     return ParseSwitchStatement();
                 case TokenType.VarKeyword:
                 case TokenType.ConstKeyword:
-                    return ParseVariableDeclaration();
+                    return ParseVariablesDeclarationStatement();
                 case TokenType.Symbol:
                     return ParseFunctionCallOrAssignStatement();
                 case TokenType.ForKeyword:
@@ -466,14 +463,100 @@ namespace Kiwi.Parser
             }
         }
 
+        private IStatementSyntax ParseVariablesDeclarationStatement()
+        {
+            var declarations = ParseVariableDeclarations();
+            if (declarations.Count == 1)
+            {
+                return declarations[0];
+            }
+
+            return new VariablesDeclarationStatementSyntax(declarations);
+        }
+
         private IStatementSyntax ParseForReverseStatement()
         {
-            throw new NotImplementedException();
+            ParseExpected(TokenType.ForReverseKeyword);
+            ParseExpected(TokenType.OpenParenth);
+            if (TokenStream.Current.Type == TokenType.VarKeyword)
+            {
+                var variableDeclaration = ParseVariablesDeclarationStatement();
+                var variableDeclarationStatement = variableDeclaration as VariableDeclarationStatementSyntax;
+                if (variableDeclarationStatement?.InitExpression == null)
+                {
+                    ParseExpected(TokenType.InKeyword);
+                    var collExpression = ParseExpression();
+                    ParseExpected(TokenType.ClosingParenth);
+                    var statement = ParseScopeOrSingleStatement();
+                    return new ReverseForInStatementSyntax(variableDeclarationStatement, collExpression, statement);
+                }
+                throw new KiwiSyntaxException("Expected Variable declaration without init");
+            }
+
+            if (TokenStream.Peek(1).Type == TokenType.InKeyword)
+            {
+                var expression = ParseTermExpression();
+                ParseExpected(TokenType.InKeyword);
+                var collExpression = ParseExpression();
+                ParseExpected(TokenType.ClosingParenth);
+                var statement = ParseScopeOrSingleStatement();
+                return new ReverseForInStatementSyntax(expression, collExpression, statement);
+            }
+            
+            throw new KiwiSyntaxException("Unexpected Statement. Expected AssignmentStatement");
         }
 
         private IStatementSyntax ParseForInOrForStatement()
         {
-            throw new NotImplementedException();
+            ParseExpected(TokenType.ForKeyword);
+            ParseExpected(TokenType.OpenParenth);
+            if (TokenStream.Current.Type == TokenType.VarKeyword)
+            {
+                var variableDeclaration = ParseVariablesDeclarationStatement();
+                var variableDeclarationStatement = variableDeclaration as VariableDeclarationStatementSyntax;
+                if (variableDeclaration is VariablesDeclarationStatementSyntax || variableDeclarationStatement?.InitExpression != null)
+                {
+                    ParseExpected(TokenType.Semicolon);
+                    var condExpression = ParseExpression();
+                    ParseExpected(TokenType.Semicolon);
+                    var incExpression = ParseFunctionCallOrAssignStatement();
+                    ParseExpected(TokenType.ClosingParenth);
+                    var statement = ParseScopeOrSingleStatement();
+                    return new ForStatementSyntax(variableDeclaration, condExpression, incExpression, statement);
+                }
+                if (variableDeclarationStatement?.InitExpression == null)
+                {
+                    ParseExpected(TokenType.InKeyword);
+                    var collExpression = ParseExpression();
+                    ParseExpected(TokenType.ClosingParenth);
+                    var statement = ParseScopeOrSingleStatement();
+                    return new ForInStatementSyntax(variableDeclarationStatement, collExpression, statement);
+                }
+            }
+
+            if (TokenStream.Peek(1).Type == TokenType.InKeyword)
+            {
+                var expression = ParseTermExpression();
+                ParseExpected(TokenType.InKeyword);
+                var collExpression = ParseExpression();
+                ParseExpected(TokenType.ClosingParenth);
+                var statement = ParseScopeOrSingleStatement();
+                return new ForInStatementSyntax(expression, collExpression, statement);
+            }
+
+            var assignmentStatement = ParseFunctionCallOrAssignStatement() as AssignmentStatementSyntax;
+            if (assignmentStatement != null)
+            {
+                ParseExpected(TokenType.Semicolon);
+                var condExpression = ParseExpression();
+                ParseExpected(TokenType.Semicolon);
+                var incExpression = ParseExpression();
+                ParseExpected(TokenType.ClosingParenth);
+                var statement = ParseScopeOrSingleStatement();
+                return new ForStatementSyntax(assignmentStatement, condExpression, incExpression, statement);
+            }
+
+            throw new KiwiSyntaxException("Unexpected Statement. Expected AssignmentStatement");
         }
 
         private IStatementSyntax ParseFunctionCallOrAssignStatement()
@@ -485,7 +568,7 @@ namespace Kiwi.Parser
                 var current = TokenStream.Current;
                 if (!IsAssignOperator(current))
                 {
-                    throw new KiwiSyntaxException("Unexpected assign operator {0}. Expected :, :+, :-, :/, :* or :^.");
+                    throw new KiwiSyntaxException($"Unexpected assign operator {current}. Expected :, :+, :-, :/, :* or :^.");
                 }
                 ParseExpected(current.Type);
                 var intializer = ParseExpression();
@@ -526,8 +609,6 @@ namespace Kiwi.Parser
 
         private FunctionSyntax ParseFunctionThatReturnValue(Token functionName, List<ParameterSyntax> functionParameter)
         {
-            ParseExpected(TokenType.HypenGreater);
-
             switch (TokenStream.Current.Type)
             {
                 case TokenType.DataKeyword:
@@ -574,7 +655,7 @@ namespace Kiwi.Parser
             return new DataClassFunctionSyntax(functionName, functionParameter.ToList(), statements, dataClass);
         }
 
-        private VariableDeclarationStatementSyntax ParseVariableDeclaration()
+        private List<VariableDeclarationStatementSyntax> ParseVariableDeclarations()
         {
             var current = TokenStream.Current;
             Token variableQualifier;
@@ -588,16 +669,19 @@ namespace Kiwi.Parser
                 default:
                     throw new KiwiSyntaxException("Expected VariableQualifier");
             }
-            var variableNames = new List<Token>();
-            for (variableNames.Add(ParseExpected(TokenType.Symbol));
-                 TokenStream.Current.Type == TokenType.Comma;
-                 variableNames.Add(ParseExpected(TokenType.Symbol)))
+            var variableDeclarationStatements = new List<VariableDeclarationStatementSyntax>();
+            while (TokenStream.Current.Type == TokenType.Symbol)
             {
-                ParseExpected(TokenType.Comma);
+                var identifier = ParseExpected(TokenType.Symbol);
+                IExpressionSyntax initExpression = null;
+                if (ParseOptional(TokenType.Colon))
+                {
+                    initExpression = ParseExpression();
+                }
+                variableDeclarationStatements.Add(new VariableDeclarationStatementSyntax(variableQualifier, identifier, initExpression));
+                ParseOptional(TokenType.Comma);
             }
-            ParseExpected(TokenType.Colon);
-            var initializer = ParseExpression();
-            return new VariableDeclarationStatementSyntax(variableQualifier, variableNames, initializer);
+            return variableDeclarationStatements;
         }
 
         private ReturnStatementSyntax ParseReturnStatement()
@@ -620,9 +704,7 @@ namespace Kiwi.Parser
             ParseExpected(TokenType.ConstructorKeyword);
 
             var parameter = ParseParameterList();
-
             var bodySyntax = ParseScope(ParseStatement);
-
             return new ConstructorSyntax(parameter, bodySyntax);
         }
 
@@ -673,7 +755,6 @@ namespace Kiwi.Parser
             ParseExpected(TokenType.HypenGreater);
 
             var statements = ParseScopeOrSingleStatement();
-
             return new ElseSyntax(statements);
         }
 
@@ -684,7 +765,6 @@ namespace Kiwi.Parser
             ParseExpected(TokenType.HypenGreater);
 
             var statements = ParseScopeOrSingleStatement();
-
             return new CaseSyntax(expression, statements);
         }
 
@@ -707,6 +787,7 @@ namespace Kiwi.Parser
 
         private WhenEntry ParseWhenSimpleWhenEntry()
         {
+            ParseExpected(TokenType.CaseKeyword);
             var condition = ParseExpression();
             ParseExpected(TokenType.HypenGreater);
             var statements = ParseScopeOrSingleStatement();
@@ -725,6 +806,7 @@ namespace Kiwi.Parser
 
         private ConditionalWhenEntry ParseConditionalWhenEntry()
         {
+            ParseExpected(TokenType.CaseKeyword);
             var binaryOperators = BinaryOperators;
             if (!binaryOperators.Contains(TokenStream.Current.Type))
             {
@@ -734,30 +816,40 @@ namespace Kiwi.Parser
             var op = TokenStream.Current;
             TokenStream.Consume();
 
-            var condition = ParseExpression();
+            var condition1 = ParseExpression();
+
+            if (op.Type == TokenType.InKeyword)
+            {
+                condition1 = ParseWhenInExpression(condition1);
+            }
+
             ParseExpected(TokenType.HypenGreater);
             var statements = ParseScopeOrSingleStatement();
-            return new ConditionalWhenEntry(op, condition, statements);
+            return new ConditionalWhenEntry(op, condition1, statements);
+        }
+
+        private WhenInExpressionSyntax ParseWhenInExpression(IExpressionSyntax condition1)
+        {
+            var inExpressionList = new List<IExpressionSyntax>();
+            while (ParseOptional(TokenType.Comma))
+            {
+                var conditionN = ParseExpression();
+                inExpressionList.Add(conditionN);
+            }
+            inExpressionList.Insert(0, condition1);
+            return new WhenInExpressionSyntax(inExpressionList);
         }
 
         private IfStatementSyntax ParseIfStatement()
         {
             ParseExpected(TokenType.IfKeyword);
-
-            try
+            var condition = ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpression);
+            var statements = ParseScope(ParseStatement);
+            if (TokenStream.Current.Type == TokenType.ElseKeyword)
             {
-                var condition = ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpression);
-                var statements = ParseScope(ParseStatement);
-                if (TokenStream.Current.Type == TokenType.ElseKeyword)
-                {
-                    return ParseIfElseStatement(condition, statements);
-                }
-                return new IfStatementSyntax(condition, statements.ToList());
+                return ParseIfElseStatement(condition, statements);
             }
-            catch (KiwiSyntaxException exception)
-            {
-                throw new KiwiSyntaxException(exception.Message);
-            }
+            return new IfStatementSyntax(condition, statements);
         }
 
         private IfElseStatementSyntax ParseIfElseStatement(
@@ -816,9 +908,9 @@ namespace Kiwi.Parser
         private ISyntaxBase ParseEnumMember()
         {
             var memberName = ParseExpected(TokenType.Symbol);
-            var hasExplicitValue = TokenStream.Current.Type == TokenType.Colon;
+
             IExpressionSyntax initializer = null;
-            if (hasExplicitValue)
+            if (ParseOptional(TokenType.Colon))
             {
                 ParseExpected(TokenType.Colon);
                 initializer = ParseExpression();

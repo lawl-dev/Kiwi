@@ -4,16 +4,22 @@ namespace Kiwi.Parser.Nodes
 {
     public class ForInStatementSyntax : IStatementSyntax
     {
+        public VariableDeclarationStatementSyntax VariableDeclarationStatement { get; }
         public IExpressionSyntax ItemExpression { get; }
-        public bool DeclareItemInnerScope { get; }
-        public IExpressionSyntax CollectionExpression { get; }
+        public IExpressionSyntax CollExpression { get; }
         public List<IStatementSyntax> Statements { get; }
 
-        public ForInStatementSyntax(IExpressionSyntax itemExpression, bool declareItemInnerScope, IExpressionSyntax collectionExpression, List<IStatementSyntax> statements)
+        public ForInStatementSyntax(VariableDeclarationStatementSyntax variableDeclarationStatement, IExpressionSyntax collExpression, List<IStatementSyntax> statements)
+        {
+            VariableDeclarationStatement = variableDeclarationStatement;
+            CollExpression = collExpression;
+            Statements = statements;
+        }
+
+        public ForInStatementSyntax(IExpressionSyntax itemExpression, IExpressionSyntax collExpression, List<IStatementSyntax> statements)
         {
             ItemExpression = itemExpression;
-            DeclareItemInnerScope = declareItemInnerScope;
-            CollectionExpression = collectionExpression;
+            CollExpression = collExpression;
             Statements = statements;
         }
 

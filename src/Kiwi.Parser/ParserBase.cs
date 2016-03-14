@@ -56,5 +56,15 @@ namespace Kiwi.Parser
             TokenStream.Consume();
             return currentToken;
         }
+
+        protected bool ParseOptional(TokenType tokenType)
+        {
+            if (TokenStream.Current.Type == tokenType)
+            {
+                TokenStream.Consume();
+                return true;
+            }
+            return false;
+        }
     }
 }
