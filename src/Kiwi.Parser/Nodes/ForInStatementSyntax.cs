@@ -23,9 +23,9 @@ namespace Kiwi.Parser.Nodes
             Statements = statements;
         }
 
-        public void Accept(ISyntaxVisitor visitor)
+        public virtual void Accept(ISyntaxVisitor visitor)
         {
-            throw new System.NotImplementedException();
+            visitor.Visit(this);
         }
     }
 }

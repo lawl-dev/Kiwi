@@ -11,5 +11,10 @@ namespace Kiwi.Parser.Nodes
         public ReverseForInStatementSyntax(IExpressionSyntax itemExpression, IExpressionSyntax collExpression, List<IStatementSyntax> statements) : base(itemExpression, collExpression, statements)
         {
         }
+
+        public override void Accept(ISyntaxVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

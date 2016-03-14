@@ -4,7 +4,7 @@ using Kiwi.Lexer;
 
 namespace Kiwi.Parser.Nodes
 {
-    internal class EnumSyntax : ISyntaxBase
+    public class EnumSyntax : ISyntaxBase
     {
         public Token EnumName { get; private set; }
         public List<ISyntaxBase> Member { get; }
@@ -18,7 +18,7 @@ namespace Kiwi.Parser.Nodes
 
         public void Accept(ISyntaxVisitor visitor)
         {
-            throw new System.NotImplementedException();
+            visitor.Visit(this);
         }
     }
 }

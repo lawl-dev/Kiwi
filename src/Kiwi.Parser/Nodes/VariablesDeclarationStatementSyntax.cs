@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Kiwi.Parser.Nodes;
 
-namespace Kiwi.Parser
+namespace Kiwi.Parser.Nodes
 {
-    internal class VariablesDeclarationStatementSyntax : IStatementSyntax
+    public class VariablesDeclarationStatementSyntax : IStatementSyntax
     {
         public List<VariableDeclarationStatementSyntax> Declarations { get; set; }
 
@@ -15,7 +14,7 @@ namespace Kiwi.Parser
 
         public void Accept(ISyntaxVisitor visitor)
         {
-            throw new NotImplementedException();
+            visitor.Visit(this);
         }
     }
 }

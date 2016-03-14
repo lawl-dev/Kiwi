@@ -13,7 +13,7 @@ namespace Kiwi.Parser.Nodes
 
         public virtual void Accept(ISyntaxVisitor visitor)
         {
-            throw new System.NotImplementedException();
+            visitor.Visit(this);
         }
     }
 }

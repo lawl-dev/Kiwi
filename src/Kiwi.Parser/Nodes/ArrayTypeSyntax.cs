@@ -14,7 +14,7 @@ namespace Kiwi.Parser.Nodes
 
         public override void Accept(ISyntaxVisitor visitor)
         {
-            throw new NotImplementedException();
+            visitor.Visit(this);
         }
     }
 }

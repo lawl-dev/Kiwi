@@ -13,5 +13,10 @@ namespace Kiwi.Parser.Nodes
         {
             ElseStatements = elseStatements;
         }
+
+        public override void Accept(ISyntaxVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

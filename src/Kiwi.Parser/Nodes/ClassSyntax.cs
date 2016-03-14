@@ -22,7 +22,7 @@ namespace Kiwi.Parser.Nodes
 
         public void Accept(ISyntaxVisitor visitor)
         {
-            throw new System.NotImplementedException();
+            visitor.Visit(this);
         }
     }
 }

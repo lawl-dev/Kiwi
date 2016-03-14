@@ -46,7 +46,6 @@
     <Compile Include="Nodes\ArrayCreationExpressionSyntax.cs" />
     <Compile Include="Nodes\ArrayTypeSyntax.cs" />
     <Compile Include="Nodes\BooleanExpressionSyntax.cs" />
-    <Compile Include="Nodes\CallExpressionSyntax.cs" />
     <Compile Include="Nodes\CaseSyntax.cs" />
     <Compile Include="Nodes\ConditionalWhenEntry.cs" />
     <Compile Include="Nodes\ConditionalWhenStatementSyntax.cs" />
@@ -99,7 +98,7 @@
     <Compile Include="Nodes\AssignmentStatementSyntax.cs" />
     <Compile Include="Nodes\VariableDeclarationStatementSyntax.cs" />
     <Compile Include="Nodes\TypeSyntax.cs" />
-    <Compile Include="VariablesDeclarationStatementSyntax.cs" />
+    <Compile Include="Nodes\VariablesDeclarationStatementSyntax.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Common\Kiwi.Common.csproj">

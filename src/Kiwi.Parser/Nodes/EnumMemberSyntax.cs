@@ -2,7 +2,7 @@
 
 namespace Kiwi.Parser.Nodes
 {
-    internal class EnumMemberSyntax : ISyntaxBase
+    public class EnumMemberSyntax : ISyntaxBase
     {
         public Token MemberName { get; private set; }
         public IExpressionSyntax Initializer { get; private set; }
@@ -15,7 +15,7 @@ namespace Kiwi.Parser.Nodes
 
         public void Accept(ISyntaxVisitor visitor)
         {
-            throw new System.NotImplementedException();
+            visitor.Visit(this);
         }
     }
 }
