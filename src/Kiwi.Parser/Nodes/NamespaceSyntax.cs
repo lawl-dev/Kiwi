@@ -7,19 +7,27 @@ namespace Kiwi.Parser.Nodes
     public class NamespaceSyntax : ISyntaxBase
     {
         public Token NamespaceName { get; private set; }
-        public List<ISyntaxBase> Member { get; }
+        public List<ClassSyntax> Classes { get; private set; }
+        public List<DataSyntax> Datas { get; private set; }
+        public List<EnumSyntax> Enums { get; private set; }
+        public SyntaxType SyntaxType => SyntaxType.NamespaceSyntax;
 
-        public List<ClassSyntax> ClassMember => Member.OfType<ClassSyntax>().ToList();
-
-        public NamespaceSyntax(Token namespaceName, List<ISyntaxBase> member)
+        public NamespaceSyntax(Token namespaceName, List<ClassSyntax> classes, List<DataSyntax> datas, List<EnumSyntax> enums)
         {
             NamespaceName = namespaceName;
-            Member = member;
+            Classes = classes;
+            Datas = datas;
+            Enums = enums;
         }
 
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

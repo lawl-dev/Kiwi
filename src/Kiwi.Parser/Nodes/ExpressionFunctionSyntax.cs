@@ -5,6 +5,8 @@ namespace Kiwi.Parser.Nodes
 {
     public class ExpressionFunctionSyntax : FunctionSyntax
     {
+        public override SyntaxType SyntaxType => SyntaxType.ExpressionFunctionSyntax;
+
         public ExpressionFunctionSyntax(
             Token functionName,
             List<ParameterSyntax> parameterList,

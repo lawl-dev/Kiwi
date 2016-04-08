@@ -13,9 +13,16 @@ namespace Kiwi.Parser.Nodes
             Statements = statements;
         }
 
+        public SyntaxType SyntaxType => SyntaxType.WhenEntry;
+
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

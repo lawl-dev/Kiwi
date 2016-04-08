@@ -15,9 +15,16 @@ namespace Kiwi.Parser.Nodes
             Else = @else;
         }
 
+        public SyntaxType SyntaxType => SyntaxType.SwitchStatementSyntax;
+
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

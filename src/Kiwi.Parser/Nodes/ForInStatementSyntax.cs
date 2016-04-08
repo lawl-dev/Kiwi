@@ -8,6 +8,7 @@ namespace Kiwi.Parser.Nodes
         public IExpressionSyntax ItemExpression { get; }
         public IExpressionSyntax CollExpression { get; }
         public List<IStatementSyntax> Statements { get; }
+        public SyntaxType SyntaxType => SyntaxType.ForInStatementSyntax;
 
         public ForInStatementSyntax(VariableDeclarationStatementSyntax variableDeclarationStatement, IExpressionSyntax collExpression, List<IStatementSyntax> statements)
         {
@@ -22,10 +23,15 @@ namespace Kiwi.Parser.Nodes
             CollExpression = collExpression;
             Statements = statements;
         }
-
+        
         public virtual void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

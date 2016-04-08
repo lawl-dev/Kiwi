@@ -87,8 +87,8 @@ namespace Kiwi.Parser
         {
             ParseExpected(TokenType.NamespaceKeyword);
             var namespaceName = ParseExpected(TokenType.Symbol);
-            var bodySyntax = ParseScope(ParseNamespaceBody);
-            return new NamespaceSyntax(namespaceName, bodySyntax);
+            var body = ParseScope(ParseNamespaceBody);
+            return new NamespaceSyntax(namespaceName, body.OfType<ClassSyntax>().ToList(), body.OfType<DataSyntax>().ToList(), body.OfType<EnumSyntax>().ToList());
         }
 
         private ISyntaxBase ParseNamespaceBody()
@@ -148,17 +148,11 @@ namespace Kiwi.Parser
         {
             var isConst = TokenStream.Current.Type == TokenType.ConstKeyword;
             var fieldTypeQualifier = ParseExpected(isConst ? TokenType.ConstKeyword : TokenType.VarKeyword);
-            var fieldType = ParseExpected(TokenType.Symbol);
             var fieldName = ParseExpected(TokenType.Symbol);
-            IExpressionSyntax fieldInitializer = null;
+            ParseExpected(TokenType.Colon);
+            var fieldInitializer = ParseExpression();
 
-            if (isConst)
-            {
-                ParseExpected(TokenType.Colon);
-                fieldInitializer = ParseExpression();
-            }
-
-            return new FieldSyntax(fieldTypeQualifier, fieldType, fieldName, fieldInitializer);
+            return new FieldSyntax(fieldTypeQualifier, fieldName, fieldInitializer);
         }
 
         private IExpressionSyntax ParseExpression()
@@ -211,16 +205,16 @@ namespace Kiwi.Parser
                     expression = ParseFalseExpression();
                     break;
                 case TokenType.Int:
-                    expression = ParseIntExpression(current);
+                    expression = ParseIntExpression();
                     break;
                 case TokenType.Float:
-                    expression = ParseFloatExpression(current);
+                    expression = ParseFloatExpression();
                     break;
                 case TokenType.String:
-                    expression = ParseStringExpression(current);
+                    expression = ParseStringExpression();
                     break;
                 case TokenType.Symbol:
-                    expression = ParseMemberExpression(current);
+                    expression = ParseMemberExpression();
                     break;
                 case TokenType.OpenParenth:
                     expression = ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpression).Single();
@@ -241,38 +235,33 @@ namespace Kiwi.Parser
             return expression;
         }
 
-        private IExpressionSyntax ParseMemberExpression(Token current)
+        private IExpressionSyntax ParseMemberExpression()
         {
-            ParseExpected(TokenType.Symbol);
-            IExpressionSyntax expression = new MemberExpressionSyntax(current);
+            IExpressionSyntax expression = new MemberExpressionSyntax(ParseExpected(TokenType.Symbol));
             return expression;
         }
 
-        private IExpressionSyntax ParseStringExpression(Token current)
+        private IExpressionSyntax ParseStringExpression()
         {
-            ParseExpected(TokenType.String);
-            IExpressionSyntax expression = new StringExpressionSyntax(current);
+            IExpressionSyntax expression = new StringExpressionSyntax(ParseExpected(TokenType.String));
             return expression;
         }
 
-        private IExpressionSyntax ParseFloatExpression(Token current)
+        private IExpressionSyntax ParseFloatExpression()
         {
-            ParseExpected(TokenType.Float);
-            IExpressionSyntax expression = new FloatExpressionSyntax(current);
+            IExpressionSyntax expression = new FloatExpressionSyntax(ParseExpected(TokenType.Float));
             return expression;
         }
 
-        private IExpressionSyntax ParseIntExpression(Token current)
+        private IExpressionSyntax ParseIntExpression()
         {
-            ParseExpected(TokenType.Int);
-            IExpressionSyntax expression = new IntExpressionSyntax(current);
+            IExpressionSyntax expression = new IntExpressionSyntax(ParseExpected(TokenType.Int));
             return expression;
         }
 
         private IExpressionSyntax ParseFalseExpression()
         {
-            var falseToken = ParseExpected(TokenType.FalseKeyword);
-            IExpressionSyntax expression = new BooleanExpressionSyntax(falseToken);
+            IExpressionSyntax expression = new BooleanExpressionSyntax(ParseExpected(TokenType.FalseKeyword));
             return expression;
         }
 
@@ -843,7 +832,7 @@ namespace Kiwi.Parser
         private IfStatementSyntax ParseIfStatement()
         {
             ParseExpected(TokenType.IfKeyword);
-            var condition = ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpression);
+            var condition = ParseInner(TokenType.OpenParenth, TokenType.ClosingParenth, ParseExpression).Single();
             var statements = ParseScope(ParseStatement);
             if (TokenStream.Current.Type == TokenType.ElseKeyword)
             {
@@ -853,7 +842,7 @@ namespace Kiwi.Parser
         }
 
         private IfElseStatementSyntax ParseIfElseStatement(
-            List<IExpressionSyntax> condition,
+            IExpressionSyntax condition,
             List<IStatementSyntax> statements)
         {
             ParseExpected(TokenType.ElseKeyword);

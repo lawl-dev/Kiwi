@@ -59,6 +59,7 @@
     <Compile Include="Nodes\IConstExpressionSyntax.cs" />
     <Compile Include="Nodes\InvocationExpressionSyntax.cs" />
     <Compile Include="Nodes\ISyntaxVisitor.cs" />
+    <Compile Include="Nodes\ISyntaxVisitor1.cs" />
     <Compile Include="Nodes\MemberAccessExpressionSyntax.cs" />
     <Compile Include="Nodes\IfElseExpressionSyntax.cs" />
     <Compile Include="Nodes\IfElseStatementSyntax.cs" />
@@ -73,6 +74,8 @@
     <Compile Include="Nodes\ReturnFunctionSyntax.cs" />
     <Compile Include="Nodes\ReverseForInStatementSyntax.cs" />
     <Compile Include="Nodes\SimpleWhenStatementSyntax.cs" />
+    <Compile Include="Nodes\SyntaxType.cs" />
+    <Compile Include="Nodes\SyntaxWalkerBase.cs" />
     <Compile Include="Nodes\WhenEntry.cs" />
     <Compile Include="Nodes\WhenInExpressionSyntax.cs" />
     <Compile Include="Parser.cs" />

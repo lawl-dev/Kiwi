@@ -7,6 +7,7 @@ namespace Kiwi.Parser.Nodes
         public IExpressionSyntax LeftExpression { get; }
         public IExpressionSyntax RightExpression { get; }
         public Token Operator { get; }
+        public SyntaxType SyntaxType => SyntaxType.BinaryExpressionSyntax;
 
         public BinaryExpressionSyntax(IExpressionSyntax leftExpression, IExpressionSyntax rightExpression, Token @operator)
         {
@@ -15,9 +16,15 @@ namespace Kiwi.Parser.Nodes
             Operator = @operator;
         }
 
+
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

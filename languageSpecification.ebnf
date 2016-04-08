@@ -18,7 +18,7 @@ class <ClassName> [is <DescriptorName>]
 		[<statements>]
 	}
 
-	[<const / var>] <fieldType> <fieldName> [ = <expression> ]
+	[<const / var>] <fieldName> : <expression>
 	
 	func <FunctionName>([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>]) [-> <returnType> | <dataClassDeclaration> | return <expression>]
 	[{

@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinderTests.cs" />
     <Compile Include="LexerTests.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -60,6 +61,10 @@
     <ProjectReference Include="..\Kiwi.Parser\Kiwi.Parser.csproj">
       <Project>{79632D97-4DB1-441B-B446-8C77C93BB4C1}</Project>
       <Name>Kiwi.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kiwi.Semantic\Kiwi.Semantic.csproj">
+      <Project>{D3014FF9-1E05-42DB-B0BE-4D48B43CA6DC}</Project>
+      <Name>Kiwi.Semantic</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

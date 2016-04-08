@@ -7,7 +7,7 @@ namespace Kiwi.Parser.Nodes
         public List<IStatementSyntax> ElseStatements { get; }
 
         public IfElseStatementSyntax(
-            List<IExpressionSyntax> condition,
+            IExpressionSyntax condition,
             List<IStatementSyntax> statements,
             List<IStatementSyntax> elseStatements) : base(condition, statements)
         {

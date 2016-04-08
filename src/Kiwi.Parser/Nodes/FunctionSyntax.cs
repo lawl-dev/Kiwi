@@ -9,6 +9,7 @@ namespace Kiwi.Parser.Nodes
         public Token FunctionName { get; private set; }
         public List<ParameterSyntax> ParameterList { get; private set; }
         public List<IStatementSyntax> Statements { get;  }
+        public virtual SyntaxType SyntaxType => SyntaxType.FunctionSyntax;
 
         public FunctionSyntax(
             Token functionName,
@@ -19,10 +20,15 @@ namespace Kiwi.Parser.Nodes
             ParameterList = parameterList;
             Statements = statements;
         }
-
+        
         public virtual void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

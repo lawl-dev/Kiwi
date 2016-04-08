@@ -11,9 +11,16 @@ namespace Kiwi.Parser.Nodes
             Value = value;
         }
 
+        public SyntaxType SyntaxType => SyntaxType.StringExpressionSyntax;
+
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

@@ -40,11 +40,45 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Binder\BasicSymbolService.cs" />
+    <Compile Include="Binder\Binder.cs" />
+    <Compile Include="Binder\Nodes\BoundVariableDeclarationStatement.cs" />
+    <Compile Include="Binder\Nodes\BoundBooleanExpression.cs" />
+    <Compile Include="Binder\Nodes\BoundInvocationExpression.cs" />
+    <Compile Include="Binder\Nodes\BoundObjectCreationExpression.cs" />
+    <Compile Include="Binder\Nodes\FunctionType.cs" />
+    <Compile Include="Binder\Nodes\IBoundMember.cs" />
+    <Compile Include="Binder\Nodes\BoundMemberExpression.cs" />
+    <Compile Include="Binder\Nodes\BoundParameter.cs" />
+    <Compile Include="Binder\Nodes\BoundReturnStatement.cs" />
+    <Compile Include="Binder\Nodes\BoundUsing.cs" />
+    <Compile Include="Binder\Scope.cs" />
+    <Compile Include="Binder\ScopeManager.cs" />
+    <Compile Include="Binder\Nodes\BoundCompilationUnit.cs" />
+    <Compile Include="Binder\Nodes\BoundConstructor.cs" />
+    <Compile Include="Binder\Nodes\BoundField.cs" />
+    <Compile Include="Binder\Nodes\BoundFunction.cs" />
+    <Compile Include="Binder\Nodes\BoundNamespace.cs" />
+    <Compile Include="Binder\Nodes\BoundType.cs" />
+    <Compile Include="Binder\StandardType.cs" />
+    <Compile Include="Binder\StandardTypes.cs" />
+    <Compile Include="Binder\VariableQualifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Binder\KiwiSemanticException.cs" />
+    <Compile Include="Binder\Nodes\BoundExpression.cs" />
+    <Compile Include="Binder\Nodes\BoundNode.cs" />
+    <Compile Include="Binder\Nodes\BoundStatement.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="ScopeChecking\" />
-    <Folder Include="TypeChecking\" />
+    <ProjectReference Include="..\Kiwi.Lexer\Kiwi.Lexer.csproj">
+      <Project>{87FAE805-1868-467E-9C1F-5E0CDCE8A284}</Project>
+      <Name>Kiwi.Lexer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kiwi.Parser\Kiwi.Parser.csproj">
+      <Project>{79632D97-4DB1-441B-B446-8C77C93BB4C1}</Project>
+      <Name>Kiwi.Parser</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

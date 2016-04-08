@@ -7,6 +7,7 @@ namespace Kiwi.Parser.Nodes
     public class DataClassFunctionSyntax : FunctionSyntax
     {
         public DataSyntax DataClassSyntax { get; }
+        public override SyntaxType SyntaxType => SyntaxType.DataClassFunctionSyntax;
 
         public DataClassFunctionSyntax(Token functionName, List<ParameterSyntax> parameter, List<IStatementSyntax> statements, DataSyntax dataClassSyntax) : base(functionName, parameter, statements)
         {

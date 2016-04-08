@@ -6,16 +6,22 @@ namespace Kiwi.Parser.Nodes
     {
         public IExpressionSyntax Owner { get; }
         public Token MemberName { get; }
+        public SyntaxType SyntaxType => SyntaxType.MemberAccessExpressionSyntax;
 
         public MemberAccessExpressionSyntax(IExpressionSyntax owner, Token memberName)
         {
             Owner = owner;
             MemberName = memberName;
         }
-
+        
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

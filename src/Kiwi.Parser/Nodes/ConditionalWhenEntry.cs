@@ -8,6 +8,7 @@ namespace Kiwi.Parser.Nodes
         public Token Operator { get; private set; }
         public IExpressionSyntax Condition { get; private set; }
         public List<IStatementSyntax> Statements { get; private set; }
+        public SyntaxType SyntaxType => SyntaxType.ConditionalWhenEntry;
 
         public ConditionalWhenEntry(Token @operator, IExpressionSyntax condition, List<IStatementSyntax> statements)
         {
@@ -15,10 +16,15 @@ namespace Kiwi.Parser.Nodes
             Condition = condition;
             Statements = statements;
         }
-
+        
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

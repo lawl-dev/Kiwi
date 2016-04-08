@@ -8,6 +8,7 @@ namespace Kiwi.Parser.Nodes
         public IExpressionSyntax CondExpression { get; }
         public ISyntaxBase LoopExpression { get; }
         public List<IStatementSyntax> Statements { get; }
+        public SyntaxType SyntaxType => SyntaxType.ForStatementSyntax;
 
         public ForStatementSyntax(IStatementSyntax initStatement, IExpressionSyntax condExpression, ISyntaxBase loopExpression, List<IStatementSyntax> statements)
         {
@@ -16,10 +17,15 @@ namespace Kiwi.Parser.Nodes
             LoopExpression = loopExpression;
             Statements = statements;
         }
-
+        
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

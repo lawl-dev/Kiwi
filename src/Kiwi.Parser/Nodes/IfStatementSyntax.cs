@@ -4,18 +4,24 @@ namespace Kiwi.Parser.Nodes
 {
     public class IfStatementSyntax : IStatementSyntax
     {
-        public List<IExpressionSyntax> Condition { get; }
-        public List<IStatementSyntax> Statements { get; } 
+        public IExpressionSyntax Condition { get; }
+        public List<IStatementSyntax> Statements { get; }
+        public SyntaxType SyntaxType => SyntaxType.IfStatementSyntax;
 
-        public IfStatementSyntax(List<IExpressionSyntax> condition, List<IStatementSyntax> statements)
+        public IfStatementSyntax(IExpressionSyntax condition, List<IStatementSyntax> statements)
         {
             Condition = condition;
             Statements = statements;
         }
-
+        
         public virtual void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }
