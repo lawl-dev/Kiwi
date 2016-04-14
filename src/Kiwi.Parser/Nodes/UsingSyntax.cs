@@ -4,12 +4,12 @@ namespace Kiwi.Parser.Nodes
 {
     public class UsingSyntax : ISyntaxBase
     {
-        public Token NamespaceName { get; private set; }
-
         public UsingSyntax(Token namespaceName)
         {
             NamespaceName = namespaceName;
         }
+
+        public Token NamespaceName { get; private set; }
 
         public SyntaxType SyntaxType => SyntaxType.UsingSyntax;
 

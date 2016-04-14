@@ -1,19 +1,18 @@
-using Kiwi.Lexer;
 using Kiwi.Parser.Nodes;
 
 namespace Kiwi.Semantic.Binder.Nodes
 {
-    public class BoundField : BoundNode, IBoundMember
+    public class BoundField : BoundNode, IBoundMember, IField
     {
-        public Token Name { get; private set; }
-        public VariableQualifier Qualifier { get; internal set; }
-        public BoundExpression Initializer { get; internal set; }
-
-        public BoundField(Token name, FieldSyntax syntax) : base(syntax)
+        public BoundField(string name, FieldSyntax syntax) : base(syntax)
         {
             Name = name;
         }
 
+        public BoundExpression Initializer { get; internal set; }
+
         public IType Type { get; set; }
+        public string Name { get; }
+        public VariableQualifier Qualifier { get; internal set; }
     }
 }

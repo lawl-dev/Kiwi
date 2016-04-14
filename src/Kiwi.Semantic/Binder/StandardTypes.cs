@@ -6,6 +6,7 @@ namespace Kiwi.Semantic.Binder
         Type,
         Int,
         Float,
-        Void
+        Void,
+        String
     }
 }

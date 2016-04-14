@@ -4,8 +4,6 @@ namespace Kiwi.Parser.Nodes
 {
     public class IfElseStatementSyntax : IfStatementSyntax
     {
-        public List<IStatementSyntax> ElseStatements { get; }
-
         public IfElseStatementSyntax(
             IExpressionSyntax condition,
             List<IStatementSyntax> statements,
@@ -13,6 +11,8 @@ namespace Kiwi.Parser.Nodes
         {
             ElseStatements = elseStatements;
         }
+
+        public List<IStatementSyntax> ElseStatements { get; }
 
         public override void Accept(ISyntaxVisitor visitor)
         {

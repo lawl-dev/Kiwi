@@ -5,16 +5,16 @@ namespace Kiwi.Parser.Nodes
 {
     public class DataSyntax : ISyntaxBase
     {
-        public Token TypeName { get; }
-        public List<ParameterSyntax> Parameter { get; }
-        public SyntaxType SyntaxType => SyntaxType.DataSyntax;
-
         public DataSyntax(Token typeName, List<ParameterSyntax> parameter)
         {
             TypeName = typeName;
             Parameter = parameter;
         }
-        
+
+        public Token TypeName { get; }
+        public List<ParameterSyntax> Parameter { get; }
+        public SyntaxType SyntaxType => SyntaxType.DataSyntax;
+
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);

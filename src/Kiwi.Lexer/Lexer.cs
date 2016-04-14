@@ -95,10 +95,8 @@ namespace Kiwi.Lexer
                                { TokenType.NotKeyword, "!" }
                            };
 
-
             var forbiddenSymbolNames = keywords.Select(x => x.Value).ToList();
             var keywordLexerStrategies = keywords.Select(keyword => new SyntaxLexerStrategy(keyword.Key, keyword.Value));
-            
 
             var strategies = new List<TokenLexerStrategyBase>();
             strategies.Add(new SyntaxCommentLexerStrategy());

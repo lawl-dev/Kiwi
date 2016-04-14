@@ -43,7 +43,7 @@ namespace Kiwi.Lexer
         Whitespace,
         NewLine,
         Float,
-        Symbol,
+        Identifier,
         IntKeyword,
         FloatKeyword,
         Comment,

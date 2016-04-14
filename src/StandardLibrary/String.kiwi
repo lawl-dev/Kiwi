@@ -1,0 +1,14 @@
+namespace std
+{
+	class String
+	{
+		const chars : new int[0];
+		
+		Constructor(int[] chars)
+		{
+			chars : chars;
+		}
+		
+		func Length() -> return chars.Count;	
+	}
+}

@@ -46,6 +46,7 @@
         WhenEntry,
         DataClassFunctionSyntax,
         ExpressionFunctionSyntax,
-        ReturnFunctionSyntax
+        ReturnFunctionSyntax,
+        ArrayCreationExpression
     }
 }

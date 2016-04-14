@@ -4,20 +4,24 @@ namespace Kiwi.Parser.Nodes
 {
     public class ForStatementSyntax : IStatementSyntax
     {
-        public ISyntaxBase InitStatement { get; }
-        public IExpressionSyntax CondExpression { get; }
-        public ISyntaxBase LoopExpression { get; }
-        public List<IStatementSyntax> Statements { get; }
-        public SyntaxType SyntaxType => SyntaxType.ForStatementSyntax;
-
-        public ForStatementSyntax(IStatementSyntax initStatement, IExpressionSyntax condExpression, ISyntaxBase loopExpression, List<IStatementSyntax> statements)
+        public ForStatementSyntax(
+            IStatementSyntax initStatement,
+            IExpressionSyntax condExpression,
+            IStatementSyntax loopStatement,
+            List<IStatementSyntax> statements)
         {
             InitStatement = initStatement;
             CondExpression = condExpression;
-            LoopExpression = loopExpression;
+            LoopStatement = loopStatement;
             Statements = statements;
         }
-        
+
+        public IStatementSyntax InitStatement { get; }
+        public IExpressionSyntax CondExpression { get; }
+        public IStatementSyntax LoopStatement { get; }
+        public List<IStatementSyntax> Statements { get; }
+        public SyntaxType SyntaxType => SyntaxType.ForStatementSyntax;
+
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);

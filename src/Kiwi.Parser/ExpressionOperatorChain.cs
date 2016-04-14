@@ -9,7 +9,7 @@ namespace Kiwi.Parser
     public class ExpressionOperatorChain
     {
         private readonly List<object> _flatList = new List<object>();
-        
+
         public void Add(IExpressionSyntax expression)
         {
             _flatList.Add(expression);

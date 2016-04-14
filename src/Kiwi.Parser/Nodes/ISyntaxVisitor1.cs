@@ -30,7 +30,11 @@
         TResult Visit(IfElseExpressionSyntax ifElseExpressionSyntax);
         TResult Visit(IfElseStatementSyntax ifElseStatementSyntax);
         TResult Visit(IfStatementSyntax ifStatementSyntax);
-        TResult Visit(ImplicitParameterTypeAnonymousFunctionExpressionSyntax implicitParameterTypeAnonymousFunctionExpressionSyntax);
+
+        TResult Visit(
+            ImplicitParameterTypeAnonymousFunctionExpressionSyntax
+                implicitParameterTypeAnonymousFunctionExpressionSyntax);
+
         TResult Visit(IntExpressionSyntax intExpressionSyntax);
         TResult Visit(InvocationExpressionSyntax invocationExpressionSyntax);
         TResult Visit(InvocationStatementSyntax invocationStatementSyntax);

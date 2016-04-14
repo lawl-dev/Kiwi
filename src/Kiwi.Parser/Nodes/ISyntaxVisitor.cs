@@ -29,7 +29,11 @@
         void Visit(IfElseExpressionSyntax ifElseExpressionSyntax);
         void Visit(IfElseStatementSyntax ifElseStatementSyntax);
         void Visit(IfStatementSyntax ifStatementSyntax);
-        void Visit(ImplicitParameterTypeAnonymousFunctionExpressionSyntax implicitParameterTypeAnonymousFunctionExpressionSyntax);
+
+        void Visit(
+            ImplicitParameterTypeAnonymousFunctionExpressionSyntax
+                implicitParameterTypeAnonymousFunctionExpressionSyntax);
+
         void Visit(IntExpressionSyntax intExpressionSyntax);
         void Visit(InvocationExpressionSyntax invocationExpressionSyntax);
         void Visit(InvocationStatementSyntax invocationStatementSyntax);

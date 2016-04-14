@@ -60,7 +60,13 @@ namespace Kiwi.Tests
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, string.Empty), string.Empty, string.Empty)));
+                    string.Format(
+                        NamespaceSource,
+                        string.Format(
+                            ClassSource,
+                            string.Format(FunctionSource, string.Empty),
+                            string.Empty,
+                            string.Empty)));
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
@@ -71,15 +77,22 @@ namespace Kiwi.Tests
         [Test]
         public void TestDataFunction()
         {
-            const string functionSource = "func FunctionSample(int a, int b, int c) -> data Dto(int a, string b)" + "\r\n" +
-                                          "{{" + "\r\n" +
-                                          "     {0}" + "\r\n" + //statements placeholder
-                                          "}}";
+            const string functionSource =
+                "func FunctionSample(int a, int b, int c) -> data Dto(int a, string b)" + "\r\n" +
+                "{{" + "\r\n" +
+                "     {0}" + "\r\n" + //statements placeholder
+                "}}";
 
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(functionSource, string.Empty), string.Empty, string.Empty)));
+                    string.Format(
+                        NamespaceSource,
+                        string.Format(
+                            ClassSource,
+                            string.Format(functionSource, string.Empty),
+                            string.Empty,
+                            string.Empty)));
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
@@ -96,7 +109,9 @@ namespace Kiwi.Tests
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, functionSource, string.Empty, string.Empty)));
+                    string.Format(
+                        NamespaceSource,
+                        string.Format(ClassSource, functionSource, string.Empty, string.Empty)));
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
@@ -168,7 +183,13 @@ namespace Kiwi.Tests
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, statementSource), string.Empty, string.Empty)));
+                    string.Format(
+                        NamespaceSource,
+                        string.Format(
+                            ClassSource,
+                            string.Format(FunctionSource, statementSource),
+                            string.Empty,
+                            string.Empty)));
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
@@ -197,18 +218,32 @@ namespace Kiwi.Tests
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, statementSource), string.Empty, string.Empty)));
+                    string.Format(
+                        NamespaceSource,
+                        string.Format(
+                            ClassSource,
+                            string.Format(FunctionSource, statementSource),
+                            string.Empty,
+                            string.Empty)));
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            Assert.IsInstanceOf(type, ((ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0]).Expression);
+            Assert.IsInstanceOf(
+                type,
+                ((ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0]).Expression);
         }
 
-        [TestCase("return if(switch) 1 else 2", typeof(KiwiSyntaxException), "Unexpected Token switch. Expected Sign Operator, New, Int, Float, String or Symbol Expression.")]
-        [TestCase("int if(switch) 1 else 2", typeof(KiwiSyntaxException), "Unexpected Token. Expected If, Return, When, Switch, Var, Const, Symbol, For or Forr")]
-        [TestCase("for(f(); i < 1; i :+ 1){}", typeof(KiwiSyntaxException), "Unexpected Statement. Expected AssignmentStatement")]
-        [TestCase("i lol 1", typeof(KiwiSyntaxException), "Unexpected assign operator lol. Expected :, :+, :-, :/, :* or :^.")]
-        [TestCase("i + 1", typeof(KiwiSyntaxException), "Unexpected Syntax. Expected MemberAccessExpressionSyntax, ArrayAccessExpression, MemberExpressionSyntax or InvocationExpressionSyntax")]
+        [TestCase("return if(switch) 1 else 2", typeof(KiwiSyntaxException),
+            "Unexpected Token switch. Expected Sign Operator, New, Int, Float, String or Identifier Expression.")]
+        [TestCase("int if(switch) 1 else 2", typeof(KiwiSyntaxException),
+            "Unexpected Token. Expected If, Return, When, Switch, Var, Const, Identifier, For or Forr")]
+        [TestCase("for(f(); i < 1; i :+ 1){}", typeof(KiwiSyntaxException),
+            "Unexpected Statement. Expected AssignmentStatement")]
+        [TestCase("i lol 1", typeof(KiwiSyntaxException),
+            "Unexpected assign operator lol. Expected :, :+, :-, :/, :* or :^.")]
+        [TestCase("i + 1", typeof(KiwiSyntaxException),
+            "Unexpected Syntax. Expected MemberAccessExpressionSyntax, ArrayAccessExpression, MemberExpressionSyntax or InvocationExpressionSyntax"
+            )]
         [TestCase("switch(i){" +
                   "else -> f()" +
                   "else -> f2()" +
@@ -226,24 +261,36 @@ namespace Kiwi.Tests
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, statementSource), string.Empty, string.Empty)));
+                    string.Format(
+                        NamespaceSource,
+                        string.Format(
+                            ClassSource,
+                            string.Format(FunctionSource, statementSource),
+                            string.Empty,
+                            string.Empty)));
             var parser = new Parser.Parser(tokens);
-
 
             Assert.That(() => parser.Parse(), Throws.TypeOf(exception).With.Message.EqualTo(message));
         }
-        
+
         [Test]
         public void TestSimpleOperatorPrecedence()
         {
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, "return 1 + 2 * 3"), string.Empty, string.Empty)));
+                    string.Format(
+                        NamespaceSource,
+                        string.Format(
+                            ClassSource,
+                            string.Format(FunctionSource, "return 1 + 2 * 3"),
+                            string.Empty,
+                            string.Empty)));
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
+            var returnStatementSyntax =
+                (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var leftBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -265,11 +312,18 @@ namespace Kiwi.Tests
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, "return +1 + 2 * -3"), string.Empty, string.Empty)));
+                    string.Format(
+                        NamespaceSource,
+                        string.Format(
+                            ClassSource,
+                            string.Format(FunctionSource, "return +1 + 2 * -3"),
+                            string.Empty,
+                            string.Empty)));
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
+            var returnStatementSyntax =
+                (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -297,11 +351,18 @@ namespace Kiwi.Tests
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, "return ++1 + 2 * --3"), string.Empty, string.Empty)));
+                    string.Format(
+                        NamespaceSource,
+                        string.Format(
+                            ClassSource,
+                            string.Format(FunctionSource, "return ++1 + 2 * --3"),
+                            string.Empty,
+                            string.Empty)));
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
+            var returnStatementSyntax =
+                (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -334,11 +395,18 @@ namespace Kiwi.Tests
             var lexer = new Lexer.Lexer();
             var tokens =
                 lexer.Lex(
-                    string.Format(NamespaceSource, string.Format(ClassSource, string.Format(FunctionSource, "return ++1 + (2 * --3)"), string.Empty, string.Empty)));
+                    string.Format(
+                        NamespaceSource,
+                        string.Format(
+                            ClassSource,
+                            string.Format(FunctionSource, "return ++1 + (2 * --3)"),
+                            string.Empty,
+                            string.Empty)));
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            var returnStatementSyntax = (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
+            var returnStatementSyntax =
+                (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;

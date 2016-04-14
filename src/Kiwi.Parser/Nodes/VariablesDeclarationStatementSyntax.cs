@@ -1,16 +1,15 @@
-using System;
 using System.Collections.Generic;
 
 namespace Kiwi.Parser.Nodes
 {
     public class VariablesDeclarationStatementSyntax : IStatementSyntax
     {
-        public List<VariableDeclarationStatementSyntax> Declarations { get; set; }
-
         public VariablesDeclarationStatementSyntax(List<VariableDeclarationStatementSyntax> declarations)
         {
             Declarations = declarations;
         }
+
+        public List<VariableDeclarationStatementSyntax> Declarations { get; set; }
 
         public SyntaxType SyntaxType => SyntaxType.VariablesDeclarationStatementSyntax;
 

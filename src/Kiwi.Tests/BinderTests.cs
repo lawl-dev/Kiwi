@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kiwi.Parser.Nodes;
 using Kiwi.Semantic.Binder;
+using Kiwi.Semantic.Binder.LanguageTypes;
 using Kiwi.Semantic.Binder.Nodes;
 using NUnit.Framework;
 
@@ -33,7 +32,6 @@ namespace Kiwi.Tests
                                "    }" +
                                "}";
 
-
             var lexer = new Lexer.Lexer();
             var tokens = lexer.Lex(src);
             var parser = new Parser.Parser(tokens);
@@ -41,13 +39,13 @@ namespace Kiwi.Tests
             var ast = parser.Parse();
 
             var binder = new Binder();
-            var semanticModel = binder.Bind(ast);
+            var semanticModel = binder.Bind(new List<CompilationUnitSyntax> { ast }).Single();
 
-            var boundNamespace = semanticModel.Namespaces.Single(x=>x.NamespaceName.Value == "MyNamespace");
-            var referencedBoundType = boundNamespace.Types.Single(x => x.Name.Value == "MyClass2");
-            var boundType = boundNamespace.Types.Single(x => x.Name.Value == "MyClass");
-            var boundFunction = boundType.Functions.Single(x=>x.Name.Value == "MyFunc");
-            Assert.AreEqual(((StandardType)((IBoundMember)boundFunction.Statements[0]).Type).Type, StandardTypes.Bool);
+            var boundNamespace = semanticModel.Namespaces.Single(x => x.NamespaceName == "MyNamespace");
+            var referencedBoundType = boundNamespace.Types.Single(x => x.Name == "MyClass2");
+            var boundType = boundNamespace.Types.Single(x => x.Name == "MyClass");
+            var boundFunction = (BoundFunction)boundType.Functions.Single(x => x.Name == "MyFunc");
+            Assert.AreEqual(((IBoundMember)boundFunction.Statements[0]).Type, new BoolSpecialType());
             Assert.AreSame(((IBoundMember)boundFunction.Statements[1]).Type, referencedBoundType);
         }
 
@@ -67,6 +65,36 @@ namespace Kiwi.Tests
                                "    }" +
                                "}";
 
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+            var semanticModel = binder.Bind(new List<CompilationUnitSyntax> { ast }).Single();
+
+            var boundNamespace = semanticModel.Namespaces.Single(x => x.NamespaceName == "MyNamespace");
+            var expectedFunctionReturnType = boundNamespace.Types.Single(x => x.Name == "MyClass2");
+            var function = boundNamespace.Types.Single(x => x.Name == "MyClass").Functions.Single(x => x.Name == "Add");
+            Assert.AreSame(expectedFunctionReturnType, function.ReturnType);
+        }
+
+        [Test]
+        public void Test_VariableWithSameName_Throws()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b)" +
+                               "        {" +
+                               "            var a : 1" +
+                               "            var b : 2" +
+                               "            var a : 1" +
+                               "        }" +
+                               "    }" +
+                               "}";
 
             var lexer = new Lexer.Lexer();
             var tokens = lexer.Lex(src);
@@ -75,11 +103,35 @@ namespace Kiwi.Tests
             var ast = parser.Parse();
 
             var binder = new Binder();
-            var semanticModel = binder.Bind(ast);
-            var boundNamespace = semanticModel.Namespaces.Single(x=>x.NamespaceName.Value == "MyNamespace");
-            var expectedFunctionReturnType = boundNamespace.Types.Single(x=>x.Name.Value == "MyClass2");
-            var function = boundNamespace.Types.Single(x => x.Name.Value == "MyClass").Functions.Single(x=>x.Name.Value == "Add");
-            Assert.AreSame(expectedFunctionReturnType, function.ReturnType);
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax> { ast }),
+                Throws.TypeOf<KiwiSemanticException>().With.Message.EqualTo("a already defined."));
+        }
+
+        [Test]
+        public void Test_VariableNotDefined_Throws()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b)" +
+                               "        {" +
+                               "            var a : b" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax> { ast }),
+                Throws.TypeOf<KiwiSemanticException>().With.Message.EqualTo("a already defined."));
         }
     }
 }

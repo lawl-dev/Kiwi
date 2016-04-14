@@ -1,67 +1,37 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Kiwi.Semantic.Binder.Nodes;
 
 namespace Kiwi.Semantic.Binder
 {
-    internal class Scope
+    public class Scope
     {
-        private readonly Dictionary<string, BoundType> _typeSymbols = new Dictionary<string, BoundType>(); 
-        private readonly Dictionary<string, BoundField> _fieldSymbols = new Dictionary<string, BoundField>(); 
-        private readonly Dictionary<string, BoundParameter> _parameterSymbols = new Dictionary<string, BoundParameter>(); 
-        private readonly Dictionary<string, List<BoundFunction>> _functionSymbols = new Dictionary<string, List<BoundFunction>>(); 
+        private readonly Dictionary<string, IBoundMember> _locals = new Dictionary<string, IBoundMember>();
+        private readonly Scope _parent;
 
-        public void Add(string value, BoundType boundType)
+        public Scope(Scope parent)
         {
-            _typeSymbols.Add(value, boundType);
+            _parent = parent;
         }
 
-        public IBoundMember Lookup(string value)
+        public void Add(string value, IBoundMember member)
         {
-            if (_typeSymbols.ContainsKey(value))
+            if (Get(value) != null)
             {
-                return _typeSymbols[value];
+                throw new KiwiSemanticException($"{value} already defined.");
             }
-            if (_fieldSymbols.ContainsKey(value))
+            _locals.Add(value, member);
+        }
+
+        public IBoundMember Get(string value)
+        {
+            var boundMember = _parent?.Get(value);
+            if (boundMember != null)
             {
-                return _fieldSymbols[value];
+                return boundMember;
             }
-            if (_parameterSymbols.ContainsKey(value))
-            {
-                return _parameterSymbols[value];
-            }
-            return null;
-        }
 
-        public void Add(string value, BoundField boundField)
-        {
-            _fieldSymbols.Add(value, boundField);
-        }
-
-        public void Add(string value, BoundFunction boundFunction)
-        {
-            if (!_functionSymbols.ContainsKey(value))
-            {
-                _functionSymbols.Add(value, new List<BoundFunction>());
-            }
-            _functionSymbols[value].Add(boundFunction);
-        }
-
-        public BoundFunction LookupFunction(string value, List<IType> parameterTypes)
-        {
-            return _functionSymbols[value].SingleOrDefault(x=>MatchTypes(x.Parameter, parameterTypes));
-        }
-
-        private static bool MatchTypes(List<BoundParameter> parameter, List<IType> parameterTypes)
-        {
-            return parameterTypes.Count == parameter.Count
-                   && parameterTypes.Select((x, i) => x == parameter[i].Type).All(x => x);
-        }
-
-        public void Add(string value, BoundParameter boundParameter)
-        {
-            _parameterSymbols.Add(value, boundParameter);
+            _locals.TryGetValue(value, out boundMember);
+            return boundMember;
         }
     }
 }

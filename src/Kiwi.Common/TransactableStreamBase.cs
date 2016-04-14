@@ -6,8 +6,8 @@ namespace Kiwi.Common
     public abstract class TransactableStreamBase<TItem> where TItem : class
     {
         private readonly List<TItem> _items;
-        private int _index;
         private readonly Stack<int> _snapshotIndexes;
+        private int _index;
 
         protected TransactableStreamBase(Func<List<TItem>> getStreamItems)
         {

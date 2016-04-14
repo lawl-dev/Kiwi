@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Kiwi.Lexer;
 using Kiwi.Parser.Nodes;
@@ -7,33 +8,41 @@ namespace Kiwi.Semantic.Binder
 {
     public class BasicSymbolService
     {
-        public BoundCompilationUnit CreateBasicModel(CompilationUnitSyntax compilationUnitSyntax)
+        public List<BoundCompilationUnit> CreateBasicModel(List<CompilationUnitSyntax> compilationUnitSyntax)
         {
-            var boundCompilationUnit = new BoundCompilationUnit(compilationUnitSyntax);
-            foreach (var namespaceSyntax in compilationUnitSyntax.NamespaceMember)
+            var compilationUnits = new List<BoundCompilationUnit>();
+            foreach (var unitSyntax in compilationUnitSyntax)
             {
-                var boundNamespace = new BoundNamespace(namespaceSyntax.NamespaceName, namespaceSyntax);
-                boundCompilationUnit.Namespaces.Add(boundNamespace);
-                foreach (var classSyntax in namespaceSyntax.Classes)
+                var boundCompilationUnit = new BoundCompilationUnit(unitSyntax);
+                foreach (var namespaceSyntax in unitSyntax.NamespaceMember)
                 {
-                    var boundType = new BoundType(classSyntax.ClassName, classSyntax);
-                    boundType.FieldsInternal.AddRange(classSyntax.FieldMember.Select(x => new BoundField(x.FieldName, x)));
-                    boundType.FunctionsInternal.AddRange(classSyntax.FunctionMember.Select(x => new BoundFunction(x.FunctionName, x)));
-                    boundNamespace.TypesInternal.Add(boundType);
+                    var boundNamespace = new BoundNamespace(namespaceSyntax.NamespaceName.Value, namespaceSyntax);
+                    boundCompilationUnit.Namespaces.Add(boundNamespace);
+                    foreach (var classSyntax in namespaceSyntax.Classes)
+                    {
+                        var boundType = new BoundType(classSyntax.ClassName.Value, classSyntax);
+                        boundType.FieldsInternal.AddRange(
+                            classSyntax.FieldMember.Select(x => new BoundField(x.FieldName.Value, x)));
+                        boundType.FunctionsInternal.AddRange(
+                            classSyntax.FunctionMember.Select(x => new BoundFunction(x.FunctionName.Value, x)));
+                        boundNamespace.TypesInternal.Add(boundType);
+                    }
+                    boundNamespace.EnumsInternal.AddRange(
+                        namespaceSyntax.Enums.Select(x => new BoundEnum(x.EnumName, x)));
                 }
-                boundNamespace.EnumsInternal.AddRange(namespaceSyntax.Enums.Select(x => new BoundEnum(x.EnumName, x)));
+                compilationUnits.Add(boundCompilationUnit);
             }
-            return boundCompilationUnit;
+            return compilationUnits;
         }
     }
 
     public class BoundEnum : BoundNode
     {
-        public Token EnumName { get; set; }
-
         public BoundEnum(Token enumName, EnumSyntax enumSyntax) : base(enumSyntax)
         {
             EnumName = enumName;
         }
+
+        public Token EnumName { get; set; }
     }
 }

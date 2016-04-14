@@ -5,15 +5,15 @@ namespace Kiwi.Parser.Nodes
 {
     public class ExpressionFunctionSyntax : FunctionSyntax
     {
-        public override SyntaxType SyntaxType => SyntaxType.ExpressionFunctionSyntax;
-
         public ExpressionFunctionSyntax(
             Token functionName,
             List<ParameterSyntax> parameterList,
             ReturnStatementSyntax returnStatement)
-            : base(functionName, parameterList, new List<IStatementSyntax>() { returnStatement })
+            : base(functionName, parameterList, new List<IStatementSyntax> { returnStatement })
         {
         }
+
+        public override SyntaxType SyntaxType => SyntaxType.ExpressionFunctionSyntax;
 
         public override void Accept(ISyntaxVisitor visitor)
         {

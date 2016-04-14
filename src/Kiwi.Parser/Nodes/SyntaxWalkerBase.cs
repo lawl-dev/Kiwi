@@ -1,14 +1,7 @@
-using System;
-
 namespace Kiwi.Parser.Nodes
 {
     public class SyntaxWalkerBase : ISyntaxVisitor
     {
-        public void Visit(ISyntaxBase @base)
-        {
-            @base.Accept(this);
-        }
-
         public virtual void Visit(AnonymousFunctionExpressionSyntax anonymousFunctionExpressionSyntax)
         {
             foreach (var parameterSyntax in anonymousFunctionExpressionSyntax.Parameter)
@@ -216,7 +209,7 @@ namespace Kiwi.Parser.Nodes
         {
             Visit(forStatementSyntax.InitStatement);
             Visit(forStatementSyntax.CondExpression);
-            Visit(forStatementSyntax.LoopExpression);
+            Visit(forStatementSyntax.LoopStatement);
             foreach (var statementSyntax in forStatementSyntax.Statements)
             {
                 Visit(statementSyntax);
@@ -265,7 +258,8 @@ namespace Kiwi.Parser.Nodes
         }
 
         public virtual void Visit(
-            ImplicitParameterTypeAnonymousFunctionExpressionSyntax implicitParameterTypeAnonymousFunctionExpressionSyntax)
+            ImplicitParameterTypeAnonymousFunctionExpressionSyntax
+                implicitParameterTypeAnonymousFunctionExpressionSyntax)
         {
             foreach (var expressionSyntax in implicitParameterTypeAnonymousFunctionExpressionSyntax.Parameter)
             {
@@ -392,6 +386,11 @@ namespace Kiwi.Parser.Nodes
             {
                 Visit(expressionSyntax);
             }
+        }
+
+        public void Visit(ISyntaxBase @base)
+        {
+            @base.Accept(this);
         }
     }
 }

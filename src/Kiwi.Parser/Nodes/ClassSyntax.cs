@@ -6,6 +6,13 @@ namespace Kiwi.Parser.Nodes
 {
     public class ClassSyntax : ISyntaxBase
     {
+        public ClassSyntax(Token className, Token descriptorName, List<ISyntaxBase> member)
+        {
+            ClassName = className;
+            DescriptorName = descriptorName;
+            Member = member;
+        }
+
         public Token ClassName { get; private set; }
         public Token DescriptorName { get; private set; }
         public List<ISyntaxBase> Member { get; set; }
@@ -14,13 +21,6 @@ namespace Kiwi.Parser.Nodes
         public List<FunctionSyntax> FunctionMember => Member.OfType<FunctionSyntax>().ToList();
         public SyntaxType SyntaxType => SyntaxType.ClassSyntax;
 
-        public ClassSyntax(Token className, Token descriptorName, List<ISyntaxBase> member)
-        {
-            ClassName = className;
-            DescriptorName = descriptorName;
-            Member = member;
-        }
-        
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);

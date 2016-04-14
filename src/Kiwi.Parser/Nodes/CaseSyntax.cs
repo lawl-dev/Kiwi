@@ -4,16 +4,16 @@ namespace Kiwi.Parser.Nodes
 {
     public class CaseSyntax : ISyntaxBase
     {
-        public IExpressionSyntax Expression { get; }
-        public List<IStatementSyntax> Statements { get; }
-        public SyntaxType SyntaxType => SyntaxType.CaseSyntax;
-
         public CaseSyntax(IExpressionSyntax expression, List<IStatementSyntax> statements)
         {
             Expression = expression;
             Statements = statements;
         }
-        
+
+        public IExpressionSyntax Expression { get; }
+        public List<IStatementSyntax> Statements { get; }
+        public SyntaxType SyntaxType => SyntaxType.CaseSyntax;
+
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);

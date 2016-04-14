@@ -1,18 +1,34 @@
-using Kiwi.Lexer;
 using Kiwi.Parser.Nodes;
 
 namespace Kiwi.Semantic.Binder.Nodes
 {
-    public class BoundParameter : BoundNode, IBoundMember
+    public class BoundParameter : BoundNode, IBoundMember, IParameter
     {
-        public Token ParameterName { get; private set; }
-        
-        public BoundParameter(Token parameterName, IType type, ParameterSyntax parameterSyntax) : base(parameterSyntax)
+        public BoundParameter(string name, IType type, ParameterSyntax parameterSyntax) : base(parameterSyntax)
         {
-            ParameterName = parameterName;
+            Name = name;
             Type = type;
         }
 
+        public IType Type { get; set; }
+        public string Name { get; }
+    }
+
+    public interface IParameter
+    {
+        string Name { get; }
+        IType Type { get; set; }
+    }
+
+    public class SpecialParameter : IParameter
+    {
+        public SpecialParameter(string name, IType type)
+        {
+            Name = name;
+            Type = type;
+        }
+
+        public string Name { get; }
         public IType Type { get; set; }
     }
 }

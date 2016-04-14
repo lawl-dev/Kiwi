@@ -36,7 +36,7 @@ namespace Kiwi.Lexer
         private static string LexMultiLineComment(TransactableTokenStream stream)
         {
             var comment = string.Empty;
-            while (stream.Current != null && (stream.Current != "*" && stream.Peek(1) != "/"))
+            while (stream.Current != null && stream.Current != "*" && stream.Peek(1) != "/")
             {
                 comment += stream.Current;
                 stream.Consume();
@@ -54,7 +54,7 @@ namespace Kiwi.Lexer
         private static string LexSingleLineComment(TransactableTokenStream stream)
         {
             var comment = string.Empty;
-            while (stream.Current != null && (stream.Current != "\r" && stream.Peek(1) != "\n"))
+            while (stream.Current != null && stream.Current != "\r" && stream.Peek(1) != "\n")
             {
                 comment += stream.Current;
                 stream.Consume();

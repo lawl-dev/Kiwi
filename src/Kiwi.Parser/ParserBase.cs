@@ -27,7 +27,7 @@ namespace Kiwi.Parser
             TokenType opening,
             TokenType closing,
             Func<TSyntax> parser,
-            bool commaSeperated = false) where TSyntax: ISyntaxBase
+            bool commaSeperated = false) where TSyntax : ISyntaxBase
         {
             var innerSyntax = new List<TSyntax>();
             ParseExpected(opening);
@@ -44,7 +44,6 @@ namespace Kiwi.Parser
             ParseExpected(closing);
             return innerSyntax;
         }
-        
 
         protected Token ParseExpected(TokenType tokenType)
         {

@@ -35,7 +35,7 @@ namespace Kiwi.Lexer.Strategies
             }
 
             stream.CommitSnapshot();
-            return new Token(TokenType.Symbol, symbolName);
+            return new Token(TokenType.Identifier, symbolName);
         }
     }
 }
