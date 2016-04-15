@@ -13,8 +13,6 @@ namespace Kiwi.Parser.Nodes
         public IExpressionSyntax Condition { get; set; }
         public List<IStatementSyntax> Statements { get; set; }
 
-        public SyntaxType SyntaxType => SyntaxType.WhenEntry;
-
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);

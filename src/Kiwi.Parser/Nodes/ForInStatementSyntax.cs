@@ -28,7 +28,6 @@ namespace Kiwi.Parser.Nodes
         public IExpressionSyntax ItemExpression { get; }
         public IExpressionSyntax CollExpression { get; }
         public List<IStatementSyntax> Statements { get; }
-        public SyntaxType SyntaxType => SyntaxType.ForInStatementSyntax;
 
         public virtual void Accept(ISyntaxVisitor visitor)
         {

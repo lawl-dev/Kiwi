@@ -10,7 +10,6 @@ namespace Kiwi.Parser.Nodes
         }
 
         public Token MemberName { get; }
-        public SyntaxType SyntaxType => SyntaxType.MemberExpressionSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

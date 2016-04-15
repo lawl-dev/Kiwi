@@ -12,7 +12,6 @@ namespace Kiwi.Parser.Nodes
 
         public IExpressionSyntax Condition { get; }
         public List<IStatementSyntax> Statements { get; }
-        public SyntaxType SyntaxType => SyntaxType.IfStatementSyntax;
 
         public virtual void Accept(ISyntaxVisitor visitor)
         {

@@ -74,7 +74,6 @@
     <Compile Include="Nodes\ReturnFunctionSyntax.cs" />
     <Compile Include="Nodes\ReverseForInStatementSyntax.cs" />
     <Compile Include="Nodes\SimpleWhenStatementSyntax.cs" />
-    <Compile Include="Nodes\SyntaxType.cs" />
     <Compile Include="Nodes\SyntaxWalkerBase.cs" />
     <Compile Include="Nodes\WhenEntry.cs" />
     <Compile Include="Nodes\WhenInExpressionSyntax.cs" />

@@ -15,7 +15,6 @@ namespace Kiwi.Parser.Nodes
         public IExpressionSyntax Condition { get; }
         public IExpressionSyntax IfTrueExpression { get; }
         public IExpressionSyntax IfFalseExpression { get; }
-        public SyntaxType SyntaxType => SyntaxType.IfElseExpressionSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

@@ -1,6 +1,8 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using Kiwi.Common.Extensions;
 using Kiwi.Lexer;
 using Kiwi.Parser.Nodes;
 using Kiwi.Semantic.Binder.LanguageTypes;
@@ -62,19 +64,15 @@ namespace Kiwi.Semantic.Binder
 
         private BoundFunction BindFunction(BoundFunction boundFunction, FunctionSyntax functionSyntax)
         {
-            switch (functionSyntax.SyntaxType)
-            {
-                case SyntaxType.FunctionSyntax:
-                    return BindVoid(boundFunction, functionSyntax);
-                case SyntaxType.ExpressionFunctionSyntax:
-                    return BindExpressionFunction(boundFunction, (ExpressionFunctionSyntax)functionSyntax);
-                case SyntaxType.ReturnFunctionSyntax:
-                    return Bind(boundFunction, (ReturnFunctionSyntax)functionSyntax);
-            }
-            throw new NotImplementedException();
+            return functionSyntax.TypeSwitchExpression<FunctionSyntax, BoundFunction>()
+                                 .Case<ReturnFunctionSyntax>(x => BindReturnFunction(boundFunction, x))
+                                 .Case<ExpressionFunctionSyntax>(x => BindExpressionFunction(boundFunction, x))
+                                 .Case<FunctionSyntax>(x => BindVoid(boundFunction, x))
+                                 .Default(() => { throw new NotImplementedException(); })
+                                 .Done();
         }
 
-        private BoundFunction Bind(BoundFunction boundFunction, ReturnFunctionSyntax returnFunctionSyntax)
+        private BoundFunction BindReturnFunction(BoundFunction boundFunction, ReturnFunctionSyntax returnFunctionSyntax)
         {
             var boundParameters = returnFunctionSyntax.ParameterList.Select(BindParameter).ToList();
             var type = _contextService.LookupType(returnFunctionSyntax.ReturnType.TypeName.Value);
@@ -129,26 +127,17 @@ namespace Kiwi.Semantic.Binder
 
         private BoundStatement BindStatement(IStatementSyntax statementSyntax)
         {
-            switch (statementSyntax.SyntaxType)
-            {
-                case SyntaxType.VariablesDeclarationStatementSyntax:
-                    return BindVariablesDeclarationStatement((VariablesDeclarationStatementSyntax)statementSyntax);
-                case SyntaxType.VariableDeclarationStatementSyntax:
-                    return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax)statementSyntax);
-                case SyntaxType.ReturnStatementSyntax:
-                    return BindReturnStatement((ReturnStatementSyntax)statementSyntax);
-                case SyntaxType.IfStatementSyntax:
-                    return BindIfStatement((IfStatementSyntax)statementSyntax);
-                case SyntaxType.IfElseExpressionSyntax:
-                    return BindIfElseStatement((IfElseStatementSyntax)statementSyntax);
-                case SyntaxType.AssignmentStatementSyntax:
-                    return BindAssignmentStatement((AssignmentStatementSyntax)statementSyntax);
-                case SyntaxType.ForStatementSyntax:
-                    return BindForStatement((ForStatementSyntax)statementSyntax);
-                case SyntaxType.ForInStatementSyntax:
-                    return BindForInStatement((ForInStatementSyntax)statementSyntax);
-            }
-            throw new NotImplementedException();
+            return statementSyntax.TypeSwitchExpression<IStatementSyntax, BoundStatement>()
+                                  .Case<VariablesDeclarationStatementSyntax>(BindVariablesDeclarationStatement)
+                                  .Case<VariableDeclarationStatementSyntax>(BindVariableDeclarationStatement)
+                                  .Case<ReturnStatementSyntax>(BindReturnStatement)
+                                  .Case<IfElseStatementSyntax>(BindIfElseStatement)
+                                  .Case<IfStatementSyntax>(BindIfStatement)
+                                  .Case<AssignmentStatementSyntax>(BindAssignmentStatement)
+                                  .Case<ForStatementSyntax>(BindForStatement)
+                                  .Case<ForInStatementSyntax>(BindForInStatement)
+                                  .Default(() => { throw new NotImplementedException(); })
+                                  .Done();
         }
 
         private BoundStatement BindForInStatement(ForInStatementSyntax statementSyntax)
@@ -288,26 +277,17 @@ namespace Kiwi.Semantic.Binder
 
         private BoundExpression BindExpression(IExpressionSyntax expressionSyntax, List<IType> args = null)
         {
-            switch (expressionSyntax.SyntaxType)
-            {
-                case SyntaxType.BooleanExpressionSyntax:
-                    return BindBooleanExpression((BooleanExpressionSyntax)expressionSyntax);
-                case SyntaxType.IntExpressionSyntax:
-                    return BindIntExpression((IntExpressionSyntax)expressionSyntax);
-                case SyntaxType.InvocationExpressionSyntax:
-                    return BindInvocationExpression((InvocationExpressionSyntax)expressionSyntax);
-                case SyntaxType.MemberExpressionSyntax:
-                    return BindMemerExpression((MemberExpressionSyntax)expressionSyntax, args);
-                case SyntaxType.ObjectCreationExpressionSyntax:
-                    return BindObjectCreationExpression((ObjectCreationExpressionSyntax)expressionSyntax);
-                case SyntaxType.ArrayCreationExpression:
-                    return BindArrayCreationExpression((ArrayCreationExpressionSyntax)expressionSyntax);
-                case SyntaxType.StringExpressionSyntax:
-                    return BindStringExpression((StringExpressionSyntax)expressionSyntax);
-                case SyntaxType.MemberAccessExpressionSyntax:
-                    return BindMemberAccessExpression((MemberAccessExpressionSyntax)expressionSyntax);
-            }
-            throw new NotImplementedException();
+            return expressionSyntax.TypeSwitchExpression<IExpressionSyntax, BoundExpression>()
+                                   .Case<BooleanExpressionSyntax>(BindBooleanExpression)
+                                   .Case<IntExpressionSyntax>(BindIntExpression)
+                                   .Case<InvocationExpressionSyntax>(BindInvocationExpression)
+                                   .Case<MemberExpressionSyntax>(x => BindMemerExpression(x, args))
+                                   .Case<ObjectCreationExpressionSyntax>(BindObjectCreationExpression)
+                                   .Case<ArrayCreationExpressionSyntax>(BindArrayCreationExpression)
+                                   .Case<StringExpressionSyntax>(BindStringExpression)
+                                   .Case<MemberAccessExpressionSyntax>(BindMemberAccessExpression)
+                                   .Default(() => { throw new NotImplementedException(); })
+                                   .Done();
         }
 
         private BoundMemberAccessExpression BindMemberAccessExpression(MemberAccessExpressionSyntax expressionSyntax)

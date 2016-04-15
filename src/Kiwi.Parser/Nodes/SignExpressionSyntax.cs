@@ -12,7 +12,6 @@ namespace Kiwi.Parser.Nodes
 
         public Token Operator { get; }
         public IExpressionSyntax Expression { get; }
-        public SyntaxType SyntaxType => SyntaxType.SignExpressionSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

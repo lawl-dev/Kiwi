@@ -10,7 +10,6 @@ namespace Kiwi.Parser.Nodes
         }
 
         public List<IStatementSyntax> Statements { get; }
-        public SyntaxType SyntaxType => SyntaxType.ElseSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

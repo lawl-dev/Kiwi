@@ -15,8 +15,6 @@ namespace Kiwi.Parser.Nodes
         public List<CaseSyntax> Cases { get; }
         public ElseSyntax Else { get; }
 
-        public SyntaxType SyntaxType => SyntaxType.SwitchStatementSyntax;
-
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);

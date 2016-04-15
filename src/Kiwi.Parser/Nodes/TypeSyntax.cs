@@ -11,8 +11,6 @@ namespace Kiwi.Parser.Nodes
 
         public Token TypeName { get; }
 
-        public SyntaxType SyntaxType => SyntaxType.TypeSyntax;
-
         public virtual void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);

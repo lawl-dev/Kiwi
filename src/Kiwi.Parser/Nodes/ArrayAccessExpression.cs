@@ -12,7 +12,6 @@ namespace Kiwi.Parser.Nodes
 
         public IExpressionSyntax Owner { get; }
         public List<IExpressionSyntax> Parameter { get; }
-        public SyntaxType SyntaxType => SyntaxType.ArrayAccessExpression;
 
         public void Accept(ISyntaxVisitor visitor)
         {

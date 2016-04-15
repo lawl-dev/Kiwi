@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\TypeSwitchExtensions.cs" />
     <Compile Include="KiwiSyntaxException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransactableStreamBase.cs" />

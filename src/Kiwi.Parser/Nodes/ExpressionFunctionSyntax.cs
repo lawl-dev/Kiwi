@@ -13,7 +13,6 @@ namespace Kiwi.Parser.Nodes
         {
         }
 
-        public override SyntaxType SyntaxType => SyntaxType.ExpressionFunctionSyntax;
 
         public override void Accept(ISyntaxVisitor visitor)
         {

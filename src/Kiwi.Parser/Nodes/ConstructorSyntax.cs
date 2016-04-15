@@ -12,7 +12,6 @@ namespace Kiwi.Parser.Nodes
 
         public List<ParameterSyntax> ArgList { get; private set; }
         public List<IStatementSyntax> Statements { get; }
-        public SyntaxType SyntaxType => SyntaxType.ConstructorSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

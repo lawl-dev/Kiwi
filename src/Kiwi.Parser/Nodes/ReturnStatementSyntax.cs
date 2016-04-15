@@ -8,7 +8,6 @@ namespace Kiwi.Parser.Nodes
         }
 
         public IExpressionSyntax Expression { get; }
-        public SyntaxType SyntaxType => SyntaxType.ReturnStatementSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

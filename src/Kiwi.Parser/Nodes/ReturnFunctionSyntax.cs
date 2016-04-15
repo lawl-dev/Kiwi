@@ -15,7 +15,6 @@ namespace Kiwi.Parser.Nodes
         }
 
         public TypeSyntax ReturnType { get; }
-        public override SyntaxType SyntaxType => SyntaxType.ReturnFunctionSyntax;
 
         public override void Accept(ISyntaxVisitor visitor)
         {

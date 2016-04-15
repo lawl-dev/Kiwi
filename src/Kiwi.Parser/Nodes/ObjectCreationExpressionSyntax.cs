@@ -12,7 +12,6 @@ namespace Kiwi.Parser.Nodes
 
         public TypeSyntax Type { get; }
         public List<IExpressionSyntax> Parameter { get; }
-        public virtual SyntaxType SyntaxType => SyntaxType.ObjectCreationExpressionSyntax;
 
         public virtual void Accept(ISyntaxVisitor visitor)
         {

@@ -14,7 +14,6 @@ namespace Kiwi.Parser.Nodes
 
         public List<IExpressionSyntax> Parameter { get; }
         public List<IStatementSyntax> Statements { get; }
-        public SyntaxType SyntaxType => SyntaxType.ImplicitParameterTypeAnonymousFunctionExpressionSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

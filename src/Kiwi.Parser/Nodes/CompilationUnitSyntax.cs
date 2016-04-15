@@ -13,7 +13,6 @@ namespace Kiwi.Parser.Nodes
         public List<ISyntaxBase> MemberSyntax { get; }
         public List<UsingSyntax> UsingMember => MemberSyntax.OfType<UsingSyntax>().ToList();
         public List<NamespaceSyntax> NamespaceMember => MemberSyntax.OfType<NamespaceSyntax>().ToList();
-        public SyntaxType SyntaxType => SyntaxType.CompilationUnitSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

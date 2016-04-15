@@ -11,8 +11,6 @@ namespace Kiwi.Parser.Nodes
 
         public List<VariableDeclarationStatementSyntax> Declarations { get; set; }
 
-        public SyntaxType SyntaxType => SyntaxType.VariablesDeclarationStatementSyntax;
-
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);

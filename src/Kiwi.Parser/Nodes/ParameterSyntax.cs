@@ -12,7 +12,6 @@ namespace Kiwi.Parser.Nodes
 
         public TypeSyntax Type { get; private set; }
         public Token ParameterName { get; private set; }
-        public SyntaxType SyntaxType => SyntaxType.ParameterSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

@@ -14,7 +14,6 @@ namespace Kiwi.Parser.Nodes
         public Token FieldTypeQualifier { get; private set; }
         public Token FieldName { get; private set; }
         public IExpressionSyntax FieldInitializer { get; set; }
-        public SyntaxType SyntaxType => SyntaxType.FieldSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

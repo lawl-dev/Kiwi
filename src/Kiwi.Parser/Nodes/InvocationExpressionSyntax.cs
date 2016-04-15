@@ -12,7 +12,6 @@ namespace Kiwi.Parser.Nodes
 
         public IExpressionSyntax ToInvoke { get; }
         public List<IExpressionSyntax> Parameter { get; }
-        public SyntaxType SyntaxType => SyntaxType.InvocationExpressionSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

@@ -15,7 +15,6 @@ namespace Kiwi.Parser.Nodes
         public Token Operator { get; }
         public IExpressionSyntax ToAssign { get; }
 
-        public SyntaxType SyntaxType => SyntaxType.AssignmentStatementSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

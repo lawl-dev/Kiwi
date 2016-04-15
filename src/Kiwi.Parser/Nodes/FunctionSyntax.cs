@@ -18,7 +18,6 @@ namespace Kiwi.Parser.Nodes
         public Token FunctionName { get; private set; }
         public List<ParameterSyntax> ParameterList { get; private set; }
         public List<IStatementSyntax> Statements { get; }
-        public virtual SyntaxType SyntaxType => SyntaxType.FunctionSyntax;
 
         public virtual void Accept(ISyntaxVisitor visitor)
         {

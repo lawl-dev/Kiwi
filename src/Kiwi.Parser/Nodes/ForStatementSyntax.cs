@@ -20,7 +20,6 @@ namespace Kiwi.Parser.Nodes
         public IExpressionSyntax CondExpression { get; }
         public IStatementSyntax LoopStatement { get; }
         public List<IStatementSyntax> Statements { get; }
-        public SyntaxType SyntaxType => SyntaxType.ForStatementSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

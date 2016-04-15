@@ -9,7 +9,6 @@ namespace Kiwi.Parser.Nodes
         }
 
         public int Dimension => Parameter.Count;
-        public override SyntaxType SyntaxType => SyntaxType.ArrayCreationExpression;
 
         public override void Accept(ISyntaxVisitor visitor)
         {

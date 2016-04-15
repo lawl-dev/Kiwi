@@ -15,7 +15,6 @@ namespace Kiwi.Parser.Nodes
         public Token EnumName { get; private set; }
         public List<ISyntaxBase> Member { get; }
         public List<EnumMemberSyntax> EnumMember => Member.OfType<EnumMemberSyntax>().ToList();
-        public SyntaxType SyntaxType => SyntaxType.EnumSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

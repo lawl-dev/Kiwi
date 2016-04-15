@@ -12,7 +12,6 @@ namespace Kiwi.Parser.Nodes
 
         public IExpressionSyntax Condition { get; private set; }
         public List<ConditionalWhenEntry> WhenEntries { get; private set; }
-        public SyntaxType SyntaxType => SyntaxType.ConditionalWhenStatementSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

@@ -8,7 +8,6 @@ namespace Kiwi.Parser.Nodes
         }
 
         public InvocationExpressionSyntax InvocationExpression { get; private set; }
-        public SyntaxType SyntaxType => SyntaxType.InvocationStatementSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

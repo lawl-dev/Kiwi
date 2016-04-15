@@ -21,7 +21,6 @@ namespace Kiwi.Parser.Nodes
         public List<ClassSyntax> Classes { get; private set; }
         public List<DataSyntax> Datas { get; private set; }
         public List<EnumSyntax> Enums { get; private set; }
-        public SyntaxType SyntaxType => SyntaxType.NamespaceSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

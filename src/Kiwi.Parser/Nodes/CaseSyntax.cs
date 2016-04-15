@@ -12,7 +12,6 @@ namespace Kiwi.Parser.Nodes
 
         public IExpressionSyntax Expression { get; }
         public List<IStatementSyntax> Statements { get; }
-        public SyntaxType SyntaxType => SyntaxType.CaseSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

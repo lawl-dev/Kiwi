@@ -10,7 +10,6 @@ namespace Kiwi.Parser.Nodes
         }
 
         public List<IExpressionSyntax> InExpressionList { get; }
-        public SyntaxType SyntaxType => SyntaxType.WhenInExpressionSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

@@ -12,7 +12,6 @@ namespace Kiwi.Parser.Nodes
 
         public Token MemberName { get; private set; }
         public IExpressionSyntax Initializer { get; private set; }
-        public SyntaxType SyntaxType => SyntaxType.EnumMemberSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {

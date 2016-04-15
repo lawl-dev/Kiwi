@@ -12,8 +12,7 @@ namespace Kiwi.Parser.Nodes
 
         public List<ParameterSyntax> Parameter { get; }
         public List<IStatementSyntax> Statements { get; }
-        public SyntaxType SyntaxType => SyntaxType.AnonymousFunctionExpressionSyntax;
-
+        
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);

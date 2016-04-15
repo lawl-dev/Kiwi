@@ -15,7 +15,6 @@ namespace Kiwi.Parser.Nodes
         }
 
         public DataSyntax DataClassSyntax { get; }
-        public override SyntaxType SyntaxType => SyntaxType.DataClassFunctionSyntax;
 
         public override void Accept(ISyntaxVisitor visitor)
         {

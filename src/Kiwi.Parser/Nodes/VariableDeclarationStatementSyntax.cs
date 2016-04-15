@@ -18,8 +18,6 @@ namespace Kiwi.Parser.Nodes
         public Token Identifier { get; }
         public IExpressionSyntax InitExpression { get; }
 
-        public SyntaxType SyntaxType => SyntaxType.VariableDeclarationStatementSyntax;
-
         public void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);

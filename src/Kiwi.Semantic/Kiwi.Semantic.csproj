@@ -56,6 +56,7 @@
     <Compile Include="Binder\Nodes\BoundAssignStatement.cs" />
     <Compile Include="Binder\Nodes\BoundForStatement.cs" />
     <Compile Include="Binder\Nodes\BoundIntExpression.cs" />
+    <Compile Include="Binder\Nodes\BoundMemberAccessExpression.cs" />
     <Compile Include="Binder\Nodes\BoundStringExpression.cs" />
     <Compile Include="Binder\Nodes\BoundVariableDeclarationStatement.cs" />
     <Compile Include="Binder\Nodes\BoundBooleanExpression.cs" />
@@ -88,6 +89,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\Kiwi.Common\Kiwi.Common.csproj">
+      <Project>{A221E521-1C96-4C78-9757-F8A08686FF23}</Project>
+      <Name>Kiwi.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kiwi.Lexer\Kiwi.Lexer.csproj">
       <Project>{87FAE805-1868-467E-9C1F-5E0CDCE8A284}</Project>
       <Name>Kiwi.Lexer</Name>

@@ -19,7 +19,6 @@ namespace Kiwi.Parser.Nodes
         public List<FieldSyntax> FieldMember => Member.OfType<FieldSyntax>().ToList();
         public List<ConstructorSyntax> ConstructorMember => Member.OfType<ConstructorSyntax>().ToList();
         public List<FunctionSyntax> FunctionMember => Member.OfType<FunctionSyntax>().ToList();
-        public SyntaxType SyntaxType => SyntaxType.ClassSyntax;
 
         public void Accept(ISyntaxVisitor visitor)
         {
