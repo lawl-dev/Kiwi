@@ -6,8 +6,8 @@ namespace Kiwi.Semantic.Binder.Nodes
     internal class BoundObjectCreationExpression : BoundExpression
     {
         public BoundObjectCreationExpression(
-            BoundType type,
-            BoundConstructor boundConstructor,
+            IType type,
+            IConstructor boundConstructor,
             List<BoundExpression> boundParameter,
             ObjectCreationExpressionSyntax expressionSyntax) : base(expressionSyntax, type)
         {
@@ -15,7 +15,7 @@ namespace Kiwi.Semantic.Binder.Nodes
             BoundParameter = boundParameter;
         }
 
-        public BoundConstructor BoundConstructor { get; set; }
+        public IConstructor BoundConstructor { get; set; }
         public List<BoundExpression> BoundParameter { get; set; }
     }
 }

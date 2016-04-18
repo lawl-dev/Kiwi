@@ -5,7 +5,7 @@ namespace Kiwi.Parser.Nodes
 {
     public class ConditionalWhenEntry : ISyntaxBase
     {
-        public ConditionalWhenEntry(Token @operator, IExpressionSyntax condition, List<IStatementSyntax> statements)
+        public ConditionalWhenEntry(Token @operator, IExpressionSyntax condition, IStatementSyntax statements)
         {
             Operator = @operator;
             Condition = condition;
@@ -14,7 +14,7 @@ namespace Kiwi.Parser.Nodes
 
         public Token Operator { get; private set; }
         public IExpressionSyntax Condition { get; private set; }
-        public List<IStatementSyntax> Statements { get; private set; }
+        public IStatementSyntax Statements { get; private set; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

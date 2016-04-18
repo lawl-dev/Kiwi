@@ -3,18 +3,18 @@ using Kiwi.Parser.Nodes;
 
 namespace Kiwi.Semantic.Binder.Nodes
 {
-    public class BoundConstructor : BoundNode
+    public class BoundConstructor : BoundNode, IConstructor
     {
         public BoundConstructor(
             List<BoundParameter> boundParameters,
-            List<BoundStatement> boundStatements,
+            BoundScopeStatement boundStatements,
             ConstructorSyntax syntax) : base(syntax)
         {
-            Parameters = boundParameters;
+            Parameter = boundParameters;
             Statements = boundStatements;
         }
 
-        public List<BoundParameter> Parameters { get; set; }
-        public List<BoundStatement> Statements { get; set; }
+        public IEnumerable<IParameter> Parameter { get; }
+        public BoundScopeStatement Statements { get; }
     }
 }

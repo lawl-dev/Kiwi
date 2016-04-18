@@ -8,8 +8,8 @@ namespace Kiwi.Semantic.Binder
     {
         public BoundIfElseStatement(
             BoundExpression boundExpression,
-            List<BoundStatement> boundStatements,
-            List<BoundStatement> elseBoundStatements,
+            BoundScopeStatement boundStatements,
+            BoundScopeStatement elseBoundStatements,
             IfElseStatementSyntax statementSyntax) : base(statementSyntax)
         {
             BoundExpression = boundExpression;
@@ -18,7 +18,7 @@ namespace Kiwi.Semantic.Binder
         }
 
         public BoundExpression BoundExpression { get; set; }
-        public List<BoundStatement> BoundStatements { get; set; }
-        public List<BoundStatement> ElseBoundStatements { get; set; }
+        public BoundScopeStatement BoundStatements { get; set; }
+        public BoundScopeStatement ElseBoundStatements { get; set; }
     }
 }

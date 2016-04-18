@@ -2,7 +2,7 @@
 using System.Linq;
 using Kiwi.Parser.Nodes;
 using Kiwi.Semantic.Binder;
-using Kiwi.Semantic.Binder.LanguageTypes;
+using Kiwi.Semantic.Binder.CompilerGeneratedNodes;
 using Kiwi.Semantic.Binder.Nodes;
 using NUnit.Framework;
 
@@ -41,12 +41,12 @@ namespace Kiwi.Tests
             var binder = new Binder();
             var semanticModel = binder.Bind(new List<CompilationUnitSyntax> { ast }).Single();
 
-            var boundNamespace = semanticModel.Namespaces.Single(x => x.NamespaceName == "MyNamespace");
+            var boundNamespace = semanticModel.Namespaces.Single(x => x.Name == "MyNamespace");
             var referencedBoundType = boundNamespace.Types.Single(x => x.Name == "MyClass2");
             var boundType = boundNamespace.Types.Single(x => x.Name == "MyClass");
             var boundFunction = (BoundFunction)boundType.Functions.Single(x => x.Name == "MyFunc");
-            Assert.AreEqual(((IBoundMember)boundFunction.Statements[0]).Type, new BoolSpecialType());
-            Assert.AreSame(((IBoundMember)boundFunction.Statements[1]).Type, referencedBoundType);
+            Assert.IsInstanceOf<BoolCompilerGeneratedType>(((IBoundMember)((BoundScopeStatement)boundFunction.Statements).Statements[0]).Type);
+            Assert.AreSame(((IBoundMember)((BoundScopeStatement)boundFunction.Statements).Statements[1]).Type, referencedBoundType);
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace Kiwi.Tests
             var binder = new Binder();
             var semanticModel = binder.Bind(new List<CompilationUnitSyntax> { ast }).Single();
 
-            var boundNamespace = semanticModel.Namespaces.Single(x => x.NamespaceName == "MyNamespace");
+            var boundNamespace = semanticModel.Namespaces.Single(x => x.Name == "MyNamespace");
             var expectedFunctionReturnType = boundNamespace.Types.Single(x => x.Name == "MyClass2");
             var function = boundNamespace.Types.Single(x => x.Name == "MyClass").Functions.Single(x => x.Name == "Add");
             Assert.AreSame(expectedFunctionReturnType, function.ReturnType);

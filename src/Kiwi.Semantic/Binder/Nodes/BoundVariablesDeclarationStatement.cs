@@ -12,6 +12,6 @@ namespace Kiwi.Semantic.Binder.Nodes
             BoundVariableDeclarationStatements = boundVariableDeclarationStatements;
         }
 
-        public List<BoundVariableDeclarationStatement> BoundVariableDeclarationStatements { get; set; }
+        public List<BoundVariableDeclarationStatement> BoundVariableDeclarationStatements { get; }
     }
 }

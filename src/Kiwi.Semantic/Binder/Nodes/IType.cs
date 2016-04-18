@@ -4,7 +4,7 @@ namespace Kiwi.Semantic.Binder.Nodes
 {
     public interface IType
     {
-        IReadOnlyCollection<IField> Fields { get; }
-        IReadOnlyCollection<IFunction> Functions { get; }
+        IEnumerable<IField> Fields { get; }
+        IEnumerable<IFunction> Functions { get; }
     }
 }

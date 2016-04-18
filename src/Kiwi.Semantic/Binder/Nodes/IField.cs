@@ -1,9 +1,8 @@
 namespace Kiwi.Semantic.Binder.Nodes
 {
-    public interface IField
+    public interface IField : IBoundMember
     {
         string Name { get; }
         VariableQualifier Qualifier { get; }
-        IType Type { get; }
     }
 }

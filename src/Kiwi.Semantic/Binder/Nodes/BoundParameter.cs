@@ -10,14 +10,14 @@ namespace Kiwi.Semantic.Binder.Nodes
             Type = type;
         }
 
-        public IType Type { get; set; }
+        public IType Type { get; }
         public string Name { get; }
     }
 
     public interface IParameter
     {
         string Name { get; }
-        IType Type { get; set; }
+        IType Type { get; }
     }
 
     public class SpecialParameter : IParameter
@@ -29,6 +29,6 @@ namespace Kiwi.Semantic.Binder.Nodes
         }
 
         public string Name { get; }
-        public IType Type { get; set; }
+        public IType Type { get; }
     }
 }

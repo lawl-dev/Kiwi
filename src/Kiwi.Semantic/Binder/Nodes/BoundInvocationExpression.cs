@@ -15,7 +15,7 @@ namespace Kiwi.Semantic.Binder.Nodes
             BoundParameter = boundParameter;
         }
 
-        public BoundExpression ToInvoke { get; set; }
-        public List<BoundExpression> BoundParameter { get; set; }
+        public BoundExpression ToInvoke { get; }
+        public List<BoundExpression> BoundParameter { get; }
     }
 }

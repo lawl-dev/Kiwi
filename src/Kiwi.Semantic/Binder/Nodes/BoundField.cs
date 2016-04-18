@@ -11,7 +11,7 @@ namespace Kiwi.Semantic.Binder.Nodes
 
         public BoundExpression Initializer { get; internal set; }
 
-        public IType Type { get; set; }
+        public IType Type { get; internal set; }
         public string Name { get; }
         public VariableQualifier Qualifier { get; internal set; }
     }

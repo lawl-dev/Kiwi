@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Kiwi.Semantic.Binder.LanguageTypes;
+using Kiwi.Semantic.Binder.CompilerGeneratedNodes;
 using Kiwi.Semantic.Binder.Nodes;
 
 namespace Kiwi.Semantic.Binder
@@ -10,6 +10,7 @@ namespace Kiwi.Semantic.Binder
     {
         private readonly Stack<Scope> _locals = new Stack<Scope>();
         private readonly Dictionary<string, BoundType> _types = new Dictionary<string, BoundType>();
+        private BoundType _currentClass;
         private Scope CurrentScope => _locals.Any() ? _locals.Peek() : null;
 
         public void Load(BoundNamespace boundNamespace)
@@ -35,21 +36,23 @@ namespace Kiwi.Semantic.Binder
 
         private IType GetStandardType(string value)
         {
-            StandardTypes res;
-            Enum.TryParse(value, true, out res);
-            return GetStandardType(res);
-        }
-
-        public IType GetStandardType(StandardTypes type)
-        {
-            switch (type)
+            switch ((StandardTypes)Enum.Parse(typeof(StandardTypes), value, true))
             {
                 case StandardTypes.Bool:
-                    return new BoolSpecialType();
+                    return new BoolCompilerGeneratedType();
+                case StandardTypes.Type:
+                    return new TypeCompilerGeneratedType();
                 case StandardTypes.Int:
-                    return new IntSpecialType();
+                    return new IntCompilerGeneratedType();
+                case StandardTypes.Float:
+                    return new FloatCompilerGeneratedType();
+                case StandardTypes.Void:
+                    return new VoidCompilerGeneratedType();
+                case StandardTypes.String:
+                    return new StringCompilerGeneratedType();
+                default:
+                    throw new NotImplementedException();
             }
-            throw new NotImplementedException();
         }
 
         private static bool IsStandardType(string value)
@@ -76,6 +79,26 @@ namespace Kiwi.Semantic.Binder
         public IBoundMember GetLocal(string value)
         {
             return CurrentScope.Get(value);
+        }
+
+        public void EnterClass(BoundType @class)
+        {
+            _currentClass = @class;
+        }
+
+        public void ExitClass()
+        {
+            _currentClass = null;
+        }
+
+        public IEnumerable<IFunction> GetAvailableFunctions()
+        {
+            return _currentClass.Functions;
+        }
+
+        public IEnumerable<IField> GetAvailableFields()
+        {
+            return _currentClass.Fields;
         }
     }
 }

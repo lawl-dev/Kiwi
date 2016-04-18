@@ -1,10 +1,10 @@
 using Kiwi.Semantic.Binder.Nodes;
 
-namespace Kiwi.Semantic.Binder.LanguageTypes
+namespace Kiwi.Semantic.Binder.CompilerGeneratedNodes
 {
-    public class SpecialField : IField
+    public class CompilerGeneratedField : IField
     {
-        public SpecialField(string name, VariableQualifier qualifier, IType type)
+        public CompilerGeneratedField(string name, VariableQualifier qualifier, IType type)
         {
             Name = name;
             Qualifier = qualifier;

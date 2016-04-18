@@ -193,7 +193,7 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            Assert.IsInstanceOf(type, ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0]);
+            Assert.IsInstanceOf(type, ((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0]);
         }
 
         [TestCase("return if(1 = 2 * 5) 1 else 2", typeof(IfElseExpressionSyntax))]
@@ -230,7 +230,7 @@ namespace Kiwi.Tests
             var ast = parser.Parse();
             Assert.IsInstanceOf(
                 type,
-                ((ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0]).Expression);
+                ((ReturnStatementSyntax)((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0]).Expression);
         }
 
         [TestCase("return if(switch) 1 else 2", typeof(KiwiSyntaxException),
@@ -290,7 +290,7 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax =
-                (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
+                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var leftBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -323,7 +323,7 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax =
-                (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
+                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -362,7 +362,7 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax =
-                (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
+                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -406,7 +406,7 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax =
-                (ReturnStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements[0];
+                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;

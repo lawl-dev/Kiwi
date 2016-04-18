@@ -10,11 +10,11 @@ namespace Kiwi.Semantic.Binder.Nodes
             Name = name;
         }
 
-        public List<BoundStatement> Statements { get; set; }
+        public BoundStatement Statements { get; internal set; }
 
-        public IType Type { get; set; }
+        public IType Type { get; internal set; }
         public string Name { get; }
-        public IEnumerable<IParameter> Parameter { get; set; }
-        public IType ReturnType { get; set; }
+        public IEnumerable<IParameter> Parameter { get; internal set; }
+        public IType ReturnType { get; internal set; }
     }
 }

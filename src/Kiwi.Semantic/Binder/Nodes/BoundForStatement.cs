@@ -9,7 +9,7 @@ namespace Kiwi.Semantic.Binder.Nodes
             BoundStatement initStatement,
             BoundExpression condition,
             BoundStatement loopStatement,
-            List<BoundStatement> boundStatements,
+            BoundScopeStatement boundStatements,
             ForStatementSyntax statementSyntax) : base(statementSyntax)
         {
             InitStatement = initStatement;
@@ -18,9 +18,9 @@ namespace Kiwi.Semantic.Binder.Nodes
             BoundStatements = boundStatements;
         }
 
-        public BoundStatement InitStatement { get; set; }
-        public BoundExpression Condition { get; set; }
-        public BoundStatement LoopStatement { get; set; }
-        public List<BoundStatement> BoundStatements { get; set; }
+        public BoundStatement InitStatement { get; }
+        public BoundExpression Condition { get; }
+        public BoundStatement LoopStatement { get; }
+        public BoundScopeStatement BoundStatements { get; }
     }
 }

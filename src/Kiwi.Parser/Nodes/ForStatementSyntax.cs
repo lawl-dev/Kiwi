@@ -8,7 +8,7 @@ namespace Kiwi.Parser.Nodes
             IStatementSyntax initStatement,
             IExpressionSyntax condExpression,
             IStatementSyntax loopStatement,
-            List<IStatementSyntax> statements)
+            ScopeStatementSyntax statements)
         {
             InitStatement = initStatement;
             CondExpression = condExpression;
@@ -19,7 +19,7 @@ namespace Kiwi.Parser.Nodes
         public IStatementSyntax InitStatement { get; }
         public IExpressionSyntax CondExpression { get; }
         public IStatementSyntax LoopStatement { get; }
-        public List<IStatementSyntax> Statements { get; }
+        public ScopeStatementSyntax Statements { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

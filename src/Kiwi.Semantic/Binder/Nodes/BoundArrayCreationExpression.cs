@@ -1,16 +1,17 @@
 using System.Collections.Generic;
+using System.Runtime.Remoting.Services;
 using Kiwi.Parser.Nodes;
-using Kiwi.Semantic.Binder.LanguageTypes;
+using Kiwi.Semantic.Binder.CompilerGeneratedNodes;
 
 namespace Kiwi.Semantic.Binder.Nodes
 {
     internal class BoundArrayCreationExpression : BoundExpression
     {
         public BoundArrayCreationExpression(
-            BoundType type,
+            IType type,
             int dimension,
             List<BoundExpression> boundParameter,
-            ArrayCreationExpressionSyntax expressionSyntax) : base(expressionSyntax, new ArrayType(type, dimension))
+            ArrayCreationExpressionSyntax expressionSyntax) : base(expressionSyntax, new ArrayCompilerGeneratedType(type, dimension))
         {
             BoundParameter = boundParameter;
         }

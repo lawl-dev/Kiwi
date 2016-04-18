@@ -9,7 +9,7 @@ namespace Kiwi.Parser.Nodes
             Token functionName,
             List<ParameterSyntax> parameterList,
             ReturnStatementSyntax returnStatement)
-            : base(functionName, parameterList, new List<IStatementSyntax> { returnStatement })
+            : base(functionName, parameterList, returnStatement)
         {
         }
 

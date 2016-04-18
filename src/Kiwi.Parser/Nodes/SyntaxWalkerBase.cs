@@ -8,12 +8,9 @@ namespace Kiwi.Parser.Nodes
             {
                 Visit(parameterSyntax);
             }
-            foreach (var statementSyntax in anonymousFunctionExpressionSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(anonymousFunctionExpressionSyntax.Statements);
         }
-
+        
         public virtual void Visit(ArrayAccessExpression arrayAccessExpression)
         {
             Visit(arrayAccessExpression.Owner);
@@ -55,10 +52,7 @@ namespace Kiwi.Parser.Nodes
         public virtual void Visit(CaseSyntax caseSyntax)
         {
             Visit(caseSyntax.Expression);
-            foreach (var statementSyntax in caseSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(caseSyntax.Statements);
         }
 
         public virtual void Visit(ClassSyntax classSyntax)
@@ -92,10 +86,7 @@ namespace Kiwi.Parser.Nodes
         public virtual void Visit(ConditionalWhenEntry conditionalWhenEntry)
         {
             Visit(conditionalWhenEntry.Condition);
-            foreach (var statementSyntax in conditionalWhenEntry.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(conditionalWhenEntry.Statements);
         }
 
         public virtual void Visit(ConditionalWhenStatementSyntax conditionalWhenStatementSyntax)
@@ -113,10 +104,7 @@ namespace Kiwi.Parser.Nodes
             {
                 Visit(parameterSyntax);
             }
-            foreach (var statementSyntax in constructorSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(constructorSyntax.Statements);
         }
 
         public virtual void Visit(DataClassFunctionSyntax dataClassFunctionSyntax)
@@ -126,10 +114,7 @@ namespace Kiwi.Parser.Nodes
                 Visit(parameterSyntax);
             }
             Visit(dataClassFunctionSyntax.DataClassSyntax);
-            foreach (var statementSyntax in dataClassFunctionSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(dataClassFunctionSyntax.Statements);
         }
 
         public virtual void Visit(DataSyntax dataSyntax)
@@ -142,10 +127,7 @@ namespace Kiwi.Parser.Nodes
 
         public virtual void Visit(ElseSyntax elseSyntax)
         {
-            foreach (var statementSyntax in elseSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(elseSyntax.Statements);
         }
 
         public virtual void Visit(EnumMemberSyntax enumMemberSyntax)
@@ -170,10 +152,7 @@ namespace Kiwi.Parser.Nodes
             {
                 Visit(parameterSyntax);
             }
-            foreach (var statementSyntax in expressionFunctionSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(expressionFunctionSyntax.Statements);
         }
 
         public virtual void Visit(FieldSyntax fieldSyntax)
@@ -199,10 +178,7 @@ namespace Kiwi.Parser.Nodes
                 Visit(forInStatementSyntax.ItemExpression);
             }
             Visit(forInStatementSyntax.CollExpression);
-            foreach (var statementSyntax in forInStatementSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(forInStatementSyntax.Statements);
         }
 
         public virtual void Visit(ForStatementSyntax forStatementSyntax)
@@ -210,10 +186,7 @@ namespace Kiwi.Parser.Nodes
             Visit(forStatementSyntax.InitStatement);
             Visit(forStatementSyntax.CondExpression);
             Visit(forStatementSyntax.LoopStatement);
-            foreach (var statementSyntax in forStatementSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(forStatementSyntax.Statements);
         }
 
         public virtual void Visit(FunctionSyntax functionSyntax)
@@ -222,10 +195,7 @@ namespace Kiwi.Parser.Nodes
             {
                 Visit(parameterSyntax);
             }
-            foreach (var statementSyntax in functionSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(functionSyntax.Statements);
         }
 
         public virtual void Visit(IfElseExpressionSyntax ifElseExpressionSyntax)
@@ -238,23 +208,14 @@ namespace Kiwi.Parser.Nodes
         public virtual void Visit(IfElseStatementSyntax ifElseStatementSyntax)
         {
             Visit(ifElseStatementSyntax.Condition);
-            foreach (var statementSyntax in ifElseStatementSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
-            foreach (var statementSyntax in ifElseStatementSyntax.ElseStatements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(ifElseStatementSyntax.Statements);
+            Visit(ifElseStatementSyntax.ElseStatements);
         }
 
         public virtual void Visit(IfStatementSyntax ifStatementSyntax)
         {
             Visit(ifStatementSyntax.Condition);
-            foreach (var statementSyntax in ifStatementSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(ifStatementSyntax.Statements);
         }
 
         public virtual void Visit(
@@ -265,10 +226,7 @@ namespace Kiwi.Parser.Nodes
             {
                 Visit(expressionSyntax);
             }
-            foreach (var statementSyntax in implicitParameterTypeAnonymousFunctionExpressionSyntax.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(implicitParameterTypeAnonymousFunctionExpressionSyntax.Statements);
         }
 
         public virtual void Visit(IntExpressionSyntax intExpressionSyntax)
@@ -374,10 +332,7 @@ namespace Kiwi.Parser.Nodes
         public virtual void Visit(WhenEntry whenEntry)
         {
             Visit(whenEntry.Condition);
-            foreach (var statementSyntax in whenEntry.Statements)
-            {
-                Visit(statementSyntax);
-            }
+            Visit(whenEntry.Statements);
         }
 
         public virtual void Visit(WhenInExpressionSyntax whenInExpressionSyntax)
@@ -385,6 +340,14 @@ namespace Kiwi.Parser.Nodes
             foreach (var expressionSyntax in whenInExpressionSyntax.InExpressionList)
             {
                 Visit(expressionSyntax);
+            }
+        }
+
+        public void Visit(ScopeStatementSyntax scopeStatement)
+        {
+            foreach (var statementSyntax in scopeStatement.Statements)
+            {
+                Visit(statementSyntax);
             }
         }
 

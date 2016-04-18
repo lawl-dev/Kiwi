@@ -2,16 +2,14 @@ using System.Collections.Generic;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class CaseSyntax : ISyntaxBase
+    public class ScopeStatementSyntax : IStatementSyntax
     {
-        public CaseSyntax(IExpressionSyntax expression, IStatementSyntax statements)
+        public List<IStatementSyntax> Statements { get; }
+
+        public ScopeStatementSyntax(List<IStatementSyntax> statements)
         {
-            Expression = expression;
             Statements = statements;
         }
-
-        public IExpressionSyntax Expression { get; }
-        public IStatementSyntax Statements { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

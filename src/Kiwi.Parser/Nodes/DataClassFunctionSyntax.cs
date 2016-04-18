@@ -8,7 +8,7 @@ namespace Kiwi.Parser.Nodes
         public DataClassFunctionSyntax(
             Token functionName,
             List<ParameterSyntax> parameter,
-            List<IStatementSyntax> statements,
+            ScopeStatementSyntax statements,
             DataSyntax dataClassSyntax) : base(functionName, parameter, statements)
         {
             DataClassSyntax = dataClassSyntax;

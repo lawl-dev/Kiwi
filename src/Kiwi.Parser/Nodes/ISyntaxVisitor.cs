@@ -53,5 +53,6 @@
         void Visit(VariablesDeclarationStatementSyntax variablesDeclarationStatementSyntax);
         void Visit(WhenEntry whenEntry);
         void Visit(WhenInExpressionSyntax whenInExpressionSyntax);
+        void Visit(ScopeStatementSyntax scopeStatement);
     }
 }

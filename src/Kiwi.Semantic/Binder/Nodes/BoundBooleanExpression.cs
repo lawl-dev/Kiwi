@@ -1,10 +1,11 @@
 using Kiwi.Parser.Nodes;
+using Kiwi.Semantic.Binder.CompilerGeneratedNodes;
 
 namespace Kiwi.Semantic.Binder.Nodes
 {
     internal class BoundBooleanExpression : BoundExpression
     {
-        public BoundBooleanExpression(bool value, IType type, BooleanExpressionSyntax syntax) : base(syntax, type)
+        public BoundBooleanExpression(bool value, BooleanExpressionSyntax syntax) : base(syntax, new BoolCompilerGeneratedType())
         {
             Value = value;
         }

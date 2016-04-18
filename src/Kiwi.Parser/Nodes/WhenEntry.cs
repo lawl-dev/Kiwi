@@ -4,14 +4,14 @@ namespace Kiwi.Parser.Nodes
 {
     public class WhenEntry : ISyntaxBase
     {
-        public WhenEntry(IExpressionSyntax condition, List<IStatementSyntax> statements)
+        public WhenEntry(IExpressionSyntax condition, IStatementSyntax statements)
         {
             Condition = condition;
             Statements = statements;
         }
 
         public IExpressionSyntax Condition { get; set; }
-        public List<IStatementSyntax> Statements { get; set; }
+        public IStatementSyntax Statements { get; set; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

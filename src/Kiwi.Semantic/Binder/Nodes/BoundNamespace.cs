@@ -6,15 +6,15 @@ namespace Kiwi.Semantic.Binder.Nodes
 {
     public class BoundNamespace : BoundNode
     {
-        public BoundNamespace(string namespaceName, NamespaceSyntax syntax) : base(syntax)
+        public BoundNamespace(string name, NamespaceSyntax syntax) : base(syntax)
         {
-            NamespaceName = namespaceName;
+            Name = name;
             TypesInternal = new List<BoundType>();
             EnumsInternal = new List<BoundEnum>();
         }
 
-        public string NamespaceName { get; private set; }
-        public ReadOnlyCollection<BoundType> Types => new ReadOnlyCollection<BoundType>(TypesInternal);
+        public string Name { get; }
+        public IEnumerable<BoundType> Types => new ReadOnlyCollection<BoundType>(TypesInternal);
         internal List<BoundType> TypesInternal { get; set; }
         public List<BoundEnum> EnumsInternal { get; set; }
     }

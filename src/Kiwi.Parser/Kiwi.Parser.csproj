@@ -73,6 +73,7 @@
     <Compile Include="Nodes\ObjectCreationExpressionSyntax.cs" />
     <Compile Include="Nodes\ReturnFunctionSyntax.cs" />
     <Compile Include="Nodes\ReverseForInStatementSyntax.cs" />
+    <Compile Include="Nodes\ScopeStatementSyntax.cs" />
     <Compile Include="Nodes\SimpleWhenStatementSyntax.cs" />
     <Compile Include="Nodes\SyntaxWalkerBase.cs" />
     <Compile Include="Nodes\WhenEntry.cs" />
@@ -112,9 +113,7 @@
       <Name>Kiwi.Lexer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="LangugeTypes\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

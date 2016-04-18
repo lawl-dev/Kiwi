@@ -4,12 +4,12 @@ namespace Kiwi.Parser.Nodes
 {
     public class ElseSyntax : ISyntaxBase
     {
-        public ElseSyntax(List<IStatementSyntax> statements)
+        public ElseSyntax(IStatementSyntax statements)
         {
             Statements = statements;
         }
 
-        public List<IStatementSyntax> Statements { get; }
+        public IStatementSyntax Statements { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

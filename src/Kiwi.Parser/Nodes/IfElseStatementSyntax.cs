@@ -6,13 +6,13 @@ namespace Kiwi.Parser.Nodes
     {
         public IfElseStatementSyntax(
             IExpressionSyntax condition,
-            List<IStatementSyntax> statements,
-            List<IStatementSyntax> elseStatements) : base(condition, statements)
+            ScopeStatementSyntax statements,
+            ScopeStatementSyntax elseStatements) : base(condition, statements)
         {
             ElseStatements = elseStatements;
         }
 
-        public List<IStatementSyntax> ElseStatements { get; }
+        public ScopeStatementSyntax ElseStatements { get; }
 
         public override void Accept(ISyntaxVisitor visitor)
         {

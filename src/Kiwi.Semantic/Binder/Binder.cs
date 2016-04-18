@@ -1,11 +1,10 @@
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using Kiwi.Common.Extensions;
 using Kiwi.Lexer;
 using Kiwi.Parser.Nodes;
-using Kiwi.Semantic.Binder.LanguageTypes;
+using Kiwi.Semantic.Binder.CompilerGeneratedNodes;
 using Kiwi.Semantic.Binder.Nodes;
 
 namespace Kiwi.Semantic.Binder
@@ -14,8 +13,7 @@ namespace Kiwi.Semantic.Binder
     {
         private readonly BasicSymbolService _basicSymbolService = new BasicSymbolService();
         private readonly BindingContextService _contextService = new BindingContextService();
-        private BoundType _this;
-
+        
         public List<BoundCompilationUnit> Bind(List<CompilationUnitSyntax> compilationUnits)
         {
             var basicModels = _basicSymbolService.CreateBasicModel(compilationUnits);
@@ -23,8 +21,7 @@ namespace Kiwi.Semantic.Binder
 
             foreach (var basicModel in basicModels)
             {
-                basicModel.BoundUsings.AddRange(
-                    ((CompilationUnitSyntax)basicModel.Syntax).UsingMember.Select(x => BindUsing(x, allNamespaces)));
+                basicModel.BoundUsings.AddRange(((CompilationUnitSyntax)basicModel.Syntax).UsingMember.Select(x => BindUsing(x, allNamespaces)));
 
                 foreach (var boundNamespace in basicModel.Namespaces)
                 {
@@ -39,14 +36,14 @@ namespace Kiwi.Semantic.Binder
             _contextService.Load(boundNamespace);
             foreach (var boundType in boundNamespace.TypesInternal)
             {
-                BindClass(syntax, boundType, (ClassSyntax)boundType.Syntax);
+                BindClass(boundType, (ClassSyntax)boundType.Syntax);
             }
             _contextService.Unload(boundNamespace);
         }
 
-        private BoundType BindClass(NamespaceSyntax classNamespace, BoundType @class, ClassSyntax syntax)
+        private BoundType BindClass(BoundType @class, ClassSyntax syntax)
         {
-            _this = @class;
+            _contextService.EnterClass(@class);
             foreach (var boundField in @class.FieldsInternal)
             {
                 BindField(boundField, (FieldSyntax)boundField.Syntax);
@@ -58,7 +55,7 @@ namespace Kiwi.Semantic.Binder
                 _contextService.ExitScope();
             }
             @class.ConstructorsInternal.AddRange(syntax.ConstructorMember.Select(BindConstructor).ToList());
-            _this = null;
+            _contextService.ExitClass();
             return @class;
         }
 
@@ -76,10 +73,18 @@ namespace Kiwi.Semantic.Binder
         {
             var boundParameters = returnFunctionSyntax.ParameterList.Select(BindParameter).ToList();
             var type = _contextService.LookupType(returnFunctionSyntax.ReturnType.TypeName.Value);
-            boundFunction.Statements = returnFunctionSyntax.Statements.Select(BindStatement).ToList();
+            boundFunction.Statements = BindScope((ScopeStatementSyntax)returnFunctionSyntax.Statements);
             boundFunction.Parameter = boundParameters;
-            boundFunction.Type = new FunctionType(boundParameters.Select(x => x.Type).ToList(), type);
+            boundFunction.Type = new FunctionCompilerGeneratedType(boundParameters.Select(x => x.Type).ToList(), type);
             return boundFunction;
+        }
+
+        private BoundScopeStatement BindScope(ScopeStatementSyntax statements)
+        {
+            _contextService.EnterScope();
+            var boundScopeStatement = new BoundScopeStatement(statements.Statements.Select(BindStatement).ToList(), statements);
+            _contextService.ExitScope();
+            return boundScopeStatement;
         }
 
         private BoundFunction BindExpressionFunction(
@@ -87,11 +92,10 @@ namespace Kiwi.Semantic.Binder
             ExpressionFunctionSyntax expressionFunctionSyntax)
         {
             var boundParameters = expressionFunctionSyntax.ParameterList.Select(BindParameter).ToList();
-            var boundReturnStatement =
-                (BoundReturnStatement)expressionFunctionSyntax.Statements.Select(BindStatement).ToList().Single();
+            var boundReturnStatement = BindReturnStatement((ReturnStatementSyntax)expressionFunctionSyntax.Statements);
             boundFunction.Parameter = boundParameters;
-            boundFunction.Statements = new List<BoundStatement> { boundReturnStatement };
-            boundFunction.Type = new FunctionType(
+            boundFunction.Statements = boundReturnStatement;
+            boundFunction.Type = new FunctionCompilerGeneratedType(
                 boundParameters.Select(x => x.Type).ToList(),
                 boundReturnStatement.BoundExpression.Type);
             boundFunction.ReturnType = boundReturnStatement.BoundExpression.Type;
@@ -101,19 +105,16 @@ namespace Kiwi.Semantic.Binder
         private BoundFunction BindVoid(BoundFunction function, FunctionSyntax functionSyntax)
         {
             var boundParameters = functionSyntax.ParameterList.Select(BindParameter).ToList();
-            function.Statements = functionSyntax.Statements.Select(BindStatement).ToList();
+            function.Statements = BindScope((ScopeStatementSyntax)functionSyntax.Statements);
             function.Parameter = boundParameters;
-            function.Type = new FunctionType(boundParameters.Select(x => x.Type).ToList(), null);
+            function.Type = new FunctionCompilerGeneratedType(boundParameters.Select(x => x.Type).ToList(), null);
             return function;
         }
 
         private BoundParameter BindParameter(ParameterSyntax parameterSyntax)
         {
             var type = _contextService.LookupType(parameterSyntax.Type.TypeName.Value);
-            var boundParameter = new BoundParameter(parameterSyntax.ParameterName.Value, type, parameterSyntax)
-                                 {
-                                     Type = type
-                                 };
+            var boundParameter = new BoundParameter(parameterSyntax.ParameterName.Value, type, parameterSyntax);
             _contextService.AddLocal(boundParameter.Name, boundParameter);
             return boundParameter;
         }
@@ -121,7 +122,7 @@ namespace Kiwi.Semantic.Binder
         private BoundConstructor BindConstructor(ConstructorSyntax constructorSyntax)
         {
             var boundParameters = constructorSyntax.ArgList.Select(BindParameter).ToList();
-            var boundStatements = constructorSyntax.Statements.Select(BindStatement).ToList();
+            var boundStatements = BindScope(constructorSyntax.Statements);
             return new BoundConstructor(boundParameters, boundStatements, constructorSyntax);
         }
 
@@ -150,7 +151,7 @@ namespace Kiwi.Semantic.Binder
             var initStatement = BindStatement(statementSyntax.InitStatement);
             var condition = BindExpression(statementSyntax.CondExpression);
             var loopStatement = BindStatement(statementSyntax.LoopStatement);
-            var boundStatements = statementSyntax.Statements.Select(BindStatement).ToList();
+            var boundStatements = BindScope(statementSyntax.Statements);
             return new BoundForStatement(initStatement, condition, loopStatement, boundStatements, statementSyntax);
         }
 
@@ -194,12 +195,8 @@ namespace Kiwi.Semantic.Binder
         private BoundStatement BindIfElseStatement(IfElseStatementSyntax statementSyntax)
         {
             var boundExpression = BindExpression(statementSyntax.Condition);
-            _contextService.EnterScope();
-            var boundStatements = statementSyntax.Statements.Select(BindStatement).ToList();
-            _contextService.ExitScope();
-            _contextService.EnterScope();
-            var elseBoundStatements = statementSyntax.ElseStatements.Select(BindStatement).ToList();
-            _contextService.ExitScope();
+            var boundStatements = BindScope(statementSyntax.Statements);
+            var elseBoundStatements = BindScope(statementSyntax.ElseStatements);
             return new BoundIfElseStatement(boundExpression, boundStatements, elseBoundStatements, statementSyntax);
         }
 
@@ -207,7 +204,7 @@ namespace Kiwi.Semantic.Binder
         {
             var boundExpression = BindExpression(statementSyntax.Condition);
             _contextService.EnterScope();
-            var boundStatements = statementSyntax.Statements.Select(BindStatement).ToList();
+            var boundStatements = BindScope(statementSyntax.Statements);
             _contextService.ExitScope();
             return new BoundIfStatement(boundExpression, boundStatements, statementSyntax);
         }
@@ -242,7 +239,7 @@ namespace Kiwi.Semantic.Binder
 
         private BoundUsing BindUsing(UsingSyntax usingSyntax, List<BoundNamespace> allNamespaces)
         {
-            var boundNamespace = allNamespaces.Single(x => x.NamespaceName == usingSyntax.NamespaceName.Value);
+            var boundNamespace = allNamespaces.Single(x => x.Name == usingSyntax.NamespaceName.Value);
             _contextService.Load(boundNamespace);
             var boundUsing = new BoundUsing(usingSyntax.NamespaceName.Value, usingSyntax, boundNamespace);
             return boundUsing;
@@ -285,28 +282,44 @@ namespace Kiwi.Semantic.Binder
                                    .Case<ObjectCreationExpressionSyntax>(BindObjectCreationExpression)
                                    .Case<ArrayCreationExpressionSyntax>(BindArrayCreationExpression)
                                    .Case<StringExpressionSyntax>(BindStringExpression)
-                                   .Case<MemberAccessExpressionSyntax>(BindMemberAccessExpression)
+                                   .Case<MemberAccessExpressionSyntax>(x => BindMemberAccessExpression(x, args))
                                    .Default(() => { throw new NotImplementedException(); })
                                    .Done();
         }
 
-        private BoundMemberAccessExpression BindMemberAccessExpression(MemberAccessExpressionSyntax expressionSyntax)
+        private BoundMemberAccessExpression BindMemberAccessExpression(MemberAccessExpressionSyntax expressionSyntax, List<IType> parameterTypes)
         {
             var boundExpression = BindExpression(expressionSyntax.Owner);
-            throw new NotImplementedException();
+            var boundFunction =
+                boundExpression.Type.Functions.SingleOrDefault(
+                    x =>
+                    x.Name == expressionSyntax.MemberName.Value
+                    && Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes));
+
+            if (boundFunction != null)
+            {
+                return new BoundMemberAccessExpression(expressionSyntax.MemberName.Value, boundFunction, expressionSyntax);
+            }
+
+            var boundField = boundExpression.Type.Fields.SingleOrDefault(x => x.Name == expressionSyntax.MemberName.Value);
+            if (boundField != null)
+            {
+                return new BoundMemberAccessExpression(
+                    expressionSyntax.MemberName.Value,
+                    boundField,
+                    expressionSyntax);
+            }
+            throw new KiwiSemanticException($"{expressionSyntax.MemberName.Value} not defined");
         }
 
         private BoundExpression BindStringExpression(StringExpressionSyntax expressionSyntax)
         {
-            var boundType = _contextService.GetStandardType(StandardTypes.String);
-            return new BoundStringExpression(expressionSyntax.Value.Value, boundType, expressionSyntax);
+            return new BoundStringExpression(expressionSyntax.Value.Value, expressionSyntax);
         }
 
         private BoundExpression BindIntExpression(IntExpressionSyntax expressionSyntax)
         {
-            //TODO: int parsen
-            var boundType = _contextService.GetStandardType(StandardTypes.Int);
-            return new BoundIntExpression(expressionSyntax, boundType);
+            return new BoundIntExpression(expressionSyntax);
         }
 
         private BoundObjectCreationExpression BindObjectCreationExpression(
@@ -320,7 +333,7 @@ namespace Kiwi.Semantic.Binder
             {
                 boundConstructor =
                     type.ConstructorsInternal.Single(
-                        x => Match(x.Parameters.Select(y => y.Type).ToList(), parameterTypes));
+                        x => Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes));
             }
             return new BoundObjectCreationExpression(type, boundConstructor, boundParameter, expressionSyntax);
         }
@@ -336,8 +349,9 @@ namespace Kiwi.Semantic.Binder
             MemberExpressionSyntax expressionSyntax,
             List<IType> parameterTypes = null)
         {
-            var boundFunction =
-                _this.FunctionsInternal.SingleOrDefault(
+            
+            
+            var boundFunction = _contextService.GetAvailableFunctions().SingleOrDefault(
                     x =>
                     x.Name == expressionSyntax.MemberName.Value
                     && Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes));
@@ -346,7 +360,7 @@ namespace Kiwi.Semantic.Binder
                 return new BoundMemberExpression(expressionSyntax.MemberName.Value, boundFunction, expressionSyntax);
             }
 
-            var boundField = _this.FieldsInternal.SingleOrDefault(x => x.Name == expressionSyntax.MemberName.Value);
+            var boundField = _contextService.GetAvailableFields().SingleOrDefault(x => x.Name == expressionSyntax.MemberName.Value);
             if (boundField != null)
             {
                 return new BoundMemberExpression(
@@ -375,14 +389,13 @@ namespace Kiwi.Semantic.Binder
         {
             var boundParameter = expressionSyntax.Parameter.Select(x => BindExpression(x)).ToList();
             var boundToInvoke = BindExpression(expressionSyntax.ToInvoke, boundParameter.Select(x => x.Type).ToList());
-            var returnType = ((FunctionType)boundToInvoke.Type).ReturnType ?? new VoidType();
+            var returnType = ((FunctionCompilerGeneratedType)boundToInvoke.Type).ReturnType ?? new VoidCompilerGeneratedType();
             return new BoundInvocationExpression(boundToInvoke, boundParameter, expressionSyntax, returnType);
         }
 
         private BoundExpression BindBooleanExpression(BooleanExpressionSyntax expressionSyntax)
         {
-            var boundType = _contextService.GetStandardType(StandardTypes.Bool);
-            return new BoundBooleanExpression(expressionSyntax.Value.Value == "true", boundType, expressionSyntax);
+            return new BoundBooleanExpression(expressionSyntax.Value.Value == "true", expressionSyntax);
         }
     }
 

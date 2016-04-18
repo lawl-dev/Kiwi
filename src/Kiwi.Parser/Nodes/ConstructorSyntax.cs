@@ -4,14 +4,14 @@ namespace Kiwi.Parser.Nodes
 {
     public class ConstructorSyntax : ISyntaxBase
     {
-        public ConstructorSyntax(List<ParameterSyntax> argList, List<IStatementSyntax> statements)
+        public ConstructorSyntax(List<ParameterSyntax> argList, ScopeStatementSyntax statements)
         {
             ArgList = argList;
             Statements = statements;
         }
 
         public List<ParameterSyntax> ArgList { get; private set; }
-        public List<IStatementSyntax> Statements { get; }
+        public ScopeStatementSyntax Statements { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

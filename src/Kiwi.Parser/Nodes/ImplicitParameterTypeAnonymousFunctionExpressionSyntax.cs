@@ -6,14 +6,14 @@ namespace Kiwi.Parser.Nodes
     {
         public ImplicitParameterTypeAnonymousFunctionExpressionSyntax(
             List<IExpressionSyntax> parameter,
-            List<IStatementSyntax> statements)
+            IStatementSyntax statements)
         {
             Parameter = parameter;
             Statements = statements;
         }
 
         public List<IExpressionSyntax> Parameter { get; }
-        public List<IStatementSyntax> Statements { get; }
+        public IStatementSyntax Statements { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

@@ -87,7 +87,7 @@ namespace Kiwi.Parser
         {
             ParseExpected(TokenType.NamespaceKeyword);
             var namespaceName = ParseExpected(TokenType.Identifier);
-            var body = ParseScope(ParseNamespaceBody);
+            var body = ParseInner(ParseNamespaceBody);
             return new NamespaceSyntax(
                 namespaceName,
                 body.OfType<ClassSyntax>().ToList(),
@@ -128,7 +128,7 @@ namespace Kiwi.Parser
                 descriptorName = ParseExpected(TokenType.Identifier);
             }
 
-            var inner = ParseScope(ParseClassBody);
+            var inner = ParseInner(ParseClassBody);
             return new ClassSyntax(className, descriptorName, inner);
         }
 
@@ -234,7 +234,7 @@ namespace Kiwi.Parser
                     break;
                 default:
                     throw new KiwiSyntaxException(
-                        $"Unexpected Token {current}. Expected Sign Operator, New, Int, Float, String or Symbol Expression.");
+                        $"Unexpected Token {current}. Expected Sign Operator, New, Int, Float, String or Identifier Expression.");
             }
             return expression;
         }
@@ -480,7 +480,7 @@ namespace Kiwi.Parser
                     ParseExpected(TokenType.InKeyword);
                     var collExpression = ParseExpression();
                     ParseExpected(TokenType.ClosingParenth);
-                    var statement = ParseScopeOrSingleStatement();
+                    var statement = ParseScope(ParseStatement);
                     return new ReverseForInStatementSyntax(variableDeclarationStatement, collExpression, statement);
                 }
                 throw new KiwiSyntaxException("Expected Variable declaration without init");
@@ -492,7 +492,7 @@ namespace Kiwi.Parser
                 ParseExpected(TokenType.InKeyword);
                 var collExpression = ParseExpression();
                 ParseExpected(TokenType.ClosingParenth);
-                var statement = ParseScopeOrSingleStatement();
+                var statement = ParseScope(ParseStatement);
                 return new ReverseForInStatementSyntax(expression, collExpression, statement);
             }
 
@@ -515,7 +515,7 @@ namespace Kiwi.Parser
                     ParseExpected(TokenType.Semicolon);
                     var incExpression = ParseFunctionCallOrAssignStatement();
                     ParseExpected(TokenType.ClosingParenth);
-                    var statement = ParseScopeOrSingleStatement();
+                    var statement = ParseScope(ParseStatement);
                     return new ForStatementSyntax(variableDeclaration, condExpression, incExpression, statement);
                 }
                 if (variableDeclarationStatement?.InitExpression == null)
@@ -523,7 +523,7 @@ namespace Kiwi.Parser
                     ParseExpected(TokenType.InKeyword);
                     var collExpression = ParseExpression();
                     ParseExpected(TokenType.ClosingParenth);
-                    var statement = ParseScopeOrSingleStatement();
+                    var statement = ParseScope(ParseStatement);
                     return new ForInStatementSyntax(variableDeclarationStatement, collExpression, statement);
                 }
             }
@@ -534,7 +534,7 @@ namespace Kiwi.Parser
                 ParseExpected(TokenType.InKeyword);
                 var collExpression = ParseExpression();
                 ParseExpected(TokenType.ClosingParenth);
-                var statement = ParseScopeOrSingleStatement();
+                var statement = ParseScope(ParseStatement);
                 return new ForInStatementSyntax(expression, collExpression, statement);
             }
 
@@ -546,7 +546,7 @@ namespace Kiwi.Parser
                 ParseExpected(TokenType.Semicolon);
                 var incrementStatement = ParseStatement();
                 ParseExpected(TokenType.ClosingParenth);
-                var statement = ParseScopeOrSingleStatement();
+                var statement = ParseScope(ParseStatement);
                 return new ForStatementSyntax(assignmentStatement, condExpression, incrementStatement, statement);
             }
 
@@ -704,10 +704,10 @@ namespace Kiwi.Parser
             return new ConstructorSyntax(parameter, bodySyntax);
         }
 
-        private List<IStatementSyntax> ParseScopeOrSingleStatement()
+        private IStatementSyntax ParseScopeOrSingleStatement()
         {
             var hasScope = TokenStream.Current.Type == TokenType.OpenBrace;
-            var statements = hasScope ? ParseScope(ParseStatement) : new List<IStatementSyntax> { ParseStatement() };
+            var statements = hasScope ? ParseScope(ParseStatement) : ParseStatement();
             return statements;
         }
 
@@ -717,7 +717,7 @@ namespace Kiwi.Parser
             ParseExpected(TokenType.OpenParenth);
             var condition = ParseExpression();
             ParseExpected(TokenType.ClosingParenth);
-            var caseAndDefaultSyntax = ParseScope(ParseCaseOrElse);
+            var caseAndDefaultSyntax = ParseInner(ParseCaseOrElse);
 
             ElseSyntax elseSyntax;
             try
@@ -850,11 +850,11 @@ namespace Kiwi.Parser
 
         private IfElseStatementSyntax ParseIfElseStatement(
             IExpressionSyntax condition,
-            List<IStatementSyntax> statements)
+            ScopeStatementSyntax statements)
         {
             ParseExpected(TokenType.ElseKeyword);
             var elseBody = ParseScope(ParseStatement);
-            return new IfElseStatementSyntax(condition, statements, elseBody.ToList());
+            return new IfElseStatementSyntax(condition, statements, elseBody);
         }
 
         private ParameterSyntax ParseSimpleParameter()
@@ -914,9 +914,14 @@ namespace Kiwi.Parser
             return new EnumMemberSyntax(memberName, initializer);
         }
 
-        private List<TSyntax> ParseScope<TSyntax>(Func<TSyntax> parser) where TSyntax : ISyntaxBase
+        private List<TSyntax> ParseInner<TSyntax>(Func<TSyntax> parser) where TSyntax : ISyntaxBase
         {
             return ParseInner(TokenType.OpenBrace, TokenType.ClosingBrace, parser);
+        }
+
+        private ScopeStatementSyntax ParseScope(Func<IStatementSyntax> parser)
+        {
+            return new ScopeStatementSyntax(ParseInner(TokenType.OpenBrace, TokenType.ClosingBrace, parser).ToList());
         }
 
         private static List<Token> RemoveUnnecessaryToken(List<Token> token)

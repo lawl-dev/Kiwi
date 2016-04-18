@@ -7,7 +7,7 @@ namespace Kiwi.Parser.Nodes
         public ForInStatementSyntax(
             VariableDeclarationStatementSyntax variableDeclarationStatement,
             IExpressionSyntax collExpression,
-            List<IStatementSyntax> statements)
+            IStatementSyntax statements)
         {
             VariableDeclarationStatement = variableDeclarationStatement;
             CollExpression = collExpression;
@@ -17,7 +17,7 @@ namespace Kiwi.Parser.Nodes
         public ForInStatementSyntax(
             IExpressionSyntax itemExpression,
             IExpressionSyntax collExpression,
-            List<IStatementSyntax> statements)
+            IStatementSyntax statements)
         {
             ItemExpression = itemExpression;
             CollExpression = collExpression;
@@ -27,7 +27,7 @@ namespace Kiwi.Parser.Nodes
         public VariableDeclarationStatementSyntax VariableDeclarationStatement { get; }
         public IExpressionSyntax ItemExpression { get; }
         public IExpressionSyntax CollExpression { get; }
-        public List<IStatementSyntax> Statements { get; }
+        public IStatementSyntax Statements { get; }
 
         public virtual void Accept(ISyntaxVisitor visitor)
         {
