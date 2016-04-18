@@ -16,6 +16,6 @@ namespace Kiwi.Semantic.Binder.Nodes
         public string Name { get; }
         public IEnumerable<BoundType> Types => new ReadOnlyCollection<BoundType>(TypesInternal);
         internal List<BoundType> TypesInternal { get; set; }
-        public List<BoundEnum> EnumsInternal { get; set; }
+        internal List<BoundEnum> EnumsInternal { get; set; }
     }
 }

@@ -6,5 +6,6 @@ namespace Kiwi.Semantic.Binder.Nodes
     {
         IEnumerable<IField> Fields { get; }
         IEnumerable<IFunction> Functions { get; }
+        IEnumerable<IConstructor> Constructors{ get; }
     }
 }

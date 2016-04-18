@@ -5,7 +5,7 @@ using Kiwi.Semantic.Binder.Nodes;
 
 namespace Kiwi.Semantic.Binder.CompilerGeneratedNodes
 {
-    internal class FunctionCompilerGeneratedType : IType
+    public class FunctionCompilerGeneratedType : IType
     {
         public FunctionCompilerGeneratedType(List<IType> parameterTypes, IType returnType)
         {
@@ -18,5 +18,6 @@ namespace Kiwi.Semantic.Binder.CompilerGeneratedNodes
 
         public IEnumerable<IField> Fields => Enumerable.Empty<IField>();
         public IEnumerable<IFunction> Functions => Enumerable.Empty<IFunction>();
+        public IEnumerable<IConstructor> Constructors => Enumerable.Empty<IConstructor>();
     }
 }

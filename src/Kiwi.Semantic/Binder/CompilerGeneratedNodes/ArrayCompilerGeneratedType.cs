@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -13,12 +14,13 @@ namespace Kiwi.Semantic.Binder.CompilerGeneratedNodes
             Dimension = dimension;
         }
 
-        public IType Type { get; set; }
-        public int Dimension { get; set; }
+        public IType Type { get; }
+        public int Dimension { get; }
 
         public IEnumerable<IField> Fields => Enumerable.Empty<IField>();
 
         public IEnumerable<IFunction> Functions => CreateFunctions();
+        public IEnumerable<IConstructor> Constructors => Enumerable.Empty<IConstructor>();
 
         private static IEnumerable<CompilerGeneratedFunction> CreateFunctions()
         {

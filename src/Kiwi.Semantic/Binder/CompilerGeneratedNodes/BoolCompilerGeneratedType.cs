@@ -8,5 +8,6 @@ namespace Kiwi.Semantic.Binder.CompilerGeneratedNodes
     {
         public IEnumerable<IField> Fields => Enumerable.Empty<IField>();
         public IEnumerable<IFunction> Functions => Enumerable.Empty<IFunction>();
+        public IEnumerable<IConstructor> Constructors => Enumerable.Empty<IConstructor>();
     }
 }

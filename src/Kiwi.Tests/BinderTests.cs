@@ -133,5 +133,36 @@ namespace Kiwi.Tests
                 () => binder.Bind(new List<CompilationUnitSyntax> { ast }),
                 Throws.TypeOf<KiwiSemanticException>().With.Message.EqualTo("a already defined."));
         }
+
+        [Test]
+        public void Test_MemberAccessExpressionBinding()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b) -> return a * b" +
+                               "    }" +
+                               "" +
+                               "    class MyClass2" +
+                               "    {" +
+                               "        var addMethod : new MyClass().Add" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            var boundCompilationUnit = binder.Bind(new List<CompilationUnitSyntax>() { ast }).Single();
+            var function = boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass").Functions.Single(x=> x.Name == "Add");
+            var field = boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass2").Fields.Single(x => x.Name == "addMethod");
+            Assert.That(() => field.Type, Is.InstanceOf<FunctionCompilerGeneratedType>().And.Property("ReturnType").InstanceOf<IntCompilerGeneratedType>());
+            CollectionAssert.AllItemsAreInstancesOfType(((FunctionCompilerGeneratedType)field.Type).ParameterTypes, typeof(IntCompilerGeneratedType));
+        }
     }
 }

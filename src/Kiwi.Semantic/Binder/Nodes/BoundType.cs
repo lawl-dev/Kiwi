@@ -20,10 +20,11 @@ namespace Kiwi.Semantic.Binder.Nodes
 
         public string Name { get; }
 
-        public IReadOnlyCollection<BoundConstructor> Constructors => new ReadOnlyCollection<BoundConstructor>(ConstructorsInternal);
+        public IEnumerable<IConstructor> Constructors => ConstructorsInternal.Select(x => x);
 
-        
-        
+
+
+
         public IType Type { get; internal set; }
 
         public IEnumerable<IField> Fields => FieldsInternal.Select(x => x);
