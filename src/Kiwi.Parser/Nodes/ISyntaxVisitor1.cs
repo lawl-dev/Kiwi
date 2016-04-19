@@ -39,7 +39,7 @@
         TResult Visit(InvocationExpressionSyntax invocationExpressionSyntax);
         TResult Visit(InvocationStatementSyntax invocationStatementSyntax);
         TResult Visit(MemberAccessExpressionSyntax memberAccessExpressionSyntax);
-        TResult Visit(MemberExpressionSyntax memberExpressionSyntax);
+        TResult Visit(MemberOrTypeExpressionSyntax memberOrTypeExpressionSyntax);
         TResult Visit(NamespaceSyntax namespaceSyntax);
         TResult Visit(ObjectCreationExpressionSyntax objectCreationExpressionSyntax);
         TResult Visit(ParameterSyntax parameterSyntax);

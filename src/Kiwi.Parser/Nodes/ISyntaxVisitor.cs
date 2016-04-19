@@ -38,7 +38,7 @@
         void Visit(InvocationExpressionSyntax invocationExpressionSyntax);
         void Visit(InvocationStatementSyntax invocationStatementSyntax);
         void Visit(MemberAccessExpressionSyntax memberAccessExpressionSyntax);
-        void Visit(MemberExpressionSyntax memberExpressionSyntax);
+        void Visit(MemberOrTypeExpressionSyntax memberOrTypeExpressionSyntax);
         void Visit(NamespaceSyntax namespaceSyntax);
         void Visit(ObjectCreationExpressionSyntax objectCreationExpressionSyntax);
         void Visit(ParameterSyntax parameterSyntax);

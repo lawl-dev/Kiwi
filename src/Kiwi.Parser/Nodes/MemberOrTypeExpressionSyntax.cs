@@ -2,14 +2,14 @@ using Kiwi.Lexer;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class MemberExpressionSyntax : IExpressionSyntax
+    public class MemberOrTypeExpressionSyntax : IExpressionSyntax
     {
-        public MemberExpressionSyntax(Token memberName)
+        public MemberOrTypeExpressionSyntax(Token name)
         {
-            MemberName = memberName;
+            Name = name;
         }
 
-        public Token MemberName { get; }
+        public Token Name { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

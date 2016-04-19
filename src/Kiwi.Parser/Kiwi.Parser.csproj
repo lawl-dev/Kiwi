@@ -69,7 +69,7 @@
     <Compile Include="Nodes\IExpressionSyntax.cs" />
     <Compile Include="Nodes\IntExpressionSyntax.cs" />
     <Compile Include="Nodes\IStatementSyntax.cs" />
-    <Compile Include="Nodes\MemberExpressionSyntax.cs" />
+    <Compile Include="Nodes\MemberOrTypeExpressionSyntax.cs" />
     <Compile Include="Nodes\ObjectCreationExpressionSyntax.cs" />
     <Compile Include="Nodes\ReturnFunctionSyntax.cs" />
     <Compile Include="Nodes\ReverseForInStatementSyntax.cs" />

@@ -63,6 +63,7 @@
     <Compile Include="Binder\Nodes\BoundMemberAccessExpression.cs" />
     <Compile Include="Binder\Nodes\BoundScopeStatement.cs" />
     <Compile Include="Binder\Nodes\BoundStringExpression.cs" />
+    <Compile Include="Binder\Nodes\BoundTypeExpression.cs" />
     <Compile Include="Binder\Nodes\BoundVariableDeclarationStatement.cs" />
     <Compile Include="Binder\Nodes\BoundBooleanExpression.cs" />
     <Compile Include="Binder\Nodes\BoundInvocationExpression.cs" />

@@ -6,7 +6,7 @@ using Kiwi.Semantic.Binder.Nodes;
 
 namespace Kiwi.Semantic.Binder.CompilerGeneratedNodes
 {
-    internal class ArrayCompilerGeneratedType : IType
+    internal class ArrayCompilerGeneratedType : CompilerGeneratedTypeBase
     {
         public ArrayCompilerGeneratedType(IType type, int dimension)
         {
@@ -17,10 +17,10 @@ namespace Kiwi.Semantic.Binder.CompilerGeneratedNodes
         public IType Type { get; }
         public int Dimension { get; }
 
-        public IEnumerable<IField> Fields => Enumerable.Empty<IField>();
+        public override IEnumerable<IField> Fields => Enumerable.Empty<IField>();
 
-        public IEnumerable<IFunction> Functions => CreateFunctions();
-        public IEnumerable<IConstructor> Constructors => Enumerable.Empty<IConstructor>();
+        public override IEnumerable<IFunction> Functions => CreateFunctions();
+        public override IEnumerable<IConstructor> Constructors => Enumerable.Empty<IConstructor>();
 
         private static IEnumerable<CompilerGeneratedFunction> CreateFunctions()
         {

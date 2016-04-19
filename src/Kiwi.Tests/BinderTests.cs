@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Kiwi.Parser.Nodes;
 using Kiwi.Semantic.Binder;
@@ -163,6 +164,44 @@ namespace Kiwi.Tests
             var field = boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass2").Fields.Single(x => x.Name == "addMethod");
             Assert.That(() => field.Type, Is.InstanceOf<FunctionCompilerGeneratedType>().And.Property("ReturnType").InstanceOf<IntCompilerGeneratedType>());
             CollectionAssert.AllItemsAreInstancesOfType(((FunctionCompilerGeneratedType)field.Type).ParameterTypes, typeof(IntCompilerGeneratedType));
+        }
+
+        [Test]
+        public void Test_IsExpression()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b) -> return a * b" +
+                               "    }" +
+                               "" +
+                               "    class MyClass2" +
+                               "    {" +
+                               "        var myClassField : new MyClass()" +
+                               "        func Foo() -> bool" +
+                               "        {" +
+                               "            return myClassField is MyClass" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            var boundCompilationUnit = binder.Bind(new List<CompilationUnitSyntax>() { ast }).Single();
+            var type = boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass");
+            var function = (BoundFunction)boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass2").Functions.Single(x => x.Name == "Foo");
+            var returnStatement = (BoundReturnStatement)((BoundScopeStatement)function.Statements).Statements[0];
+            var boundBinaryExpression = (BoundBinaryExpression)returnStatement.BoundExpression;
+            Assert.AreEqual(BinaryOperators.Is, boundBinaryExpression.Operator);
+            Assert.IsInstanceOf<BoundTypeExpression>(boundBinaryExpression.Right);
+            Assert.AreSame(((BoundTypeExpression)boundBinaryExpression.Right).ReferencedType, type);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Kiwi.Semantic.Binder.Nodes
         public BoundMemberExpression(
             string name,
             IBoundMember boundMember,
-            MemberExpressionSyntax expressionSyntax) : base(expressionSyntax, boundMember.Type)
+            MemberOrTypeExpressionSyntax orTypeExpressionSyntax) : base(orTypeExpressionSyntax, boundMember.Type)
         {
             Name = name;
             BoundMember = boundMember;

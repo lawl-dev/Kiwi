@@ -241,7 +241,7 @@ namespace Kiwi.Parser
 
         private IExpressionSyntax ParseMemberExpression()
         {
-            IExpressionSyntax expression = new MemberExpressionSyntax(ParseExpected(TokenType.Identifier));
+            IExpressionSyntax expression = new MemberOrTypeExpressionSyntax(ParseExpected(TokenType.Identifier));
             return expression;
         }
 
@@ -577,13 +577,13 @@ namespace Kiwi.Parser
             }
 
             throw new KiwiSyntaxException(
-                "Unexpected Syntax. Expected MemberAccessExpressionSyntax, ArrayAccessExpression, MemberExpressionSyntax or InvocationExpressionSyntax");
+                "Unexpected Syntax. Expected MemberAccessExpressionSyntax, ArrayAccessExpression, MemberOrTypeExpressionSyntax or InvocationExpressionSyntax");
         }
 
         private static bool IsMemberExpression(IExpressionSyntax expression)
         {
             return expression is MemberAccessExpressionSyntax || expression is ArrayAccessExpression
-                   || expression is MemberExpressionSyntax;
+                   || expression is MemberOrTypeExpressionSyntax;
         }
 
         private ParameterSyntax ParseParameter()

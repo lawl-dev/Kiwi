@@ -252,7 +252,7 @@ namespace Kiwi.Parser.Nodes
             Visit(memberAccessExpressionSyntax.Owner);
         }
 
-        public virtual void Visit(MemberExpressionSyntax memberExpressionSyntax)
+        public virtual void Visit(MemberOrTypeExpressionSyntax memberOrTypeExpressionSyntax)
         {
         }
 

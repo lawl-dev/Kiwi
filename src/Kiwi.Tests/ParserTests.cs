@@ -200,7 +200,7 @@ namespace Kiwi.Tests
         [TestCase("return 1 * 2", typeof(BinaryExpressionSyntax))]
         [TestCase("return 12f", typeof(FloatExpressionSyntax))]
         [TestCase("return 12", typeof(IntExpressionSyntax))]
-        [TestCase("return variable", typeof(MemberExpressionSyntax))]
+        [TestCase("return variable", typeof(MemberOrTypeExpressionSyntax))]
         [TestCase("return new Object()", typeof(ObjectCreationExpressionSyntax))]
         [TestCase("return -1", typeof(SignExpressionSyntax))]
         [TestCase("return \"Hallo\"", typeof(StringExpressionSyntax))]
@@ -242,7 +242,7 @@ namespace Kiwi.Tests
         [TestCase("i lol 1", typeof(KiwiSyntaxException),
             "Unexpected assign operator lol. Expected :, :+, :-, :/, :* or :^.")]
         [TestCase("i + 1", typeof(KiwiSyntaxException),
-            "Unexpected Syntax. Expected MemberAccessExpressionSyntax, ArrayAccessExpression, MemberExpressionSyntax or InvocationExpressionSyntax"
+            "Unexpected Syntax. Expected MemberAccessExpressionSyntax, ArrayAccessExpression, MemberOrTypeExpressionSyntax or InvocationExpressionSyntax"
             )]
         [TestCase("switch(i){" +
                   "else -> f()" +

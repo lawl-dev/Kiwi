@@ -31,7 +31,19 @@ namespace Kiwi.Semantic.Binder
 
         public IType LookupType(string value)
         {
-            return IsStandardType(value) ? GetStandardType(value) : _types[value];
+            if (IsStandardType(value))
+            {
+                return GetStandardType(value);
+            }
+            else
+            {
+                BoundType type;
+                if (!_types.TryGetValue(value, out type))
+                {
+                    throw new KiwiSemanticException($"{value} undefined Type");
+                }
+                return type;
+            }
         }
 
         private IType GetStandardType(string value)
