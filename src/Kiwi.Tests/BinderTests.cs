@@ -203,5 +203,36 @@ namespace Kiwi.Tests
             Assert.IsInstanceOf<BoundTypeExpression>(boundBinaryExpression.Right);
             Assert.AreSame(((BoundTypeExpression)boundBinaryExpression.Right).ReferencedType, type);
         }
+
+        [Test]
+        public void Test_IsExpression_ThrowsTypeNotDefined()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b) -> return a * b" +
+                               "    }" +
+                               "" +
+                               "    class MyClass2" +
+                               "    {" +
+                               "        var myClassField : new MyClass()" +
+                               "        func Foo() -> bool" +
+                               "        {" +
+                               "            return myClassField is MyClassS" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("MyClassS undefined Type"));
+        }
     }
 }
