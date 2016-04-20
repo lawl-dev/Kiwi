@@ -35,6 +35,12 @@ namespace Kiwi.Common.Extensions
                 if (!_handled)
                     action(_value);
             }
+
+            public void Default(Action action)
+            {
+                if (!_handled)
+                    action();
+            }
         }
 
         public static SwitchExpression<TSource, TResult> TypeSwitchExpression<TSource, TResult>(this TSource value)

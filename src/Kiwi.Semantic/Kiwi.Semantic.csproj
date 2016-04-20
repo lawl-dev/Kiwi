@@ -58,6 +58,7 @@
     <Compile Include="Binder\Nodes\BoundArrayCreationExpression.cs" />
     <Compile Include="Binder\Nodes\BoundAssignStatement.cs" />
     <Compile Include="Binder\Nodes\BoundBinaryExpression.cs" />
+    <Compile Include="Binder\Nodes\BoundFloatExpression.cs" />
     <Compile Include="Binder\Nodes\BoundForStatement.cs" />
     <Compile Include="Binder\Nodes\BoundIntExpression.cs" />
     <Compile Include="Binder\Nodes\BoundMemberAccessExpression.cs" />

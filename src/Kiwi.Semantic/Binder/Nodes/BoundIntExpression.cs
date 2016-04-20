@@ -5,9 +5,12 @@ namespace Kiwi.Semantic.Binder.Nodes
 {
     internal class BoundIntExpression : BoundExpression
     {
-        public BoundIntExpression(IntExpressionSyntax expressionSyntax)
+        public int Value { get; }
+
+        public BoundIntExpression(int value, IntExpressionSyntax expressionSyntax)
             : base(expressionSyntax, new IntCompilerGeneratedType())
         {
+            Value = value;
         }
     }
 }
