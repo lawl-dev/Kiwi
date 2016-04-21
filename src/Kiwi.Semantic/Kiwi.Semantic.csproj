@@ -43,8 +43,8 @@
     <Compile Include="Binder\AssignmentOperators.cs" />
     <Compile Include="Binder\BasicSymbolService.cs" />
     <Compile Include="Binder\Binder.cs" />
-    <Compile Include="Binder\BoundIfElseStatement.cs" />
-    <Compile Include="Binder\BoundIfStatement.cs" />
+    <Compile Include="Binder\Nodes\BoundIfElseStatement.cs" />
+    <Compile Include="Binder\Nodes\BoundIfStatement.cs" />
     <Compile Include="Binder\CompilerGeneratedNodes\ArrayCompilerGeneratedType.cs" />
     <Compile Include="Binder\CompilerGeneratedNodes\BoolCompilerGeneratedType.cs" />
     <Compile Include="Binder\CompilerGeneratedNodes\FloatCompilerGeneratedType.cs" />

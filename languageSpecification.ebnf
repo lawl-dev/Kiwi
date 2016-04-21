@@ -20,7 +20,7 @@ class <ClassName> [is <DescriptorName>]
 
 	[<const / var>] <fieldName> : <expression>
 	
-	func <FunctionName>([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>]) [-> <returnType> | <dataClassDeclaration> | return <expression>]
+	func <FunctionName>([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>]) [-> <returnType> | return <expression>]
 	[{
 		[<statements>]
 	}]
@@ -85,7 +85,7 @@ range:
 <valueFrom>..<valueTo>
 
 VariableDdeclaration:
-var <variableName>
+var <variableName> : <expression>
 
 VariableInit:
 <variableName> : <expression>
@@ -103,6 +103,16 @@ forr(<singleItem> in <collection>)
 for([var] <variableInit>; <expesssion>; <exoression>)
 {
 	<statements>
+}
+
+
+try
+{
+	<statements>
+}
+catch
+{
+	
 }
 
 Operators:

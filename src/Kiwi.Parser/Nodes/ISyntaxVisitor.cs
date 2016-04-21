@@ -15,7 +15,6 @@
         void Visit(ConditionalWhenEntry conditionalWhenEntry);
         void Visit(ConditionalWhenStatementSyntax conditionalWhenStatementSyntax);
         void Visit(ConstructorSyntax constructorSyntax);
-        void Visit(DataClassFunctionSyntax dataClassFunctionSyntax);
         void Visit(DataSyntax dataSyntax);
         void Visit(ElseSyntax elseSyntax);
         void Visit(EnumMemberSyntax enumMemberSyntax);

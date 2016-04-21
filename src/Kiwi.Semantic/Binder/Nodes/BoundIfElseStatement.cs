@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using Kiwi.Parser.Nodes;
-using Kiwi.Semantic.Binder.Nodes;
 
-namespace Kiwi.Semantic.Binder
+namespace Kiwi.Semantic.Binder.Nodes
 {
     internal class BoundIfElseStatement : BoundStatement
     {
@@ -17,8 +15,8 @@ namespace Kiwi.Semantic.Binder
             ElseBoundStatements = elseBoundStatements;
         }
 
-        public BoundExpression BoundExpression { get; set; }
-        public BoundScopeStatement BoundStatements { get; set; }
-        public BoundScopeStatement ElseBoundStatements { get; set; }
+        public BoundExpression BoundExpression { get; }
+        public BoundScopeStatement BoundStatements { get; }
+        public BoundScopeStatement ElseBoundStatements { get; }
     }
 }

@@ -73,33 +73,7 @@ namespace Kiwi.Tests
             Assert.IsNotEmpty(ast.NamespaceMember[0].Classes[0].FunctionMember);
             Assert.AreEqual("FunctionSample", ast.NamespaceMember[0].Classes[0].FunctionMember[0].FunctionName.Value);
         }
-
-        [Test]
-        public void TestDataFunction()
-        {
-            const string functionSource =
-                "func FunctionSample(int a, int b, int c) -> data Dto(int a, string b)" + "\r\n" +
-                "{{" + "\r\n" +
-                "     {0}" + "\r\n" + //statements placeholder
-                "}}";
-
-            var lexer = new Lexer.Lexer();
-            var tokens =
-                lexer.Lex(
-                    string.Format(
-                        NamespaceSource,
-                        string.Format(
-                            ClassSource,
-                            string.Format(functionSource, string.Empty),
-                            string.Empty,
-                            string.Empty)));
-            var parser = new Parser.Parser(tokens);
-
-            var ast = parser.Parse();
-            Assert.IsNotEmpty(ast.NamespaceMember[0].Classes[0].FunctionMember);
-            Assert.IsInstanceOf<DataClassFunctionSyntax>(ast.NamespaceMember[0].Classes[0].FunctionMember[0]);
-            Assert.AreEqual("FunctionSample", ast.NamespaceMember[0].Classes[0].FunctionMember[0].FunctionName.Value);
-        }
+        
 
         [Test]
         public void TestExpressionFunction()

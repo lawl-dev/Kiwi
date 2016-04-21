@@ -107,16 +107,7 @@ namespace Kiwi.Parser.Nodes
             Visit(constructorSyntax.Statements);
         }
 
-        public virtual void Visit(DataClassFunctionSyntax dataClassFunctionSyntax)
-        {
-            foreach (var parameterSyntax in dataClassFunctionSyntax.ParameterList)
-            {
-                Visit(parameterSyntax);
-            }
-            Visit(dataClassFunctionSyntax.DataClassSyntax);
-            Visit(dataClassFunctionSyntax.Statements);
-        }
-
+        
         public virtual void Visit(DataSyntax dataSyntax)
         {
             foreach (var parameterSyntax in dataSyntax.Parameter)

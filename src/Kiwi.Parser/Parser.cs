@@ -606,8 +606,6 @@ namespace Kiwi.Parser
         {
             switch (TokenStream.Current.Type)
             {
-                case TokenType.DataKeyword:
-                    return ParseDataFunction(functionName, functionParameter);
                 case TokenType.ReturnKeyword:
                     return ParseExpressionFunction(functionName, functionParameter);
                 default:
@@ -641,13 +639,6 @@ namespace Kiwi.Parser
         {
             var statement = ParseReturnStatement();
             return new ExpressionFunctionSyntax(functionName, functionParameter, statement);
-        }
-
-        private DataClassFunctionSyntax ParseDataFunction(Token functionName, List<ParameterSyntax> functionParameter)
-        {
-            var dataClass = ParseDataClass();
-            var statements = ParseScope(ParseStatement);
-            return new DataClassFunctionSyntax(functionName, functionParameter.ToList(), statements, dataClass);
         }
 
         private List<VariableDeclarationStatementSyntax> ParseVariableDeclarations()

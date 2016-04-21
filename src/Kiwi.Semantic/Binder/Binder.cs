@@ -271,6 +271,7 @@ namespace Kiwi.Semantic.Binder
         private BoundExpression BindExpression(IExpressionSyntax expressionSyntax, List<IType> args = null)
         {
             return expressionSyntax.TypeSwitchExpression<IExpressionSyntax, BoundExpression>()
+                                   .Case<AnonymousFunctionExpressionSyntax>(BindAnonymousFunctionExpression)
                                    .Case<BooleanExpressionSyntax>(BindBooleanExpression)
                                    .Case<IntExpressionSyntax>(BindIntExpression)
                                    .Case<FloatExpressionSyntax>(BindFloatExpression)
@@ -285,10 +286,22 @@ namespace Kiwi.Semantic.Binder
                                    .Done();
         }
 
+        private BoundExpression BindAnonymousFunctionExpression(AnonymousFunctionExpressionSyntax arg)
+        {
+            var boundParameters = arg.Parameter.Select(BindParameter).ToList();
+            var boundStatement = BindStatement(arg.Statements);
+            //TODO: Visitor to find Return Statements to determind the return type
+            throw new NotImplementedException();
+        }
+
         private BoundBinaryExpression BindBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
         {
             switch (binaryExpressionSyntax.Operator.Type)
             {
+                case TokenType.AndKeyword:
+                    return BindAndBinaryExpression(binaryExpressionSyntax);
+                case TokenType.NotEqual:
+                    return BindNotEqualBinaryExpression(binaryExpressionSyntax);
                 case TokenType.Equal:
                     return BindEqualBinaryExpression(binaryExpressionSyntax);
                 case TokenType.Mult:
@@ -313,8 +326,7 @@ namespace Kiwi.Semantic.Binder
                     return BindRangeBinaryExpression(binaryExpressionSyntax);
                 case TokenType.InKeyword:
                 case TokenType.NotInKeyword:
-                case TokenType.AndKeyword:
-                case TokenType.NotEqual:
+                    //TODO: generics and iterator pattern
                     throw new NotImplementedException();
             }
             throw new NotImplementedException();
@@ -486,6 +498,35 @@ namespace Kiwi.Semantic.Binder
                 left,
                 right,
                 BinaryOperators.Equal,
+                binaryExpressionSyntax,
+                new BoolCompilerGeneratedType());
+        }
+
+        private BoundBinaryExpression BindNotEqualBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        {
+            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
+            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+
+            Ensure(() => TypeEquals(left.Type, right.Type), $"The operator != cannt handle the operands of type {left.Type} and {right.Type}.");
+            return new BoundBinaryExpression(
+                left,
+                right,
+                BinaryOperators.NotEqual,
+                binaryExpressionSyntax,
+                new BoolCompilerGeneratedType());
+        }
+
+        private BoundBinaryExpression BindAndBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        {
+            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
+            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+
+            Ensure(() => left.Type is BoolCompilerGeneratedType, $"The operator && cannot handle ${left.Type}");
+            Ensure(() => right.Type is BoolCompilerGeneratedType, $"The operator && cannot handle ${right.Type}");
+            return new BoundBinaryExpression(
+                left,
+                right,
+                BinaryOperators.And,
                 binaryExpressionSyntax,
                 new BoolCompilerGeneratedType());
         }
@@ -662,6 +703,8 @@ namespace Kiwi.Semantic.Binder
         Greater,
         Or,
         Is,
-        Range
+        Range,
+        NotEqual,
+        And
     }
 }

@@ -16,7 +16,6 @@
         TResult Visit(ConditionalWhenEntry conditionalWhenEntry);
         TResult Visit(ConditionalWhenStatementSyntax conditionalWhenStatementSyntax);
         TResult Visit(ConstructorSyntax constructorSyntax);
-        TResult Visit(DataClassFunctionSyntax dataClassFunctionSyntax);
         TResult Visit(DataSyntax dataSyntax);
         TResult Visit(ElseSyntax elseSyntax);
         TResult Visit(EnumMemberSyntax enumMemberSyntax);

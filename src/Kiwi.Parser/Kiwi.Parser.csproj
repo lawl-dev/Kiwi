@@ -49,7 +49,6 @@
     <Compile Include="Nodes\CaseSyntax.cs" />
     <Compile Include="Nodes\ConditionalWhenEntry.cs" />
     <Compile Include="Nodes\ConditionalWhenStatementSyntax.cs" />
-    <Compile Include="Nodes\DataClassFunctionSyntax.cs" />
     <Compile Include="Nodes\ElseSyntax.cs" />
     <Compile Include="Nodes\ExpressionFunctionSyntax.cs" />
     <Compile Include="Nodes\ForInStatementSyntax.cs" />
