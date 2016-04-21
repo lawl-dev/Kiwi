@@ -87,6 +87,28 @@ namespace Kiwi.Semantic.Binder
             return boundScopeStatement;
         }
 
+        private BoundSwitchStatement BindSwitchStatement(SwitchStatementSyntax switchStatement)
+        {
+            var boundCondition = BindExpression(switchStatement.Condition);
+            var boundCases = switchStatement.Cases.Select(BindCase).ToList();
+            var boundElse = BindElse(switchStatement.Else);
+            return new BoundSwitchStatement(boundCondition, boundCases, boundElse, switchStatement);
+        }
+
+        private BoundElse BindElse(ElseSyntax @else)
+        {
+            var boundStatement = BindStatement(@else.Statements);
+
+            return new BoundElse(boundStatement, @else);
+        }
+
+        private BoundCase BindCase(CaseSyntax arg)
+        {
+            var boundExpression = BindExpression(arg.Expression);
+            var boundStatement = BindStatement(arg.Statements);
+            return new BoundCase(boundExpression, boundStatement, arg);
+        }
+
         private void BindExpressionFunction(BoundFunction boundFunction, ExpressionFunctionSyntax expressionFunctionSyntax)
         {
             var boundParameters = expressionFunctionSyntax.ParameterList.Select(BindParameter).ToList();
@@ -133,6 +155,8 @@ namespace Kiwi.Semantic.Binder
                                   .Case<AssignmentStatementSyntax>(BindAssignmentStatement)
                                   .Case<ForStatementSyntax>(BindForStatement)
                                   .Case<ForInStatementSyntax>(BindForInStatement)
+                                  .Case<ScopeStatementSyntax>(BindScope)
+                                  .Case<SwitchStatementSyntax>(BindSwitchStatement)
                                   .Default(() => { throw new NotImplementedException(); })
                                   .Done();
         }

@@ -43,6 +43,8 @@
     <Compile Include="Binder\AssignmentOperators.cs" />
     <Compile Include="Binder\BasicSymbolService.cs" />
     <Compile Include="Binder\Binder.cs" />
+    <Compile Include="Binder\Nodes\BoundCase.cs" />
+    <Compile Include="Binder\Nodes\BoundElse.cs" />
     <Compile Include="Binder\Nodes\BoundIfElseStatement.cs" />
     <Compile Include="Binder\Nodes\BoundIfStatement.cs" />
     <Compile Include="Binder\CompilerGeneratedNodes\ArrayCompilerGeneratedType.cs" />
@@ -64,6 +66,7 @@
     <Compile Include="Binder\Nodes\BoundMemberAccessExpression.cs" />
     <Compile Include="Binder\Nodes\BoundScopeStatement.cs" />
     <Compile Include="Binder\Nodes\BoundStringExpression.cs" />
+    <Compile Include="Binder\Nodes\BoundSwitchStatement.cs" />
     <Compile Include="Binder\Nodes\BoundTypeExpression.cs" />
     <Compile Include="Binder\Nodes\BoundVariableDeclarationStatement.cs" />
     <Compile Include="Binder\Nodes\BoundBooleanExpression.cs" />
