@@ -450,6 +450,8 @@ namespace Kiwi.Parser
                     return ParseForInOrForStatement();
                 case TokenType.ForReverseKeyword:
                     return ParseForReverseStatement();
+                case TokenType.OpenBrace:
+                    return ParseScope(ParseStatement);
                 default:
                     throw new KiwiSyntaxException(
                         "Unexpected Token. Expected If, Return, When, Switch, Var, Const, Identifier, For or Forr");

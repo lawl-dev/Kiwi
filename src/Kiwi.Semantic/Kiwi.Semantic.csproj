@@ -45,6 +45,7 @@
     <Compile Include="Binder\Binder.cs" />
     <Compile Include="Binder\Nodes\BoundCase.cs" />
     <Compile Include="Binder\Nodes\BoundElse.cs" />
+    <Compile Include="Binder\Nodes\BoundIfElseExpression.cs" />
     <Compile Include="Binder\Nodes\BoundIfElseStatement.cs" />
     <Compile Include="Binder\Nodes\BoundIfStatement.cs" />
     <Compile Include="Binder\CompilerGeneratedNodes\ArrayCompilerGeneratedType.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Binder\Nodes\BoundFloatExpression.cs" />
     <Compile Include="Binder\Nodes\BoundForStatement.cs" />
     <Compile Include="Binder\Nodes\BoundIntExpression.cs" />
+    <Compile Include="Binder\Nodes\BoundInvocationStatement.cs" />
     <Compile Include="Binder\Nodes\BoundMemberAccessExpression.cs" />
     <Compile Include="Binder\Nodes\BoundScopeStatement.cs" />
     <Compile Include="Binder\Nodes\BoundStringExpression.cs" />
@@ -98,7 +100,9 @@
     <Compile Include="Binder\Nodes\BoundNode.cs" />
     <Compile Include="Binder\Nodes\BoundStatement.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Checker\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Common\Kiwi.Common.csproj">
       <Project>{A221E521-1C96-4C78-9757-F8A08686FF23}</Project>

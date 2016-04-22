@@ -234,5 +234,177 @@ namespace Kiwi.Tests
 
             Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("MyClassS undefined Type"));
         }
+
+        [Test]
+        public void Test_IfElseExpression_IfConditionMustBeBool()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b) -> return if(a) a else b" +
+                               "    }" +
+                               "" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("If condition must be of Type Bool"));
+        }
+
+        [Test]
+        public void Test_IfStatement_IfConditionMustBeBool()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b) " +
+                               "        { " +
+                               "            if(a)" +
+                               "            {" +
+                               "                " +
+                               "            }" +
+                               "        }" +
+                               "    }" +
+                               "" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("If condition must be of Type Bool"));
+        }
+
+        [Test]
+        public void Test_IfElseStatement_IfConditionMustBeBool()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b) " +
+                               "        { " +
+                               "            if(a)" +
+                               "            {" +
+                               "                " +
+                               "            }" +
+                               "            else" +
+                               "            {" +
+                               "                " +
+                               "            }" +
+                               "        }" +
+                               "    }" +
+                               "" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("If condition must be of Type Bool"));
+        }
+
+        [Test]
+        public void Test_ForStatement_ConditionMustBeBool()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b) " +
+                               "        { " +
+                               "            for(var i : 0; i; i:+1)" +
+                               "            {" +
+                               "                " +
+                               "            }" +
+                               "        }" +
+                               "    }" +
+                               "" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("For condition must be of Type Bool"));
+        }
+
+        [Test]
+        public void Test_SwitchStatement_CasesTypeMustMatchSwitchConditionType()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b) " +
+                               "        { " +
+                               "            switch(a)" +
+                               "            {" +
+                               "                case \"LOL\" -> Add(1, 0)" +
+                               "            }" +
+                               "        }" +
+                               "    }" +
+                               "" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Switch cases condition type must match switch condition type"));
+        }
+
+        [Test]
+        public void Test_Scope_VariableNotDefined()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b) " +
+                               "        { " +
+                               "            {" +
+                               "                var i : 1337 + b" +
+                               "            }" +
+                               "            var c : a * b * i" +
+                               "        }" +
+                               "    }" +
+                               "" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("i not defined"));
+        }
     }
 }
