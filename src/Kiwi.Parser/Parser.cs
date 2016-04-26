@@ -359,7 +359,7 @@ namespace Kiwi.Parser
                 arrayParameter.Add(ParseExpression());
                 ParseExpected(TokenType.ClosingBracket);
             }
-            expression = new ArrayAccessExpression(expression, arrayParameter);
+            expression = new ArrayAccessExpressionSyntax(expression, arrayParameter);
             return expression;
         }
 
@@ -454,7 +454,7 @@ namespace Kiwi.Parser
                     return ParseScope(ParseStatement);
                 default:
                     throw new KiwiSyntaxException(
-                        "Unexpected Token. Expected If, Return, When, Switch, Var, Const, Identifier, For or Forr");
+                        $"Unexpected Token \"{TokenStream.Current.Value}\". Expected If, Return, When, Switch, Var, Const, Identifier, For or Forr");
             }
         }
 
@@ -584,7 +584,7 @@ namespace Kiwi.Parser
 
         private static bool IsMemberExpression(IExpressionSyntax expression)
         {
-            return expression is MemberAccessExpressionSyntax || expression is ArrayAccessExpression
+            return expression is MemberAccessExpressionSyntax || expression is ArrayAccessExpressionSyntax
                    || expression is MemberOrTypeExpressionSyntax;
         }
 

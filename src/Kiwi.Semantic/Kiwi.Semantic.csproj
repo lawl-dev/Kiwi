@@ -43,8 +43,10 @@
     <Compile Include="Binder\AssignmentOperators.cs" />
     <Compile Include="Binder\BasicSymbolService.cs" />
     <Compile Include="Binder\Binder.cs" />
+    <Compile Include="Binder\Nodes\BoundArrayAccessExpression.cs" />
     <Compile Include="Binder\Nodes\BoundCase.cs" />
     <Compile Include="Binder\Nodes\BoundElse.cs" />
+    <Compile Include="Binder\Nodes\BoundEnum.cs" />
     <Compile Include="Binder\Nodes\BoundIfElseExpression.cs" />
     <Compile Include="Binder\Nodes\BoundIfElseStatement.cs" />
     <Compile Include="Binder\Nodes\BoundIfStatement.cs" />

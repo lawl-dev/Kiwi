@@ -3,7 +3,7 @@ using Kiwi.Parser.Nodes;
 
 namespace Kiwi.Semantic.Binder.Nodes
 {
-    public class BoundFunction : BoundNode, IBoundMember, IFunction
+    public class BoundFunction : BoundNode, IFunction
     {
         public BoundFunction(string name, FunctionSyntax syntax) : base(syntax)
         {

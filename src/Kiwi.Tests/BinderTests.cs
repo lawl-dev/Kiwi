@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Kiwi.Common.Extensions;
 using Kiwi.Parser.Nodes;
 using Kiwi.Semantic.Binder;
 using Kiwi.Semantic.Binder.CompilerGeneratedNodes;
@@ -259,6 +261,29 @@ namespace Kiwi.Tests
         }
 
         [Test]
+        public void Test_IfElseExpression_IfTrueIfFalseTypeMustBeEqual()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, float b) -> return if(true) a else b" +
+                               "    }" +
+                               "" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("IfTrue and IfFalse expression Type must match"));
+        }
+
+        [Test]
         public void Test_IfStatement_IfConditionMustBeBool()
         {
             const string src = "namespace MyNamespace" +
@@ -405,6 +430,57 @@ namespace Kiwi.Tests
             var binder = new Binder();
 
             Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("i not defined"));
+        }
+
+        [Test]
+        public void Test_RecursivExpressionFunction_DoesThrow()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b) -> return Add(1, 2)" +
+                               "    }" +
+                               "" +
+                               "}";
+
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Add Type cannot be inferred") );
+        }
+
+        [Test]
+        public void Test_ArrayAccessInvalidParameter_Throws()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        func Add(int a, int b)" +
+                               "        {   " +
+                               "            var c : new int[1][1]" +
+                               "            var d : c[1]" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Parameter count (1) must match array dimension count (2)") );
         }
     }
 }

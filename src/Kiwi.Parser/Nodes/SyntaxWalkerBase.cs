@@ -11,10 +11,10 @@ namespace Kiwi.Parser.Nodes
             Visit(anonymousFunctionExpressionSyntax.Statements);
         }
         
-        public virtual void Visit(ArrayAccessExpression arrayAccessExpression)
+        public virtual void Visit(ArrayAccessExpressionSyntax arrayAccessExpressionSyntax)
         {
-            Visit(arrayAccessExpression.Owner);
-            foreach (var expressionSyntax in arrayAccessExpression.Parameter)
+            Visit(arrayAccessExpressionSyntax.Owner);
+            foreach (var expressionSyntax in arrayAccessExpressionSyntax.Parameter)
             {
                 Visit(expressionSyntax);
             }

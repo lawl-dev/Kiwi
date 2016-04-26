@@ -4,7 +4,7 @@
     {
         TResult Visit(ISyntaxBase @base);
         TResult Visit(AnonymousFunctionExpressionSyntax anonymousFunctionExpressionSyntax);
-        TResult Visit(ArrayAccessExpression arrayAccessExpression);
+        TResult Visit(ArrayAccessExpressionSyntax arrayAccessExpressionSyntax);
         TResult Visit(ArrayCreationExpressionSyntax arrayCreationExpressionSyntax);
         TResult Visit(ArrayTypeSyntax arrayTypeSyntax);
         TResult Visit(AssignmentStatementSyntax assignmentStatementSyntax);

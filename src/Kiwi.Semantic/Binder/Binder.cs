@@ -13,16 +13,30 @@ namespace Kiwi.Semantic.Binder
     {
         private readonly BasicSymbolService _basicSymbolService = new BasicSymbolService();
         private readonly BindingContextService _contextService = new BindingContextService();
-
+        private bool _bindSignatures = true;
+        
         public List<BoundCompilationUnit> Bind(List<CompilationUnitSyntax> compilationUnits)
         {
             var basicModels = _basicSymbolService.CreateBasicModel(compilationUnits);
-            var allNamespaces = basicModels.SelectMany(x => x.Namespaces).ToList();
+            var boundNamespaces = basicModels.SelectMany(x => x.Namespaces).ToList();
+            
+            foreach (var basicModel in basicModels)
+            {
+                basicModel.Usings.AddRange(
+                    ((CompilationUnitSyntax)basicModel.Syntax).UsingMember.Select(x => BindUsing(x, boundNamespaces)));
+
+                foreach (var boundNamespace in basicModel.Namespaces)
+                {
+                    BindNamespace(boundNamespace);
+                }
+            }
+
+            _bindSignatures = false; //TODO: Hack
 
             foreach (var basicModel in basicModels)
             {
-                basicModel.BoundUsings.AddRange(
-                    ((CompilationUnitSyntax)basicModel.Syntax).UsingMember.Select(x => BindUsing(x, allNamespaces)));
+                basicModel.Usings.AddRange(
+                    ((CompilationUnitSyntax)basicModel.Syntax).UsingMember.Select(x => BindUsing(x, boundNamespaces)));
 
                 foreach (var boundNamespace in basicModel.Namespaces)
                 {
@@ -59,99 +73,125 @@ namespace Kiwi.Semantic.Binder
             _contextService.ExitClass();
         }
 
-        private void BindFunction(BoundFunction boundFunction, FunctionSyntax functionSyntax)
+        private void BindFunction(BoundFunction boundFunction, FunctionSyntax syntax)
         {
-            functionSyntax.TypeSwitch()
+            syntax.TypeSwitch()
                           .Case<ReturnFunctionSyntax>(x => BindReturnFunction(boundFunction, x))
                           .Case<ExpressionFunctionSyntax>(x => BindExpressionFunction(boundFunction, x))
                           .Case<FunctionSyntax>(x => BindVoid(boundFunction, x))
                           .Default(() => { throw new NotImplementedException(); });
         }
 
-        private void BindReturnFunction(BoundFunction boundFunction, ReturnFunctionSyntax returnFunctionSyntax)
+        private void BindReturnFunction(BoundFunction boundFunction, ReturnFunctionSyntax syntax)
         {
-            var boundParameters = returnFunctionSyntax.ParameterList.Select(BindParameter).ToList();
-            var type = _contextService.LookupType(returnFunctionSyntax.ReturnType.TypeName.Value);
+            var boundParameters = syntax.ParameterList.Select(BindParameter).ToList();
+            var boundType = BindType(syntax.ReturnType);
+            boundFunction.ReturnType = boundType;
             boundFunction.Parameter = boundParameters;
-            boundFunction.Type = new FunctionCompilerGeneratedType(boundParameters.Select(x => x.Type).ToList(), type);
-            boundFunction.Statements = BindScope((ScopeStatementSyntax)returnFunctionSyntax.Statements);
+            boundFunction.Type = new FunctionCompilerGeneratedType(boundParameters.Select(x => x.Type).ToList(), boundType);
+            if (!_bindSignatures)
+            {
+                boundFunction.Statements = BindScope((ScopeStatementSyntax)syntax.Statements);
+            }
         }
 
-        private BoundScopeStatement BindScope(ScopeStatementSyntax statements)
+        private BoundScopeStatement BindScope(ScopeStatementSyntax syntax)
         {
             _contextService.EnterScope();
             var boundScopeStatement = new BoundScopeStatement(
-                statements.Statements.Select(BindStatement).ToList(),
-                statements);
+                syntax.Statements.Select(BindStatement).ToList(),
+                syntax);
             _contextService.ExitScope();
             return boundScopeStatement;
         }
 
-        private BoundSwitchStatement BindSwitchStatement(SwitchStatementSyntax switchStatement)
+        private BoundSwitchStatement BindSwitchStatement(SwitchStatementSyntax syntax)
         {
-            var boundCondition = BindExpression(switchStatement.Condition);
-            var boundCases = switchStatement.Cases.Select(BindCase).ToList();
+            var boundCondition = BindExpression(syntax.Condition);
+            var boundCases = syntax.Cases.Select(BindCase).ToList();
             foreach (var boundCase in boundCases)
             {
                 Ensure(() => TypeEquals(boundCase.BoundExpression.Type, boundCondition.Type), "Switch cases condition type must match switch condition type");
             }
 
-            var boundElse = BindElse(switchStatement.Else);
-            return new BoundSwitchStatement(boundCondition, boundCases, boundElse, switchStatement);
+            var boundElse = BindElse(syntax.Else);
+            return new BoundSwitchStatement(boundCondition, boundCases, boundElse, syntax);
         }
 
-        private BoundElse BindElse(ElseSyntax @else)
+        private BoundElse BindElse(ElseSyntax syntax)
         {
-            var boundStatement = BindStatement(@else.Statements);
+            var boundStatement = BindStatement(syntax.Statements);
 
-            return new BoundElse(boundStatement, @else);
+            return new BoundElse(boundStatement, syntax);
         }
 
-        private BoundCase BindCase(CaseSyntax arg)
+        private BoundCase BindCase(CaseSyntax syntax)
         {
-            var boundExpression = BindExpression(arg.Expression);
-            var boundStatement = BindStatement(arg.Statements);
-            return new BoundCase(boundExpression, boundStatement, arg);
+            var boundExpression = BindExpression(syntax.Expression);
+            var boundStatement = BindStatement(syntax.Statements);
+            return new BoundCase(boundExpression, boundStatement, syntax);
         }
 
-        private void BindExpressionFunction(BoundFunction boundFunction, ExpressionFunctionSyntax expressionFunctionSyntax)
+        private void BindExpressionFunction(BoundFunction boundFunction, ExpressionFunctionSyntax syntax)
         {
-            var boundParameters = expressionFunctionSyntax.ParameterList.Select(BindParameter).ToList();
-            var boundReturnStatement = BindReturnStatement((ReturnStatementSyntax)expressionFunctionSyntax.Statements);
+            var boundParameters = syntax.ParameterList.Select(BindParameter).ToList();
+            var boundReturnStatement = BindReturnStatement((ReturnStatementSyntax)syntax.Statements);
             boundFunction.Parameter = boundParameters;
             boundFunction.Type = new FunctionCompilerGeneratedType(
                 boundParameters.Select(x => x.Type).ToList(),
                 boundReturnStatement.BoundExpression.Type);
-            boundFunction.Statements = boundReturnStatement;
-            boundFunction.ReturnType = boundReturnStatement.BoundExpression.Type;
+            if (!_bindSignatures)
+            {
+                boundFunction.Statements = boundReturnStatement;
+                boundFunction.ReturnType = boundReturnStatement.BoundExpression.Type;
+            }
         }
 
-        private void BindVoid(BoundFunction function, FunctionSyntax functionSyntax)
+        private void BindVoid(BoundFunction boundFunction, FunctionSyntax syntax)
         {
-            var boundParameters = functionSyntax.ParameterList.Select(BindParameter).ToList();
-            function.Parameter = boundParameters;
-            function.Type = new FunctionCompilerGeneratedType(boundParameters.Select(x => x.Type).ToList(), null);
-            function.Statements = BindScope((ScopeStatementSyntax)functionSyntax.Statements);
+            var boundParameters = syntax.ParameterList.Select(BindParameter).ToList();
+            boundFunction.Parameter = boundParameters;
+            boundFunction.Type = new FunctionCompilerGeneratedType(boundParameters.Select(x => x.Type).ToList(), null);
+            if (!_bindSignatures)
+            {
+                boundFunction.Statements = BindScope((ScopeStatementSyntax)syntax.Statements);
+            }
         }
 
-        private BoundParameter BindParameter(ParameterSyntax parameterSyntax)
+        private BoundParameter BindParameter(ParameterSyntax syntax)
         {
-            var type = _contextService.LookupType(parameterSyntax.Type.TypeName.Value);
-            var boundParameter = new BoundParameter(parameterSyntax.ParameterName.Value, type, parameterSyntax);
+            var boundType = syntax.Type.TypeSwitchExpression<TypeSyntax, IType>()
+                                           .Case<ArrayTypeSyntax>(BindArrayType)
+                                           .Case<TypeSyntax>(BindType)
+                                           .Default(() => { throw new NotImplementedException(); })
+                                           .Done();
+
+            var boundParameter = new BoundParameter(syntax.ParameterName.Value, boundType, syntax);
             _contextService.AddLocal(boundParameter.Name, boundParameter);
             return boundParameter;
         }
 
-        private BoundConstructor BindConstructor(ConstructorSyntax constructorSyntax)
+        private IType BindType(TypeSyntax syntax)
         {
-            var boundParameters = constructorSyntax.ArgList.Select(BindParameter).ToList();
-            var boundStatements = BindScope(constructorSyntax.Statements);
-            return new BoundConstructor(boundParameters, boundStatements, constructorSyntax);
+            return _contextService.LookupType(syntax.TypeName.Value);
         }
 
-        private BoundStatement BindStatement(IStatementSyntax statementSyntax)
+        private IType BindArrayType(ArrayTypeSyntax syntax)
         {
-            return statementSyntax.TypeSwitchExpression<IStatementSyntax, BoundStatement>()
+            var boundType = _contextService.LookupType(syntax.TypeName.Value);
+            return new ArrayCompilerGeneratedType(boundType, syntax.Dimension);
+        }
+
+        private BoundConstructor BindConstructor(ConstructorSyntax syntax)
+        {
+            var boundParameters = syntax.ArgList.Select(BindParameter).ToList();
+            var boundStatements = BindScope(syntax.Statements);
+            return new BoundConstructor(boundParameters, boundStatements, syntax);
+        }
+
+        private BoundStatement BindStatement(IStatementSyntax syntax)
+        {
+            return syntax.TypeSwitchExpression<IStatementSyntax, BoundStatement>()
                                   .Case<VariablesDeclarationStatementSyntax>(BindVariablesDeclarationStatement)
                                   .Case<VariableDeclarationStatementSyntax>(BindVariableDeclarationStatement)
                                   .Case<ReturnStatementSyntax>(BindReturnStatement)
@@ -167,41 +207,39 @@ namespace Kiwi.Semantic.Binder
                                   .Done();
         }
 
-        private BoundInvocationStatement BindInvocationStatement(InvocationStatementSyntax arg)
+        private BoundInvocationStatement BindInvocationStatement(InvocationStatementSyntax syntax)
         {
-            var invocationExpression = BindInvocationExpression(arg.InvocationExpression);
-            return new BoundInvocationStatement(invocationExpression, arg);
+            var boundInvocationExpression = BindInvocationExpression(syntax.InvocationExpression);
+            return new BoundInvocationStatement(boundInvocationExpression, syntax);
         }
 
-        private BoundStatement BindForInStatement(ForInStatementSyntax statementSyntax)
+        private BoundStatement BindForInStatement(ForInStatementSyntax syntax)
         {
             throw new NotImplementedException();
         }
 
-        private BoundStatement BindForStatement(ForStatementSyntax statementSyntax)
+        private BoundStatement BindForStatement(ForStatementSyntax syntax)
         {
-            var initStatement = BindStatement(statementSyntax.InitStatement);
-            var condition = BindExpression(statementSyntax.CondExpression);
-            Ensure(() => TypeEquals(condition.Type, new BoolCompilerGeneratedType()), "For condition must be of Type Bool");
+            var boundInitStatement = BindStatement(syntax.InitStatement);
+            var boundCondition = BindExpression(syntax.CondExpression);
+            Ensure(() => TypeEquals(boundCondition.Type, new BoolCompilerGeneratedType()), "For condition must be of Type Bool");
 
-            var loopStatement = BindStatement(statementSyntax.LoopStatement);
-            var boundStatements = BindScope(statementSyntax.Statements);
-            return new BoundForStatement(initStatement, condition, loopStatement, boundStatements, statementSyntax);
+            var boundLoopStatement = BindStatement(syntax.LoopStatement);
+            var boundStatements = BindScope(syntax.Statements);
+            return new BoundForStatement(boundInitStatement, boundCondition, boundLoopStatement, boundStatements, syntax);
         }
 
-        private BoundAssignStatement BindAssignmentStatement(AssignmentStatementSyntax statementSyntax)
+        private BoundAssignStatement BindAssignmentStatement(AssignmentStatementSyntax syntax)
         {
-            var boundExpression = BindExpression(statementSyntax.Member);
+            var boundExpression = BindExpression(syntax.Member);
+            Ensure(() => boundExpression is BoundMemberExpression ||
+                         boundExpression is BoundMemberAccessExpression ||
+                         boundExpression is BoundArrayAccessExpression, $"You cannot assign {nameof(boundExpression.GetType)} a value.");
 
-            if (!(boundExpression is BoundMemberExpression)
-                && !(boundExpression is BoundMemberAccessExpression))
-            {
-                throw new KiwiSemanticException("No Member");
-            }
-            var toAssignExpression = BindExpression(statementSyntax.ToAssign);
-
+            var boundToAssignExpression = BindExpression(syntax.ToAssign);
+            
             AssignmentOperators assignOperator;
-            switch (statementSyntax.Operator.Type)
+            switch (syntax.Operator.Type)
             {
                 case TokenType.Colon:
                     assignOperator = AssignmentOperators.SimpleAssignment;
@@ -222,64 +260,62 @@ namespace Kiwi.Semantic.Binder
                     assignOperator = AssignmentOperators.SubAssignment;
                     break;
                 default:
-                    throw new KiwiSemanticException($"Unknown Assignoperator {statementSyntax.Operator.Value}");
+                    throw new KiwiSemanticException($"Unknown Assignoperator {syntax.Operator.Value}");
             }
-            return new BoundAssignStatement(boundExpression, toAssignExpression, assignOperator, statementSyntax);
+            return new BoundAssignStatement(boundExpression, boundToAssignExpression, assignOperator, syntax);
         }
 
-        private BoundStatement BindIfElseStatement(IfElseStatementSyntax statementSyntax)
+        private BoundStatement BindIfElseStatement(IfElseStatementSyntax syntax)
         {
-            var boundExpression = BindExpression(statementSyntax.Condition);
+            var boundExpression = BindExpression(syntax.Condition);
             Ensure(() => TypeEquals(boundExpression.Type, new BoolCompilerGeneratedType()), "If condition must be of Type Bool");
 
 
-            var boundStatements = BindScope(statementSyntax.Statements);
-            var elseBoundStatements = BindScope(statementSyntax.ElseStatements);
-            return new BoundIfElseStatement(boundExpression, boundStatements, elseBoundStatements, statementSyntax);
+            var boundStatements = BindScope(syntax.Statements);
+            var boundElseStatement = BindScope(syntax.ElseStatements);
+            return new BoundIfElseStatement(boundExpression, boundStatements, boundElseStatement, syntax);
         }
 
-        private BoundStatement BindIfStatement(IfStatementSyntax statementSyntax)
+        private BoundStatement BindIfStatement(IfStatementSyntax syntax)
         {
-            var boundExpression = BindExpression(statementSyntax.Condition);
+            var boundExpression = BindExpression(syntax.Condition);
             Ensure(() => TypeEquals(boundExpression.Type, new BoolCompilerGeneratedType()), "If condition must be of Type Bool");
 
-            var boundStatements = BindScope(statementSyntax.Statements);
-            return new BoundIfStatement(boundExpression, boundStatements, statementSyntax);
+            var boundStatements = BindScope(syntax.Statements);
+            return new BoundIfStatement(boundExpression, boundStatements, syntax);
         }
 
-        private BoundReturnStatement BindReturnStatement(ReturnStatementSyntax statementSyntax)
+        private BoundReturnStatement BindReturnStatement(ReturnStatementSyntax syntax)
         {
-            var boundExpression = BindExpression(statementSyntax.Expression);
-            return new BoundReturnStatement(boundExpression, statementSyntax);
+            var boundExpression = BindExpression(syntax.Expression);
+            return new BoundReturnStatement(boundExpression, syntax);
         }
 
-        private BoundStatement BindVariablesDeclarationStatement(VariablesDeclarationStatementSyntax statementSyntax)
+        private BoundStatement BindVariablesDeclarationStatement(VariablesDeclarationStatementSyntax syntax)
         {
-            var boundVariableDeclarationStatements =
-                statementSyntax.Declarations.Select(BindVariableDeclarationStatement).ToList();
-            return new BoundVariablesDeclarationStatement(boundVariableDeclarationStatements, statementSyntax);
+            var boundVarDeclStatement = syntax.Declarations.Select(BindVariableDeclarationStatement).ToList();
+            return new BoundVariablesDeclarationStatement(boundVarDeclStatement, syntax);
         }
 
-        private BoundVariableDeclarationStatement BindVariableDeclarationStatement(
-            VariableDeclarationStatementSyntax syntax)
+        private BoundVariableDeclarationStatement BindVariableDeclarationStatement(VariableDeclarationStatementSyntax syntax)
         {
             var qualifier = GetQualifier(syntax.VariableQualifier.Type);
             var boundExpression = BindExpression(syntax.InitExpression);
 
-            var boundVariableDeclarationStatement = new BoundVariableDeclarationStatement(
+            var boundVarDeclStatement = new BoundVariableDeclarationStatement(
                 syntax.Identifier.Value,
                 qualifier,
                 boundExpression,
                 syntax);
-            _contextService.AddLocal(syntax.Identifier.Value, boundVariableDeclarationStatement);
-            return boundVariableDeclarationStatement;
+            _contextService.AddLocal(syntax.Identifier.Value, boundVarDeclStatement);
+            return boundVarDeclStatement;
         }
 
-        private BoundUsing BindUsing(UsingSyntax usingSyntax, List<BoundNamespace> allNamespaces)
+        private BoundUsing BindUsing(UsingSyntax syntax, List<BoundNamespace> availableNamespaces)
         {
-            var boundNamespace = allNamespaces.Single(x => x.Name == usingSyntax.NamespaceName.Value);
+            var boundNamespace = availableNamespaces.Single(x => x.Name == syntax.NamespaceName.Value);
             _contextService.Load(boundNamespace);
-            var boundUsing = new BoundUsing(usingSyntax.NamespaceName.Value, usingSyntax, boundNamespace);
+            var boundUsing = new BoundUsing(syntax.NamespaceName.Value, syntax, boundNamespace);
             return boundUsing;
         }
 
@@ -309,9 +345,9 @@ namespace Kiwi.Semantic.Binder
             return qualifier;
         }
 
-        private BoundExpression BindExpression(IExpressionSyntax expressionSyntax, List<IType> args = null)
+        private BoundExpression BindExpression(IExpressionSyntax syntax, List<IType> args = null)
         {
-            return expressionSyntax.TypeSwitchExpression<IExpressionSyntax, BoundExpression>()
+            return syntax.TypeSwitchExpression<IExpressionSyntax, BoundExpression>()
                                    .Case<AnonymousFunctionExpressionSyntax>(BindAnonymousFunctionExpression)
                                    .Case<BooleanExpressionSyntax>(BindBooleanExpression)
                                    .Case<IntExpressionSyntax>(BindIntExpression)
@@ -319,65 +355,80 @@ namespace Kiwi.Semantic.Binder
                                    .Case<StringExpressionSyntax>(BindStringExpression)
                                    .Case<InvocationExpressionSyntax>(BindInvocationExpression)
                                    .Case<MemberOrTypeExpressionSyntax>(x => BindMemberExpression(x, args))
-                                   .Case<ObjectCreationExpressionSyntax>(BindObjectCreationExpression)
                                    .Case<ArrayCreationExpressionSyntax>(BindArrayCreationExpression)
+                                   .Case<ObjectCreationExpressionSyntax>(BindObjectCreationExpression)
                                    .Case<MemberAccessExpressionSyntax>(x => BindMemberAccessExpression(x, args))
+                                   .Case<ArrayAccessExpressionSyntax>(BindArrayAccessExpression)
                                    .Case<BinaryExpressionSyntax>(BindBinaryExpression)
                                    .Case<IfElseExpressionSyntax>(BindIfElseExpression)
                                    .Default(() => { throw new NotImplementedException(); })
                                    .Done();
         }
 
-        private BoundIfElseExpression BindIfElseExpression(IfElseExpressionSyntax arg)
+        private BoundArrayAccessExpression BindArrayAccessExpression(ArrayAccessExpressionSyntax syntax)
         {
-            var boundCondition = BindExpression(arg.Condition);
-            var boundIfTrue = BindExpression(arg.IfTrueExpression);
-            var boundIfFalse = BindExpression(arg.IfFalseExpression);
+            var boundExpression = BindExpression(syntax.Owner);
+            Ensure(() => boundExpression.Type is ArrayCompilerGeneratedType, $"{boundExpression.Type} is no array");
+
+            var arrayType = (ArrayCompilerGeneratedType)boundExpression.Type;
+
+            var elementType = arrayType.Type;
+            var boundParameter = syntax.Parameter.Select(x => BindExpression(x)).ToList();
+
+            Ensure(() => boundParameter.Count == arrayType.Dimension, $"Parameter count ({boundParameter.Count}) must match array dimension count ({arrayType.Dimension})");
+            return new BoundArrayAccessExpression(boundParameter, syntax, elementType );
+        }
+
+        private BoundIfElseExpression BindIfElseExpression(IfElseExpressionSyntax syntax)
+        {
+            var boundCondition = BindExpression(syntax.Condition);
+            var boundIfTrue = BindExpression(syntax.IfTrueExpression);
+            var boundIfFalse = BindExpression(syntax.IfFalseExpression);
 
             Ensure(() => TypeEquals(boundCondition.Type, new BoolCompilerGeneratedType()), "If condition must be of Type Bool");
             Ensure(() => TypeEquals(boundIfTrue.Type, boundIfFalse.Type), "IfTrue and IfFalse expression must match");
 
-            var expressionType = boundIfTrue.Type; //TODO: determind lowest type 
-            return new BoundIfElseExpression(boundCondition, boundIfTrue, boundIfFalse, expressionType, arg);
+            var boundExpressionType = boundIfTrue.Type; //TODO: determind lowest type 
+            return new BoundIfElseExpression(boundCondition, boundIfTrue, boundIfFalse, boundExpressionType, syntax);
         }
 
-        private BoundExpression BindAnonymousFunctionExpression(AnonymousFunctionExpressionSyntax arg)
+        private BoundExpression BindAnonymousFunctionExpression(AnonymousFunctionExpressionSyntax syntax)
         {
-            var boundParameters = arg.Parameter.Select(BindParameter).ToList();
-            var boundStatement = BindStatement(arg.Statements);
+            var boundParameters = syntax.Parameter.Select(BindParameter).ToList();
+            var boundStatement = BindStatement(syntax.Statements);
             throw new NotImplementedException();
         }
 
-        private BoundBinaryExpression BindBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            switch (binaryExpressionSyntax.Operator.Type)
+            switch (syntax.Operator.Type)
             {
                 case TokenType.AndKeyword:
-                    return BindAndBinaryExpression(binaryExpressionSyntax);
+                    return BindAndBinaryExpression(syntax);
                 case TokenType.NotEqual:
-                    return BindNotEqualBinaryExpression(binaryExpressionSyntax);
+                    return BindNotEqualBinaryExpression(syntax);
                 case TokenType.Equal:
-                    return BindEqualBinaryExpression(binaryExpressionSyntax);
+                    return BindEqualBinaryExpression(syntax);
                 case TokenType.Mult:
-                    return BindMultBinaryExpression(binaryExpressionSyntax);
+                    return BindMultBinaryExpression(syntax);
                 case TokenType.Div:
-                    return BindDivBinaryExpression(binaryExpressionSyntax);
+                    return BindDivBinaryExpression(syntax);
                 case TokenType.Add:
-                    return BindAddBinaryExpression(binaryExpressionSyntax);
+                    return BindAddBinaryExpression(syntax);
                 case TokenType.Sub:
-                    return BindSubBinaryExpression(binaryExpressionSyntax);
+                    return BindSubBinaryExpression(syntax);
                 case TokenType.Pow:
-                    return BindPowBinaryExpression(binaryExpressionSyntax);
+                    return BindPowBinaryExpression(syntax);
                 case TokenType.Less:
-                    return BindLessBinaryExpression(binaryExpressionSyntax);
+                    return BindLessBinaryExpression(syntax);
                 case TokenType.Greater:
-                    return BindGreaterBinaryExpression(binaryExpressionSyntax);
+                    return BindGreaterBinaryExpression(syntax);
                 case TokenType.Or:
-                    return BindOrBinaryExpression(binaryExpressionSyntax);
+                    return BindOrBinaryExpression(syntax);
                 case TokenType.IsKeyword:
-                    return BindIsBinaryExpression(binaryExpressionSyntax);
+                    return BindIsBinaryExpression(syntax);
                 case TokenType.TwoDots:
-                    return BindRangeBinaryExpression(binaryExpressionSyntax);
+                    return BindRangeBinaryExpression(syntax);
                 case TokenType.InKeyword:
                 case TokenType.NotInKeyword:
                     //TODO: generics and iterator pattern
@@ -386,345 +437,325 @@ namespace Kiwi.Semantic.Binder
             throw new NotImplementedException();
         }
 
-        private BoundBinaryExpression BindPowBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindPowBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => left.Type is IntCompilerGeneratedType || left.Type is FloatCompilerGeneratedType, $"The operator ^ cannot handle ${left.Type}");
-            Ensure(() => right.Type is IntCompilerGeneratedType || right.Type is FloatCompilerGeneratedType, $"The operator ^ cannot handle ${right.Type}");
-            Ensure(() => TypeEquals(left.Type, right.Type), "Please ensure the operand types equals");
+            Ensure(() => boundLeft.Type is IntCompilerGeneratedType || boundLeft.Type is FloatCompilerGeneratedType, $"The operator ^ cannot handle ${boundLeft.Type}");
+            Ensure(() => boundRight.Type is IntCompilerGeneratedType || boundRight.Type is FloatCompilerGeneratedType, $"The operator ^ cannot handle ${boundRight.Type}");
+            Ensure(() => TypeEquals(boundLeft.Type, boundRight.Type), "Please ensure the operand types equals");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Sub,
-                binaryExpressionSyntax,
-                left.Type);
+                syntax,
+                boundLeft.Type);
         }
 
-        private BoundBinaryExpression BindLessBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindLessBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => left.Type is IntCompilerGeneratedType || left.Type is FloatCompilerGeneratedType, $"The operator < cannot handle ${left.Type}");
-            Ensure(() => right.Type is IntCompilerGeneratedType || right.Type is FloatCompilerGeneratedType, $"The operator < cannot handle ${right.Type}");
-            Ensure(() => TypeEquals(left.Type, right.Type), "Please ensure the operand types equals");
+            Ensure(() => boundLeft.Type is IntCompilerGeneratedType || boundLeft.Type is FloatCompilerGeneratedType, $"The operator < cannot handle ${boundLeft.Type}");
+            Ensure(() => boundRight.Type is IntCompilerGeneratedType || boundRight.Type is FloatCompilerGeneratedType, $"The operator < cannot handle ${boundRight.Type}");
+            Ensure(() => TypeEquals(boundLeft.Type, boundRight.Type), "Please ensure the operand types equals");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Less,
-                binaryExpressionSyntax,
-                left.Type);
+                syntax,
+                new BoolCompilerGeneratedType());
         }
 
-        private BoundBinaryExpression BindGreaterBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindGreaterBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => left.Type is IntCompilerGeneratedType || left.Type is FloatCompilerGeneratedType, $"The operator > cannot handle ${left.Type}");
-            Ensure(() => right.Type is IntCompilerGeneratedType || right.Type is FloatCompilerGeneratedType, $"The operator > cannot handle ${right.Type}");
-            Ensure(() => TypeEquals(left.Type, right.Type), "Please ensure the operand types equals");
+            Ensure(() => boundLeft.Type is IntCompilerGeneratedType || boundLeft.Type is FloatCompilerGeneratedType, $"The operator > cannot handle ${boundLeft.Type}");
+            Ensure(() => boundRight.Type is IntCompilerGeneratedType || boundRight.Type is FloatCompilerGeneratedType, $"The operator > cannot handle ${boundRight.Type}");
+            Ensure(() => TypeEquals(boundLeft.Type, boundRight.Type), "Please ensure the operand types equals");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Greater,
-                binaryExpressionSyntax,
-                left.Type);
+                syntax,
+                new BoolCompilerGeneratedType());
         }
 
-        private BoundBinaryExpression BindOrBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindOrBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => left.Type is BoolCompilerGeneratedType, $"The operator || cannot handle ${left.Type}");
-            Ensure(() => right.Type is BoolCompilerGeneratedType, $"The operator || cannot handle ${right.Type}");
+            Ensure(() => boundLeft.Type is BoolCompilerGeneratedType, $"The operator || cannot handle ${boundLeft.Type}");
+            Ensure(() => boundRight.Type is BoolCompilerGeneratedType, $"The operator || cannot handle ${boundRight.Type}");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Or,
-                binaryExpressionSyntax,
-                left.Type);
+                syntax,
+                new BoolCompilerGeneratedType());
         }
 
-        private BoundBinaryExpression BindIsBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindIsBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            Ensure(() => binaryExpressionSyntax.RightExpression is MemberOrTypeExpressionSyntax, $"Expected {binaryExpressionSyntax.RightExpression} to be {nameof(MemberOrTypeExpressionSyntax)}");
+            Ensure(() => syntax.RightExpression is MemberOrTypeExpressionSyntax, $"Expected {syntax.RightExpression} to be {nameof(MemberOrTypeExpressionSyntax)}");
 
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindTypeExpression((MemberOrTypeExpressionSyntax)binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindTypeExpression((MemberOrTypeExpressionSyntax)syntax.RightExpression);
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Is,
-                binaryExpressionSyntax,
+                syntax,
                 new BoolCompilerGeneratedType());
         }
 
-        private BoundBinaryExpression BindRangeBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindRangeBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => left.Type is IntCompilerGeneratedType, $"The operator .. cannot handle ${left.Type}");
-            Ensure(() => right.Type is IntCompilerGeneratedType, $"The operator .. cannot handle ${right.Type}");
+            Ensure(() => boundLeft.Type is IntCompilerGeneratedType, $"The operator .. cannot handle ${boundLeft.Type}");
+            Ensure(() => boundRight.Type is IntCompilerGeneratedType, $"The operator .. cannot handle ${boundRight.Type}");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Range,
-                binaryExpressionSyntax,
-                new ArrayCompilerGeneratedType(left.Type, 1));
+                syntax,
+                new ArrayCompilerGeneratedType(boundLeft.Type, 1));
         }
 
-        private BoundBinaryExpression BindSubBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindSubBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => left.Type is IntCompilerGeneratedType || left.Type is FloatCompilerGeneratedType, $"The operator - cannot handle ${left.Type}");
-            Ensure(() => right.Type is IntCompilerGeneratedType || right.Type is FloatCompilerGeneratedType, $"The operator - cannot handle ${right.Type}");
-            Ensure(() => TypeEquals(left.Type, right.Type), "Please ensure the operand types equals");
+            Ensure(() => boundLeft.Type is IntCompilerGeneratedType || boundLeft.Type is FloatCompilerGeneratedType, $"The operator - cannot handle ${boundLeft.Type}");
+            Ensure(() => boundRight.Type is IntCompilerGeneratedType || boundRight.Type is FloatCompilerGeneratedType, $"The operator - cannot handle ${boundRight.Type}");
+            Ensure(() => TypeEquals(boundLeft.Type, boundRight.Type), "Please ensure the operand types equals");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Sub,
-                binaryExpressionSyntax,
-                left.Type);
+                syntax,
+                boundLeft.Type);
         }
 
-        private BoundBinaryExpression BindAddBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindAddBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => left.Type is IntCompilerGeneratedType || left.Type is FloatCompilerGeneratedType, $"The operator + cannot handle ${left.Type}");
-            Ensure(() => right.Type is IntCompilerGeneratedType || right.Type is FloatCompilerGeneratedType, $"The operator + cannot handle ${right.Type}");
-            Ensure(() => TypeEquals(left.Type, right.Type), "Please ensure the operand types equals");
+            Ensure(() => boundLeft.Type is IntCompilerGeneratedType || boundLeft.Type is FloatCompilerGeneratedType, $"The operator + cannot handle ${boundLeft.Type}");
+            Ensure(() => boundRight.Type is IntCompilerGeneratedType || boundRight.Type is FloatCompilerGeneratedType, $"The operator + cannot handle ${boundRight.Type}");
+            Ensure(() => TypeEquals(boundLeft.Type, boundRight.Type), "Please ensure the operand types equals");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Add,
-                binaryExpressionSyntax,
-                left.Type);
+                syntax,
+                boundLeft.Type);
         }
 
-        private BoundBinaryExpression BindDivBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindDivBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => left.Type is IntCompilerGeneratedType || left.Type is FloatCompilerGeneratedType, $"The operator / cannot handle ${left.Type}");
-            Ensure(() => right.Type is IntCompilerGeneratedType || right.Type is FloatCompilerGeneratedType, $"The operator / cannot handle ${right.Type}");
-            Ensure(() => TypeEquals(left.Type, right.Type), "Please ensure the operand types equals");
+            Ensure(() => boundLeft.Type is IntCompilerGeneratedType || boundLeft.Type is FloatCompilerGeneratedType, $"The operator / cannot handle ${boundLeft.Type}");
+            Ensure(() => boundRight.Type is IntCompilerGeneratedType || boundRight.Type is FloatCompilerGeneratedType, $"The operator / cannot handle ${boundRight.Type}");
+            Ensure(() => TypeEquals(boundLeft.Type, boundRight.Type), "Please ensure the operand types equals");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Div,
-                binaryExpressionSyntax,
-                left.Type);
+                syntax,
+                boundLeft.Type);
         }
 
-        private BoundBinaryExpression BindMultBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindMultBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => left.Type is IntCompilerGeneratedType || left.Type is FloatCompilerGeneratedType, $"The operator * cannot handle ${left.Type}");
-            Ensure(() => right.Type is IntCompilerGeneratedType || right.Type is FloatCompilerGeneratedType, $"The operator * cannot handle ${right.Type}");
-            Ensure(() => TypeEquals(left.Type, right.Type), "Please ensure the operand types equals");
+            Ensure(() => boundLeft.Type is IntCompilerGeneratedType || boundLeft.Type is FloatCompilerGeneratedType, $"The operator * cannot handle ${boundLeft.Type}");
+            Ensure(() => boundRight.Type is IntCompilerGeneratedType || boundRight.Type is FloatCompilerGeneratedType, $"The operator * cannot handle ${boundRight.Type}");
+            Ensure(() => TypeEquals(boundLeft.Type, boundRight.Type), "Please ensure the operand types equals");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Mult,
-                binaryExpressionSyntax,
-                left.Type);
+                syntax,
+                boundLeft.Type);
         }
 
-        private BoundBinaryExpression BindEqualBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindEqualBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => TypeEquals(left.Type, right.Type), $"The operator = cannt handle the operands of type {left.Type} and {right.Type}.");
+            Ensure(() => TypeEquals(boundLeft.Type, boundRight.Type), $"The operator = cannt handle the operands of type {boundLeft.Type} and {boundRight.Type}.");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.Equal,
-                binaryExpressionSyntax,
+                syntax,
                 new BoolCompilerGeneratedType());
         }
 
-        private BoundBinaryExpression BindNotEqualBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindNotEqualBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => TypeEquals(left.Type, right.Type), $"The operator != cannt handle the operands of type {left.Type} and {right.Type}.");
+            Ensure(() => TypeEquals(boundLeft.Type, boundRight.Type), $"The operator != cannt handle the operands of type {boundLeft.Type} and {boundRight.Type}.");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.NotEqual,
-                binaryExpressionSyntax,
+                syntax,
                 new BoolCompilerGeneratedType());
         }
 
-        private BoundBinaryExpression BindAndBinaryExpression(BinaryExpressionSyntax binaryExpressionSyntax)
+        private BoundBinaryExpression BindAndBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(binaryExpressionSyntax.LeftExpression);
-            var right = BindExpression(binaryExpressionSyntax.RightExpression);
+            var boundLeft = BindExpression(syntax.LeftExpression);
+            var boundRight = BindExpression(syntax.RightExpression);
 
-            Ensure(() => left.Type is BoolCompilerGeneratedType, $"The operator && cannot handle ${left.Type}");
-            Ensure(() => right.Type is BoolCompilerGeneratedType, $"The operator && cannot handle ${right.Type}");
+            Ensure(() => boundLeft.Type is BoolCompilerGeneratedType, $"The operator && cannot handle ${boundLeft.Type}");
+            Ensure(() => boundRight.Type is BoolCompilerGeneratedType, $"The operator && cannot handle ${boundRight.Type}");
             return new BoundBinaryExpression(
-                left,
-                right,
+                boundLeft,
+                boundRight,
                 BinaryOperators.And,
-                binaryExpressionSyntax,
+                syntax,
                 new BoolCompilerGeneratedType());
         }
 
-        private BoundMemberAccessExpression BindMemberAccessExpression(
-            MemberAccessExpressionSyntax expressionSyntax,
-            List<IType> parameterTypes)
+        private BoundMemberAccessExpression BindMemberAccessExpression(MemberAccessExpressionSyntax syntax, List<IType> parameterTypes)
         {
-            var boundExpression = BindExpression(expressionSyntax.Owner);
+            var boundExpression = BindExpression(syntax.Owner);
+            var memberName = syntax.MemberName.Value;
 
-            var function = boundExpression.Type.Functions.SingleOrDefault(x => x.Name == expressionSyntax.MemberName.Value);
-            if ((parameterTypes == null || !parameterTypes.Any()) && function != null)
-            {
-                return new BoundMemberAccessExpression(
-                    expressionSyntax.MemberName.Value,
-                    function,
-                    expressionSyntax);
-            }
+            return Select<BoundMemberAccessExpression>
+                .Case(() => (IBoundMember)boundExpression.Type.Functions.SingleOrDefault(x => x.Name == memberName))
+                .Match(func => func != null && parameterTypes == null || !parameterTypes.Any())
+                .Do(func => new BoundMemberAccessExpression(memberName, func, syntax))
 
-            var boundFunction =
-                boundExpression.Type.Functions.SingleOrDefault(
-                    x =>
-                    x.Name == expressionSyntax.MemberName.Value
-                    && Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes ?? new List<IType>()));
+                .Case(() => boundExpression.Type.Functions.SingleOrDefault(x => x.Name == memberName && Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes ?? new List<IType>())))
+                .Match(func => func != null)
+                .Do(func => new BoundMemberAccessExpression(
+                                memberName,
+                                func,
+                                syntax))
 
-            if (boundFunction != null)
-            {
-                return new BoundMemberAccessExpression(
-                    expressionSyntax.MemberName.Value,
-                    boundFunction,
-                    expressionSyntax);
-            }
+                .Case(() => boundExpression.Type.Fields.SingleOrDefault(x => x.Name == memberName))
+                .Match(field => field != null)
+                .Do(field => new BoundMemberAccessExpression(
+                                 memberName,
+                                 field,
+                                 syntax))
 
-            var boundField =
-                boundExpression.Type.Fields.SingleOrDefault(x => x.Name == expressionSyntax.MemberName.Value);
-            if (boundField != null)
-            {
-                return new BoundMemberAccessExpression(
-                    expressionSyntax.MemberName.Value,
-                    boundField,
-                    expressionSyntax);
-            }
-            throw new KiwiSemanticException($"{expressionSyntax.MemberName.Value} not defined");
+                .Else(() => { throw new KiwiSemanticException($"{memberName} not defined"); })
+                .Done();
         }
 
-        private static BoundExpression BindStringExpression(StringExpressionSyntax expressionSyntax)
+        private static BoundExpression BindStringExpression(StringExpressionSyntax syntax)
         {
-            return new BoundStringExpression(expressionSyntax.Value.Value, expressionSyntax);
+            return new BoundStringExpression(syntax.Value.Value, syntax);
         }
 
-        private static BoundExpression BindIntExpression(IntExpressionSyntax expressionSyntax)
+        private static BoundExpression BindIntExpression(IntExpressionSyntax syntax)
         {
-            var value = int.Parse(expressionSyntax.Value.Value);
+            var value = int.Parse(syntax.Value.Value);
 
-            return new BoundIntExpression(value, expressionSyntax);
+            return new BoundIntExpression(value, syntax);
         }
 
-        private static BoundExpression BindFloatExpression(FloatExpressionSyntax expressionSyntax)
+        private static BoundExpression BindFloatExpression(FloatExpressionSyntax syntax)
         {
-            var value = float.Parse(expressionSyntax.Value.Value);
+            var value = float.Parse(syntax.Value.Value);
 
-            return new BoundFloatExpression(value, expressionSyntax);
+            return new BoundFloatExpression(value, syntax);
         }
 
-        private BoundObjectCreationExpression BindObjectCreationExpression(
-            ObjectCreationExpressionSyntax expressionSyntax)
+        private BoundObjectCreationExpression BindObjectCreationExpression(ObjectCreationExpressionSyntax syntax)
         {
-            var type = _contextService.LookupType(expressionSyntax.Type.TypeName.Value);
-            var boundParameter = expressionSyntax.Parameter.Select(x => BindExpression(x)).ToList();
+            var boundType = BindType(syntax.Type); 
+            var boundParameter = syntax.Parameter.Select(x => BindExpression(x)).ToList();
             var parameterTypes = boundParameter.Select(x => x.Type).ToList();
             IConstructor boundConstructor = null;
             if (parameterTypes.Any())
             {
-                boundConstructor =
-                    type.Constructors.Single(
-                        x => Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes));
+                boundConstructor = boundType.Constructors.Single(x => Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes));
             }
-            return new BoundObjectCreationExpression(type, boundConstructor, boundParameter, expressionSyntax);
+            return new BoundObjectCreationExpression(boundType, boundConstructor, boundParameter, syntax);
         }
 
-        private BoundArrayCreationExpression BindArrayCreationExpression(ArrayCreationExpressionSyntax expressionSyntax)
+        private BoundArrayCreationExpression BindArrayCreationExpression(ArrayCreationExpressionSyntax syntax)
         {
-            var type = _contextService.LookupType(expressionSyntax.Type.TypeName.Value);
-            var boundParameter = expressionSyntax.Parameter.Select(x => BindExpression(x)).ToList();
-            return new BoundArrayCreationExpression(type, expressionSyntax.Dimension, boundParameter, expressionSyntax);
+            var boundType = BindType(syntax.Type);
+            var boundParameter = syntax.Parameter.Select(x => BindExpression(x)).ToList();
+            return new BoundArrayCreationExpression(boundType, syntax.Dimension, boundParameter, syntax);
         }
 
-        private BoundTypeExpression BindTypeExpression(MemberOrTypeExpressionSyntax memberOrTypeExpressionSyntax)
+        private BoundTypeExpression BindTypeExpression(MemberOrTypeExpressionSyntax syntax)
         {
-            var type = _contextService.LookupType(memberOrTypeExpressionSyntax.Name.Value);
-            return new BoundTypeExpression(type, memberOrTypeExpressionSyntax);
+            var boundType = _contextService.LookupType(syntax.Name.Value);
+            return new BoundTypeExpression(boundType, syntax);
         }
 
-        private BoundExpression BindMemberExpression(
-            MemberOrTypeExpressionSyntax orTypeExpressionSyntax,
-            List<IType> parameterTypes = null)
+        private BoundExpression BindMemberExpression(MemberOrTypeExpressionSyntax syntax, List<IType> parameterTypes = null)
         {
-            var boundFunction = _contextService.GetAvailableFunctions().SingleOrDefault(
-                x =>
-                x.Name == orTypeExpressionSyntax.Name.Value
-                && Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes));
-            if (boundFunction != null)
-            {
-                return new BoundMemberExpression(orTypeExpressionSyntax.Name.Value, boundFunction, orTypeExpressionSyntax);
-            }
+            var memberName = syntax.Name.Value;
 
-            var boundField =
-                _contextService.GetAvailableFields().SingleOrDefault(x => x.Name == orTypeExpressionSyntax.Name.Value);
-            if (boundField != null)
-            {
-                return new BoundMemberExpression(
-                    orTypeExpressionSyntax.Name.Value,
-                    boundField,
-                    orTypeExpressionSyntax);
-            }
+            return Select<BoundMemberExpression>
+                .Case(() => (IBoundMember)GetFunction(memberName, parameterTypes))
+                    .Match(function => function != null)
+                    .Do(function => new BoundMemberExpression(memberName, function, syntax))
 
-            var boundLocal = _contextService.GetLocal(orTypeExpressionSyntax.Name.Value);
-            if (boundLocal != null)
-            {
-                return new BoundMemberExpression(
-                    orTypeExpressionSyntax.Name.Value,
-                    boundLocal,
-                    orTypeExpressionSyntax);
-            }
-            throw new KiwiSemanticException($"{orTypeExpressionSyntax.Name.Value} not defined");
+                .Case(() => GetField(memberName))
+                    .Match(field => field != null)
+                    .Do(field => new BoundMemberExpression(memberName, field, syntax))
+
+                .Case(() => _contextService.GetLocal(memberName))
+                    .Match(local => local != null)
+                    .Do(local => new BoundMemberExpression(memberName, local, syntax))
+
+                .Else(() => { throw new KiwiSemanticException($"{memberName} not defined"); }).Done();
+        }
+
+        private IField GetField(string memberName)
+        {
+            return _contextService.GetAvailableFields().SingleOrDefault(x => x.Name == memberName);
+        }
+
+        private IFunction GetFunction(string memberName, List<IType> parameterTypes)
+        {
+            return _contextService.GetAvailableFunctions().SingleOrDefault(x => x.Name == memberName && Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes));
         }
 
         private static bool Match(List<IType> left, List<IType> right)
         {
-            return left.Count == right.Count && left.Select((type, i) => TypeEquals(right[i], type)).All(x => x);
+            return left.Count == right?.Count && left.Select((type, i) => TypeEquals(right[i], type)).All(x => x);
         }
 
-        private BoundInvocationExpression BindInvocationExpression(InvocationExpressionSyntax expressionSyntax)
+        private BoundInvocationExpression BindInvocationExpression(InvocationExpressionSyntax syntax)
         {
-            var boundParameter = expressionSyntax.Parameter.Select(x => BindExpression(x)).ToList();
-            var boundToInvoke = BindExpression(expressionSyntax.ToInvoke, boundParameter.Select(x => x.Type).ToList());
-            var returnType = ((FunctionCompilerGeneratedType)boundToInvoke.Type).ReturnType
+            var boundParameter = syntax.Parameter.Select(x => BindExpression(x)).ToList();
+            var boundToInvoke = BindExpression(syntax.ToInvoke, boundParameter.Select(x => x.Type).ToList());
+            var boundReturnType = ((FunctionCompilerGeneratedType)boundToInvoke.Type).ReturnType
                              ?? new VoidCompilerGeneratedType();
-            return new BoundInvocationExpression(boundToInvoke, boundParameter, expressionSyntax, returnType);
+            return new BoundInvocationExpression(boundToInvoke, boundParameter, syntax, boundReturnType);
         }
 
-        private BoundExpression BindBooleanExpression(BooleanExpressionSyntax expressionSyntax)
+        private BoundExpression BindBooleanExpression(BooleanExpressionSyntax syntax)
         {
-            return new BoundBooleanExpression(expressionSyntax.Value.Value == "true", expressionSyntax);
+            return new BoundBooleanExpression(syntax.Value.Value == "true", syntax);
         }
 
         private static void Ensure(Func<bool> func, string message)

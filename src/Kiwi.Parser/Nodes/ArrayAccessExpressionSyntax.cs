@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class ArrayAccessExpression : IExpressionSyntax
+    public class ArrayAccessExpressionSyntax : IExpressionSyntax
     {
-        public ArrayAccessExpression(IExpressionSyntax owner, List<IExpressionSyntax> parameter)
+        public ArrayAccessExpressionSyntax(IExpressionSyntax owner, List<IExpressionSyntax> parameter)
         {
             Owner = owner;
             Parameter = parameter;

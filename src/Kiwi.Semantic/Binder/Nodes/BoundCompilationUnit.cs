@@ -8,10 +8,10 @@ namespace Kiwi.Semantic.Binder.Nodes
         public BoundCompilationUnit(CompilationUnitSyntax syntax) : base(syntax)
         {
             Namespaces = new List<BoundNamespace>();
-            BoundUsings = new List<BoundUsing>();
+            Usings = new List<BoundUsing>();
         }
 
-        public List<BoundUsing> BoundUsings { get; set; }
+        public List<BoundUsing> Usings { get; set; }
         public List<BoundNamespace> Namespaces { get; set; }
     }
 }

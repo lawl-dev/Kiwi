@@ -28,21 +28,11 @@ namespace Kiwi.Semantic.Binder
                         boundNamespace.TypesInternal.Add(boundType);
                     }
                     boundNamespace.EnumsInternal.AddRange(
-                        namespaceSyntax.Enums.Select(x => new BoundEnum(x.EnumName, x)));
+                        namespaceSyntax.Enums.Select(x => new BoundEnum(x.EnumName.Value, x)));
                 }
                 compilationUnits.Add(boundCompilationUnit);
             }
             return compilationUnits;
         }
-    }
-
-    public class BoundEnum : BoundNode
-    {
-        public BoundEnum(Token enumName, EnumSyntax enumSyntax) : base(enumSyntax)
-        {
-            EnumName = enumName;
-        }
-
-        public Token EnumName { get; set; }
     }
 }

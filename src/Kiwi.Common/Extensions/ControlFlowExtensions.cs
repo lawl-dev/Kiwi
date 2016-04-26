@@ -2,7 +2,73 @@ using System;
 
 namespace Kiwi.Common.Extensions
 {
-    public static class TypeSwitchExtensions
+    public static class Select<TResult>
+    {
+        public static SelectResult<T> Case<T>(Func<T> getter)
+        {
+            var result = getter();
+            return new SelectResult<T>(result);
+        }
+
+        public class SelectResult<T>
+        {
+            private T _current;
+            private bool _isMatch;
+            private TResult _result;
+            private bool _resultSet;
+
+            public SelectResult(T current)
+            {
+                _current = current;
+            }
+
+            public SelectResult<T> Match(Func<T, bool> matcher)
+            {
+                if (!_isMatch)
+                {
+                    _isMatch = matcher(_current);
+                }
+
+                return this;
+            }
+
+            public SelectResult<T> Case(Func<T> getter)
+            {
+                if (!_isMatch)
+                {
+                    _current = getter();
+                }
+
+                return this;
+            }
+
+            public SelectResult<T> Do(Func<T, TResult> action)
+            {
+                if (_isMatch && !_resultSet)
+                {
+                    _resultSet = true;
+                    _result = action(_current);
+                }
+                return this;
+            }
+
+            public TResult Done()
+            {
+                return _result;
+            }
+
+            public SelectResult<T> Else(Action action)
+            {
+                if (!_isMatch)
+                {
+                    action();
+                }
+                return this;
+            }
+        }
+    }
+
+    public static class ControlFlowExtensions
     {
         public static Switch<TSource> TypeSwitch<TSource>(this TSource value)
         {

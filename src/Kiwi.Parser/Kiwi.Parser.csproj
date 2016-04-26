@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="ExpressionOperatorChain.cs" />
     <Compile Include="Nodes\AnonymousFunctionExpressionSyntax.cs" />
-    <Compile Include="Nodes\ArrayAccessExpression.cs" />
+    <Compile Include="Nodes\ArrayAccessExpressionSyntax.cs" />
     <Compile Include="Nodes\ArrayCreationExpressionSyntax.cs" />
     <Compile Include="Nodes\ArrayTypeSyntax.cs" />
     <Compile Include="Nodes\BooleanExpressionSyntax.cs" />

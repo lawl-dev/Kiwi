@@ -3,7 +3,7 @@
     public interface ISyntaxVisitor
     {
         void Visit(AnonymousFunctionExpressionSyntax anonymousFunctionExpressionSyntax);
-        void Visit(ArrayAccessExpression arrayAccessExpression);
+        void Visit(ArrayAccessExpressionSyntax arrayAccessExpressionSyntax);
         void Visit(ArrayCreationExpressionSyntax arrayCreationExpressionSyntax);
         void Visit(ArrayTypeSyntax arrayTypeSyntax);
         void Visit(AssignmentStatementSyntax assignmentStatementSyntax);

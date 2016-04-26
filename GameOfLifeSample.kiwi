@@ -1,53 +1,46 @@
 namespace Gol
 {
-class GameOfLife
-{
-	func GetUpdatedGrid(bool[][] grid) -> bool[][]
+	class GameOfLife
 	{
-		var newGrid : new bool[grid.Length(0)][grid.Length(1)]
-		for(var x : 0; x < grid.Length(0); x :+ 1)
+		func GetUpdatedGrid(bool[][] grid) -> bool[][]
 		{
-			for(var y : 0; y < grid.Length(1); y :+ 1)
+			var newGrid : new bool[grid.Length(0)][grid.Length(1)]
+			for(var x : 0; x < grid.Length(0); x :+ 1)
 			{
-				var livingNeighbours : GetLivingNeighboursCount(grid, x, y)
-				if(grid[x][y])
+				for(var y : 0; y < grid.Length(1); y :+ 1)
 				{
-					newGrid[x][y] : if(livingNeighbours < 2) false 
-								   else if(livingNeighbours = 2 || livingNeighbours = 3) true 
-								   else if(livingNeighbours > 3) false 
-								   else true
+					var livingNeighbours : GetLivingNeighboursCount(grid, x, y)
+					if(grid[x][y])
+					{
+						newGrid[x][y] : if(livingNeighbours < 2) false 
+									else if(livingNeighbours = 2 || livingNeighbours = 3) true 
+									else if(livingNeighbours > 3) false 
+									else true
+					}
+					else
+					{
+						newGrid[x][y] : livingNeighbours = 3
+					}	
 				}
-				else
-				{
-					newGrid[x][y] : livingNeighbours = 3
-				}	
 			}
+		
+			return newGrid
 		}
-	
-		return newGrid
-	}
-	
-	func GetLivingNeighboursCount(bool[][] grid, int x, int y) -> int
-	{
-		var result : 0
-		for(x1 : x-1; x1 < x + 1; x :+ 1)
+		
+		func GetLivingNeighboursCount(bool[][] grid, int x, int y) -> int
 		{
-			for(y1 : y-1; y1 < y + 1; y :+ 1)
+			var result : 0
+			for(var x1 : x-1; x1 < x + 1; x :+ 1)
 			{
-				result :+ if(GetIsIndexOutOfRange(grid, x1, y1)) 0 else if(grid[x1][y1]) 1 else 0
+				for(var y1 : y-1; y1 < y + 1; y :+ 1)
+				{
+					result :+ if(GetIsIndexOutOfRange(grid, x1, y1)) 0 else if(grid[x1][y1]) 1 else 0
+				}
 			}
+			
+			return result
 		}
 		
-		return result
+		func GetIsIndexOutOfRange(bool[][] grid, int x, int y) -> return x < 0 || y < 0 || x > grid.Length(0) || y > grid.Length(1)
 	}
-	
-	func GetIsIndexOutOfRange(bool[][] grid, int x, int y) -> bool
-	{
-		var xMin, yMin : 0
-		var xMax : grid.Length(0)
-		var yMax : grid.Length(1)
-		
-		return x < xMin || y < yMin || x > xMax || y > yMax
-	}
-}
 }
