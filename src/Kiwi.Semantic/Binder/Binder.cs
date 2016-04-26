@@ -386,7 +386,7 @@ namespace Kiwi.Semantic.Binder
             var boundIfFalse = BindExpression(syntax.IfFalseExpression);
 
             Ensure(() => TypeEquals(boundCondition.Type, new BoolCompilerGeneratedType()), "If condition must be of Type Bool");
-            Ensure(() => TypeEquals(boundIfTrue.Type, boundIfFalse.Type), "IfTrue and IfFalse expression must match");
+            Ensure(() => TypeEquals(boundIfTrue.Type, boundIfFalse.Type), "IfTrue and IfFalse expression Type must match");
 
             var boundExpressionType = boundIfTrue.Type; //TODO: determind lowest type 
             return new BoundIfElseExpression(boundCondition, boundIfTrue, boundIfFalse, boundExpressionType, syntax);

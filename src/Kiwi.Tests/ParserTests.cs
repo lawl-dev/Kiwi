@@ -210,7 +210,7 @@ namespace Kiwi.Tests
         [TestCase("return if(switch) 1 else 2", typeof(KiwiSyntaxException),
             "Unexpected Token switch. Expected Sign Operator, New, Int, Float, String or Identifier Expression.")]
         [TestCase("int if(switch) 1 else 2", typeof(KiwiSyntaxException),
-            "Unexpected Token. Expected If, Return, When, Switch, Var, Const, Identifier, For or Forr")]
+            "Unexpected Token \"int\". Expected If, Return, When, Switch, Var, Const, Identifier, For or Forr")]
         [TestCase("for(f(); i < 1; i :+ 1){}", typeof(KiwiSyntaxException),
             "Unexpected Statement. Expected AssignmentStatement")]
         [TestCase("i lol 1", typeof(KiwiSyntaxException),
