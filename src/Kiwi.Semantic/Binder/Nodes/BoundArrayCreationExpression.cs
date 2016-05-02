@@ -10,12 +10,12 @@ namespace Kiwi.Semantic.Binder.Nodes
         public BoundArrayCreationExpression(
             IType type,
             int dimension,
-            List<BoundExpression> boundParameter,
+            List<BoundExpression> parameter,
             ArrayCreationExpressionSyntax expressionSyntax) : base(expressionSyntax, new ArrayCompilerGeneratedType(type, dimension))
         {
-            BoundParameter = boundParameter;
+            Parameter = parameter;
         }
 
-        public List<BoundExpression> BoundParameter { get; set; }
+        public List<BoundExpression> Parameter { get; set; }
     }
 }

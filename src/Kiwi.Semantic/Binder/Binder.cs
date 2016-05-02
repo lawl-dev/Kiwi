@@ -134,6 +134,7 @@ namespace Kiwi.Semantic.Binder
 
         private void BindExpressionFunction(BoundFunction boundFunction, ExpressionFunctionSyntax syntax)
         {
+            _contextService.EnterScope();
             var boundParameters = syntax.ParameterList.Select(BindParameter).ToList();
             var boundReturnStatement = BindReturnStatement((ReturnStatementSyntax)syntax.Statements);
             boundFunction.Parameter = boundParameters;
@@ -145,17 +146,20 @@ namespace Kiwi.Semantic.Binder
                 boundFunction.Statements = boundReturnStatement;
                 boundFunction.ReturnType = boundReturnStatement.BoundExpression.Type;
             }
+            _contextService.ExitScope();
         }
 
         private void BindVoid(BoundFunction boundFunction, FunctionSyntax syntax)
         {
             var boundParameters = syntax.ParameterList.Select(BindParameter).ToList();
+            _contextService.EnterScope();
             boundFunction.Parameter = boundParameters;
             boundFunction.Type = new FunctionCompilerGeneratedType(boundParameters.Select(x => x.Type).ToList(), null);
             if (!_bindSignatures)
             {
                 boundFunction.Statements = BindScope((ScopeStatementSyntax)syntax.Statements);
             }
+            _contextService.ExitScope();
         }
 
         private BoundParameter BindParameter(ParameterSyntax syntax)
@@ -184,8 +188,10 @@ namespace Kiwi.Semantic.Binder
 
         private BoundConstructor BindConstructor(ConstructorSyntax syntax)
         {
+            _contextService.EnterScope();
             var boundParameters = syntax.ArgList.Select(BindParameter).ToList();
             var boundStatements = BindScope(syntax.Statements);
+            _contextService.ExitScope();
             return new BoundConstructor(boundParameters, boundStatements, syntax);
         }
 
@@ -689,9 +695,16 @@ namespace Kiwi.Semantic.Binder
             var boundParameter = syntax.Parameter.Select(x => BindExpression(x)).ToList();
             var parameterTypes = boundParameter.Select(x => x.Type).ToList();
             IConstructor boundConstructor = null;
+            
             if (parameterTypes.Any())
             {
+                string parameterTypeNames = string.Empty; //TODO: resolve names, maybe compilergeneratedTypes need name
+                Ensure(() => boundType.Constructors.Any(x => Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes)), $"Cannot resolve constructor({parameterTypeNames}).");
                 boundConstructor = boundType.Constructors.Single(x => Match(x.Parameter.Select(y => y.Type).ToList(), parameterTypes));
+            }
+            else
+            {
+                Ensure(() => !boundType.Constructors.Any(), $"{boundType} has no constructor without arguments.");
             }
             return new BoundObjectCreationExpression(boundType, boundConstructor, boundParameter, syntax);
         }
@@ -748,8 +761,7 @@ namespace Kiwi.Semantic.Binder
         {
             var boundParameter = syntax.Parameter.Select(x => BindExpression(x)).ToList();
             var boundToInvoke = BindExpression(syntax.ToInvoke, boundParameter.Select(x => x.Type).ToList());
-            var boundReturnType = ((FunctionCompilerGeneratedType)boundToInvoke.Type).ReturnType
-                             ?? new VoidCompilerGeneratedType();
+            var boundReturnType = ((FunctionCompilerGeneratedType)boundToInvoke.Type).ReturnType ?? new VoidCompilerGeneratedType();
             return new BoundInvocationExpression(boundToInvoke, boundParameter, syntax, boundReturnType);
         }
 

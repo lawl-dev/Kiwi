@@ -482,5 +482,64 @@ namespace Kiwi.Tests
 
             Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Parameter count (1) must match array dimension count (2)") );
         }
+
+        [Test]
+        public void Test_ObjectCreationExpression_ThrowsNoConstructorWithoutArguments()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "        Constructor(int a){}" +
+                               "    }" +
+                               "    class MyClass2" +
+                               "    {" +
+                               "        func Foo()" +
+                               "        {" +
+                               "            var a : new MyClass()" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("MyNamespace.MyClass has no constructor without arguments.") );
+        }
+
+        [Test]
+        public void Test_ObjectCreationExpression_ThrowsNoConstructorArguments()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass" +
+                               "    {" +
+                               "    }" +
+                               "    class MyClass2" +
+                               "    {" +
+                               "        func Foo()" +
+                               "        {" +
+                               "            var a : new MyClass(1)" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+
+            var binder = new Binder();
+
+            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Cannot resolve constructor(int)."));
+        }
     }
 }

@@ -70,6 +70,12 @@ switch(<expression>) {
 	else       ->...
 }
 
+if(obj is Auto)
+{
+	obj.On(); 
+}
+
+
 var foo : switch(<expression>) 
 		  {
 				case <const1> -> <expression>
