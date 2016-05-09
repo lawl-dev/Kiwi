@@ -4,16 +4,16 @@ namespace Kiwi.Parser.Nodes
 {
     public class FieldSyntax : ISyntaxBase
     {
-        public FieldSyntax(Token fieldTypeQualifier, Token fieldName, IExpressionSyntax fieldInitializer)
+        public FieldSyntax(Token qualifier, Token name, IExpressionSyntax initializer)
         {
-            FieldTypeQualifier = fieldTypeQualifier;
-            FieldName = fieldName;
-            FieldInitializer = fieldInitializer;
+            Qualifier = qualifier;
+            Name = name;
+            Initializer = initializer;
         }
 
-        public Token FieldTypeQualifier { get; private set; }
-        public Token FieldName { get; private set; }
-        public IExpressionSyntax FieldInitializer { get; set; }
+        public Token Qualifier { get; }
+        public Token Name { get; }
+        public IExpressionSyntax Initializer { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

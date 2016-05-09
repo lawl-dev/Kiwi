@@ -2,7 +2,7 @@ using Kiwi.Parser.Nodes;
 
 namespace Kiwi.Semantic.Binder.Nodes
 {
-    internal class BoundVariableDeclarationStatement : BoundStatement, IBoundMember
+    public class BoundVariableDeclarationStatement : BoundStatement, IBoundMember
     {
         public BoundVariableDeclarationStatement(
             string identifier,

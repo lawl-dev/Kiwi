@@ -4,11 +4,11 @@ namespace Kiwi.Semantic.Binder.Nodes
 {
     public class BoundReturnStatement : BoundStatement
     {
-        public BoundReturnStatement(BoundExpression boundExpression, ReturnStatementSyntax syntax) : base(syntax)
+        public BoundReturnStatement(BoundExpression expression, ReturnStatementSyntax syntax) : base(syntax)
         {
-            BoundExpression = boundExpression;
+            Expression = expression;
         }
 
-        public BoundExpression BoundExpression { get; private set; }
+        public BoundExpression Expression { get; private set; }
     }
 }

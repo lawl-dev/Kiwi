@@ -8,7 +8,7 @@ namespace Kiwi.Semantic.Binder.CompilerGeneratedNodes
     {
         private static IEnumerable<IField> CreateFields()
         {
-            yield return new CompilerGeneratedField("Max", VariableQualifier.Const, new IntCompilerGeneratedType());
+            yield return new CompilerGeneratedField("Max", VariableQualifier.Immutable, new IntCompilerGeneratedType());
         }
         public override IEnumerable<IField> Fields => CreateFields();
         public override IEnumerable<IFunction> Functions => Enumerable.Empty<IFunction>();

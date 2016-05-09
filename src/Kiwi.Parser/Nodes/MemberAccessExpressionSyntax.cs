@@ -4,14 +4,14 @@ namespace Kiwi.Parser.Nodes
 {
     public class MemberAccessExpressionSyntax : IExpressionSyntax
     {
-        public MemberAccessExpressionSyntax(IExpressionSyntax owner, Token memberName)
+        public MemberAccessExpressionSyntax(IExpressionSyntax owner, Token name)
         {
             Owner = owner;
-            MemberName = memberName;
+            Name = name;
         }
 
         public IExpressionSyntax Owner { get; }
-        public Token MemberName { get; }
+        public Token Name { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

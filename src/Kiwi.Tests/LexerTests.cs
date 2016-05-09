@@ -7,13 +7,15 @@ namespace Kiwi.Tests
     public class LexerTests
     {
         [TestCase(TokenType.FuncKeyword, "func")]
+        [TestCase(TokenType.Operator, "operator")]
+        [TestCase(TokenType.InfixKeyword, "infix")]
         [TestCase(TokenType.TrueKeyword, "true")]
         [TestCase(TokenType.FalseKeyword, "false")]
         [TestCase(TokenType.DescriptorKeyword, "descriptor")]
         [TestCase(TokenType.DataKeyword, "data")]
         [TestCase(TokenType.IntKeyword, "int")]
         [TestCase(TokenType.FloatKeyword, "float")]
-        [TestCase(TokenType.ConstKeyword, "const")]
+        [TestCase(TokenType.ImmutKeyword, "immut")]
         [TestCase(TokenType.CaseKeyword, "case")]
         [TestCase(TokenType.StringKeyword, "string")]
         [TestCase(TokenType.VarKeyword, "var")]
@@ -43,7 +45,7 @@ namespace Kiwi.Tests
         [TestCase(TokenType.Dot, ".")]
         [TestCase(TokenType.NewKeyword, "new")]
         [TestCase(TokenType.EnumKeyword, "enum")]
-        [TestCase(TokenType.WhenKeyword, "when")]
+        [TestCase(TokenType.MatchKeyword, "match")]
         [TestCase(TokenType.Equal, "=")]
         [TestCase(TokenType.NotEqual, "!=")]
         [TestCase(TokenType.Greater, ">")]
@@ -145,7 +147,7 @@ namespace Kiwi.Tests
         {
             const string classSource = "class ClassNameSample is DescriptorNameSample" + "\r\n" +
                                        "{" + "\r\n" +
-                                       "    const FieldTypeSample fieldNameSample : \"Hallo\";" + "\r\n" +
+                                       "    immut FieldTypeSample fieldNameSample : \"Hallo\";" + "\r\n" +
                                        "    FieldTypeSample2 = 1 * 2 + 3 / 4;" + "\r\n" +
                                        "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> TypeNameSample"
                                        + "\r\n"
@@ -167,7 +169,7 @@ namespace Kiwi.Tests
                                        TokenType.IsKeyword,
                                        TokenType.Identifier,
                                        TokenType.OpenBrace,
-                                       TokenType.ConstKeyword,
+                                       TokenType.ImmutKeyword,
                                        TokenType.Identifier,
                                        TokenType.Identifier,
                                        TokenType.Colon,
@@ -323,20 +325,20 @@ namespace Kiwi.Tests
         [Test]
         public void TestWhen()
         {
-            const string whenSource = "when(variableSample)" + "\r\n" +
+            const string whenSource = "match(variableSample)" + "\r\n" +
                                       "{" + "\r\n" +
-                                      "is TypeSample -> " + "\r\n" +
+                                      "case is TypeSample -> " + "\r\n" +
                                       "     {" + "\r\n" +
                                       "         //code" + "\r\n" +
                                       "     }" + "\r\n" +
-                                      "1             -> //code" + "\r\n" +
-                                      "2, 3, 4, 5    -> //code" + "\r\n" +
-                                      "6..99         -> //code" + "\r\n" +
+                                      "case 1             -> //code" + "\r\n" +
+                                      "case in 2, 3, 4, 5    -> //code" + "\r\n" +
+                                      "case in 6..99         -> //code" + "\r\n" +
                                       "else          -> //code" + "\r\n" +
                                       "}";
             var tokenTypeSource = new[]
                                   {
-                                      TokenType.WhenKeyword,
+                                      TokenType.MatchKeyword,
                                       TokenType.OpenParenth,
                                       TokenType.Identifier,
                                       TokenType.ClosingParenth,

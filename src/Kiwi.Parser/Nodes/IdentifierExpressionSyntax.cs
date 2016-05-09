@@ -2,9 +2,9 @@ using Kiwi.Lexer;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class MemberOrTypeExpressionSyntax : IExpressionSyntax
+    public class IdentifierExpressionSyntax : IExpressionSyntax
     {
-        public MemberOrTypeExpressionSyntax(Token name)
+        public IdentifierExpressionSyntax(Token name)
         {
             Name = name;
         }

@@ -57,15 +57,15 @@ namespace Kiwi.Parser.Nodes
 
         public virtual void Visit(ClassSyntax classSyntax)
         {
-            foreach (var fieldSyntax in classSyntax.FieldMember)
+            foreach (var fieldSyntax in classSyntax.Fields)
             {
                 Visit(fieldSyntax);
             }
-            foreach (var constructorSyntax in classSyntax.ConstructorMember)
+            foreach (var constructorSyntax in classSyntax.Constructors)
             {
                 Visit(constructorSyntax);
             }
-            foreach (var functionSyntax in classSyntax.FunctionMember)
+            foreach (var functionSyntax in classSyntax.Functions)
             {
                 Visit(functionSyntax);
             }
@@ -73,11 +73,11 @@ namespace Kiwi.Parser.Nodes
 
         public virtual void Visit(CompilationUnitSyntax compilationUnitSyntax)
         {
-            foreach (var usingSyntax in compilationUnitSyntax.UsingMember)
+            foreach (var usingSyntax in compilationUnitSyntax.Usings)
             {
                 Visit(usingSyntax);
             }
-            foreach (var namespaceSyntax in compilationUnitSyntax.NamespaceMember)
+            foreach (var namespaceSyntax in compilationUnitSyntax.Namespaces)
             {
                 Visit(namespaceSyntax);
             }
@@ -89,10 +89,10 @@ namespace Kiwi.Parser.Nodes
             Visit(conditionalWhenEntry.Statements);
         }
 
-        public virtual void Visit(ConditionalWhenStatementSyntax conditionalWhenStatementSyntax)
+        public virtual void Visit(ConditionalMatchStatementSyntax conditionalMatchStatementSyntax)
         {
-            Visit(conditionalWhenStatementSyntax.Condition);
-            foreach (var conditionalWhenEntry in conditionalWhenStatementSyntax.WhenEntries)
+            Visit(conditionalMatchStatementSyntax.Condition);
+            foreach (var conditionalWhenEntry in conditionalMatchStatementSyntax.WhenEntries)
             {
                 Visit(conditionalWhenEntry);
             }
@@ -100,7 +100,7 @@ namespace Kiwi.Parser.Nodes
 
         public virtual void Visit(ConstructorSyntax constructorSyntax)
         {
-            foreach (var parameterSyntax in constructorSyntax.ArgList)
+            foreach (var parameterSyntax in constructorSyntax.Parameter)
             {
                 Visit(parameterSyntax);
             }
@@ -131,26 +131,17 @@ namespace Kiwi.Parser.Nodes
 
         public virtual void Visit(EnumSyntax enumSyntax)
         {
-            foreach (var enumMemberSyntax in enumSyntax.EnumMember)
+            foreach (var enumMemberSyntax in enumSyntax.Member)
             {
                 Visit(enumMemberSyntax);
             }
         }
-
-        public virtual void Visit(ExpressionFunctionSyntax expressionFunctionSyntax)
-        {
-            foreach (var parameterSyntax in expressionFunctionSyntax.ParameterList)
-            {
-                Visit(parameterSyntax);
-            }
-            Visit(expressionFunctionSyntax.Statements);
-        }
-
+        
         public virtual void Visit(FieldSyntax fieldSyntax)
         {
-            if (fieldSyntax.FieldInitializer != null)
+            if (fieldSyntax.Initializer != null)
             {
-                Visit(fieldSyntax.FieldInitializer);
+                Visit(fieldSyntax.Initializer);
             }
         }
 
@@ -182,7 +173,16 @@ namespace Kiwi.Parser.Nodes
 
         public virtual void Visit(FunctionSyntax functionSyntax)
         {
-            foreach (var parameterSyntax in functionSyntax.ParameterList)
+            foreach (var parameterSyntax in functionSyntax.Parameter)
+            {
+                Visit(parameterSyntax);
+            }
+            Visit(functionSyntax.Statements);
+        }
+
+        public virtual void Visit(OperatorFunctionSyntax functionSyntax)
+        {
+            foreach (var parameterSyntax in functionSyntax.Parameter)
             {
                 Visit(parameterSyntax);
             }
@@ -243,7 +243,7 @@ namespace Kiwi.Parser.Nodes
             Visit(memberAccessExpressionSyntax.Owner);
         }
 
-        public virtual void Visit(MemberOrTypeExpressionSyntax memberOrTypeExpressionSyntax)
+        public virtual void Visit(IdentifierExpressionSyntax identifierExpressionSyntax)
         {
         }
 
@@ -277,9 +277,9 @@ namespace Kiwi.Parser.Nodes
             Visit(signExpressionSyntax.Expression);
         }
 
-        public virtual void Visit(SimpleWhenStatementSyntax simpleWhenStatementSyntax)
+        public virtual void Visit(SimpleMatchStatementSyntax simpleMatchStatementSyntax)
         {
-            foreach (var whenEntry in simpleWhenStatementSyntax.WhenEntries)
+            foreach (var whenEntry in simpleMatchStatementSyntax.WhenEntries)
             {
                 Visit(whenEntry);
             }
@@ -340,6 +340,13 @@ namespace Kiwi.Parser.Nodes
             {
                 Visit(statementSyntax);
             }
+        }
+
+        public void Visit(InfixFunctionInvocationExpressionSyntax infixFunctionInvocationExpressionSyntax)
+        {
+            Visit(infixFunctionInvocationExpressionSyntax.Left);
+            Visit(infixFunctionInvocationExpressionSyntax.Identifier);
+            Visit(infixFunctionInvocationExpressionSyntax.Right);
         }
 
         public void Visit(ISyntaxBase @base)

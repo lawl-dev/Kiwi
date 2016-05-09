@@ -14,17 +14,17 @@ namespace Kiwi.Semantic.Binder
             foreach (var unitSyntax in compilationUnitSyntax)
             {
                 var boundCompilationUnit = new BoundCompilationUnit(unitSyntax);
-                foreach (var namespaceSyntax in unitSyntax.NamespaceMember)
+                foreach (var namespaceSyntax in unitSyntax.Namespaces)
                 {
-                    var boundNamespace = new BoundNamespace(namespaceSyntax.NamespaceName.Value, namespaceSyntax);
+                    var boundNamespace = new BoundNamespace(namespaceSyntax.Name.Value, namespaceSyntax);
                     boundCompilationUnit.Namespaces.Add(boundNamespace);
                     foreach (var classSyntax in namespaceSyntax.Classes)
                     {
-                        var boundType = new BoundType(classSyntax.ClassName.Value, classSyntax);
+                        var boundType = new BoundType(classSyntax.Name.Value, classSyntax);
                         boundType.FieldsInternal.AddRange(
-                            classSyntax.FieldMember.Select(x => new BoundField(x.FieldName.Value, x)));
+                            classSyntax.Fields.Select(x => new BoundField(x.Name.Value, x)));
                         boundType.FunctionsInternal.AddRange(
-                            classSyntax.FunctionMember.Select(x => new BoundFunction(x.FunctionName.Value, x)));
+                            classSyntax.Functions.Select(x => new BoundFunction(x.Name.Value, x)));
                         boundNamespace.TypesInternal.Add(boundType);
                     }
                     boundNamespace.EnumsInternal.AddRange(

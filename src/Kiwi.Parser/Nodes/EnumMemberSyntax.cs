@@ -4,14 +4,14 @@ namespace Kiwi.Parser.Nodes
 {
     public class EnumMemberSyntax : ISyntaxBase
     {
-        public EnumMemberSyntax(Token memberName, IExpressionSyntax initializer)
+        public EnumMemberSyntax(Token name, IExpressionSyntax initializer)
         {
-            MemberName = memberName;
+            Name = name;
             Initializer = initializer;
         }
 
-        public Token MemberName { get; private set; }
-        public IExpressionSyntax Initializer { get; private set; }
+        public Token Name { get; }
+        public IExpressionSyntax Initializer { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

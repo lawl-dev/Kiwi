@@ -7,7 +7,7 @@ namespace Kiwi.Parser.Nodes
             InvocationExpression = invocationExpression;
         }
 
-        public InvocationExpressionSyntax InvocationExpression { get; private set; }
+        public InvocationExpressionSyntax InvocationExpression { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

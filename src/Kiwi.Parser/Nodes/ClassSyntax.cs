@@ -6,19 +6,22 @@ namespace Kiwi.Parser.Nodes
 {
     public class ClassSyntax : ISyntaxBase
     {
-        public ClassSyntax(Token className, Token descriptorName, List<ISyntaxBase> member)
+        public ClassSyntax(Token name, Token descriptorName, List<ConstructorSyntax> constructors, List<FunctionSyntax> functions, List<InfixFunctionSyntax> infixFunctions, List<FieldSyntax> fields)
         {
-            ClassName = className;
+            Name = name;
             DescriptorName = descriptorName;
-            Member = member;
+            Constructors = constructors;
+            Functions = functions;
+            InfixFunctions = infixFunctions;
+            Fields = fields;
         }
 
-        public Token ClassName { get; private set; }
-        public Token DescriptorName { get; private set; }
-        public List<ISyntaxBase> Member { get; set; }
-        public List<FieldSyntax> FieldMember => Member.OfType<FieldSyntax>().ToList();
-        public List<ConstructorSyntax> ConstructorMember => Member.OfType<ConstructorSyntax>().ToList();
-        public List<FunctionSyntax> FunctionMember => Member.OfType<FunctionSyntax>().ToList();
+        public Token Name { get; }
+        public Token DescriptorName { get; }
+        public List<ConstructorSyntax> Constructors { get; }
+        public List<FunctionSyntax> Functions { get; }
+        public List<InfixFunctionSyntax> InfixFunctions { get; }
+        public List<FieldSyntax> Fields { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

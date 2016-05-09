@@ -16,5 +16,6 @@ namespace Kiwi.Semantic.Binder.Nodes
         public string Name { get; }
         public IEnumerable<IParameter> Parameter { get; internal set; }
         public IType ReturnType { get; internal set; }
+        public bool IsInfixFunction { get; internal set; }
     }
 }

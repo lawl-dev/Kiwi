@@ -2,14 +2,16 @@ using System.Collections.Generic;
 
 namespace Kiwi.Parser.Nodes
 {
-    public class SimpleWhenStatementSyntax : IStatementSyntax
+    public class ConditionalMatchStatementSyntax : IStatementSyntax
     {
-        public SimpleWhenStatementSyntax(List<WhenEntry> whenEntries)
+        public ConditionalMatchStatementSyntax(IExpressionSyntax condition, List<ConditionalWhenEntry> whenEntries)
         {
+            Condition = condition;
             WhenEntries = whenEntries;
         }
 
-        public List<WhenEntry> WhenEntries { get; private set; }
+        public IExpressionSyntax Condition { get; }
+        public List<ConditionalWhenEntry> WhenEntries { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

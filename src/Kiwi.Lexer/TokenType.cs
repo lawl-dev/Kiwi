@@ -6,7 +6,7 @@ namespace Kiwi.Lexer
         FuncKeyword,
         DataKeyword,
         Int,
-        ConstKeyword,
+        ImmutKeyword,
         StringKeyword,
         VarKeyword,
         OpenBrace,
@@ -26,7 +26,7 @@ namespace Kiwi.Lexer
         Dot,
         NewKeyword,
         EnumKeyword,
-        WhenKeyword,
+        MatchKeyword,
         Equal,
         NotEqual,
         Greater,
@@ -68,6 +68,8 @@ namespace Kiwi.Lexer
         TrueKeyword,
         FalseKeyword,
         NotKeyword,
-        AndKeyword
+        AndKeyword,
+        InfixKeyword,
+        Operator
     }
 }

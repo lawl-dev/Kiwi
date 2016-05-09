@@ -1,145 +1,131 @@
-using <namespaceName>
+using MyNamespace
 
-namespace <namespaceName>
+namespace MyNamespaceName
 {
-}
-
-descriptor <DescriptorName>
-{
-	func <FunctionName>([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>]) [-> <returnType> | <dataClassDeclaration>];
-}
-
-//Class
-class <ClassName> [is <DescriptorName>]
-{
-	Constructor([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>])
+	infix func MyInfixFunction(MyTypeA myParamA, MyTypeA myParamB) -> MyReturnType
 	{
-		[<statements>]
+		...
+		return myResult 
 	}
 
-	[<const / var>] <fieldName> : <expression>
-	
-	func <FunctionName>([<parameterType> <parameterName>, ..<paramsParameterType> <parameterName>]) [-> <returnType> | return <expression>]
-	[{
-		[<statements>]
-	}]
-	
-	//op overload
-	func >(<ClassName> opB) -> return this.length > opB.length
-	func :+(<ClassName> opB)
+	descriptor MyDescriptorName
 	{
-		[some code]
-	}	
-	static func +(<ClassName> opA, <ClassName> opB) -> return new <ClassName>([some code])
-}
-
-
-[return <value> | (<value1>, <valueN>)/*dataClassDeclaration constructor call*/ ]
-new <ClassName>(<paramerter>);
-
-enum <EnumName>
-{
-	<ValueName1> [ : <Value1>],
-	<ValueNameN>
-}
-
-when [(<ExpressionOrValue>) ]{
-    case is <TypeName>		-> {...}
-    case !<value> 	 		-> ...
-    case in <value1>, <valueN>  -> ...
-    case !in <value1>, <valueN>  -> ...
-	case <operator> <value>  -> ...
-    else     			-> ...
-}
-
-var foo : when [(<ExpressionOrValue>) ]
+		func MyFunc(MyTypeA myParameterName)
+		func MyFunc2(MyType myParameterName, ..MyType myParamsParameters) -> MyReturnType		
+	}
+	
+		
+	class MyClassName is MyDescriptorName
+	{
+		immut myImmutableReferenceA : new myTypeA()
+		immut myImmutableReferenceB
+		var myMutableReferenceC : None MyTypeA
+		
+		Constructor(MyTypeA constructorParameterA)
+		{
+			myImmutableReferenceB : constructorParameterA
+		}
+		
+		operator Less(MyClassName opA, MyClassName opB) -> bool
+		{
+			//less operator for MyClassName
+		}
+		
+		func MyFunc(MyTypeA myParameterName)
+		{
+			myMutableReferenceC : myParameterName MyInfixFunction myParameterName
+		}
+		
+		func MyFunc2(MyType myParameterName, ..MyType myParamsParameters) -> MyReturnType
+		{			
+			var localA : GetLength(myParamsParameters)
 			{
-				case is <TypeName>		-> <expression>
-				case !<value> 	 		-> <expression>
-				case in <value1>, <valueN>  -> <expression>
-				case !in <value1>, <valueN>  -> <expression>
-				case <operator> <value>  -> <expression>
-				else     			-> <expression>
+				immut immutableLocalScopeB : localA
+				if(immutableLocalScopeB is int)
+				{
+					WorkWithInt(immutableLocalScopeB)
+				}
+				else throw new Error("Expected int");
+			}
+			return new MyReturnType(localA)
+		}
+		
+		func GetLength(MyType[] arr) -> return arr.Length(0)
+		
+		func WorkWithInt(int myInt) -> myInt * 2
+		
+		func LookAtMyAwesomeMatch()
+		{
+			match(1)
+			{
+				case is Int    -> 
+				{
+					
+				}				
+				case !0	       ->
+				{
+				
+				}				
+				case in 1..10  ->
+				{
+				
+				}				
+				case !in 11.20 ->
+				{
+					
+				}				
+				case > 30	   ->
+				{
+				
+				}				
+				else		   ->
+				{
+				
+				}
+			}
+		}
+		
+		func LookAtMyAwesomeFor(MyType[] arr)
+		{
+			for(var item in arr)
+			{
+			
 			}
 			
-
-switch(<expression>) {
-	case <const1> ->{...}
-	case <const2> ->...
-	case <constN> ->...
-	else       ->...
-}
-
-if(obj is Auto)
-{
-	obj.On(); 
-}
-
-
-var foo : switch(<expression>) 
-		  {
-				case <const1> -> <expression>
-				case <const2> -> <expression>
-				case <constN> -> <expression>
-				else       -> <expression>
-		  }
-
-		  
-var d : none int
-
-
-var a;
-var b;
-var c = func(a, b) -> return a * b;
-
-range:
-<valueFrom>..<valueTo>
-
-VariableDdeclaration:
-var <variableName> : <expression>
-
-Assignment:
-<variableName> : | :+ | :- ... <expression>
-
-for([var] <singleItem> in <collection>)
-{
-	<statements>
-}
-
-forr(<singleItem> in <collection>)
-{
-	<statements>
-}
-
-for([var] <variableInit>; <expesssion>; <exoression>)
-{
-	<statements>
+			forr(var item in arr)
+			{
+			
+			}
+			
+			for(var i : 0; i < arr.Length(0); i+:1)
+			{
+			
+			}
+		}
+		
+		func LookAtMyFunctions(func(int, string, TypeA) functionParameter)
+		{
+			var funcA : func(int a, int b) -> return a * b
+			var val : funcA(1, 2)
+			
+			var inferredTypedFunc : func(val, val) -> return a * b
+		}
+		
+		func LookAtMyAwesomeIf(int paramA)
+		{
+			var a : if(paramA > 1) true
+					else if(paramA < 3) true
+					else if(paramA is int) false
+					else false
+			
+			if(a)
+			{
+				
+			}
+			else throw Error("wtf")			
+		}
+	}
 }
 
 
-try
-{
-	<statements>
-}
-catch
-{
-	
-}
 
-Operators:
-Add: +
-Sub: -
-Mult: *
-Div: /
-Pow: ^
-
-
-
-Aktuelle Probleme:
-4. 
-Descriptor support
-5.
-Vererbung 
-6. 
-Generic 
-	

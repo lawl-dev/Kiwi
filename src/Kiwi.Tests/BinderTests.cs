@@ -48,8 +48,11 @@ namespace Kiwi.Tests
             var referencedBoundType = boundNamespace.Types.Single(x => x.Name == "MyClass2");
             var boundType = boundNamespace.Types.Single(x => x.Name == "MyClass");
             var boundFunction = (BoundFunction)boundType.Functions.Single(x => x.Name == "MyFunc");
-            Assert.IsInstanceOf<BoolCompilerGeneratedType>(((IBoundMember)((BoundScopeStatement)boundFunction.Statements).Statements[0]).Type);
-            Assert.AreSame(((IBoundMember)((BoundScopeStatement)boundFunction.Statements).Statements[1]).Type, referencedBoundType);
+            Assert.IsInstanceOf<BoolCompilerGeneratedType>(
+                ((IBoundMember)((BoundScopeStatement)boundFunction.Statements).Statements[0]).Type);
+            Assert.AreSame(
+                ((IBoundMember)((BoundScopeStatement)boundFunction.Statements).Statements[1]).Type,
+                referencedBoundType);
         }
 
         [Test]
@@ -162,10 +165,20 @@ namespace Kiwi.Tests
             var binder = new Binder();
 
             var boundCompilationUnit = binder.Bind(new List<CompilationUnitSyntax>() { ast }).Single();
-            var function = boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass").Functions.Single(x=> x.Name == "Add");
-            var field = boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass2").Fields.Single(x => x.Name == "addMethod");
-            Assert.That(() => field.Type, Is.InstanceOf<FunctionCompilerGeneratedType>().And.Property("ReturnType").InstanceOf<IntCompilerGeneratedType>());
-            CollectionAssert.AllItemsAreInstancesOfType(((FunctionCompilerGeneratedType)field.Type).ParameterTypes, typeof(IntCompilerGeneratedType));
+            var function =
+                boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass")
+                                                  .Functions.Single(x => x.Name == "Add");
+            var field =
+                boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass2")
+                                                  .Fields.Single(x => x.Name == "addMethod");
+            Assert.That(
+                () => field.Type,
+                Is.InstanceOf<FunctionCompilerGeneratedType>()
+                  .And.Property("ReturnType")
+                  .InstanceOf<IntCompilerGeneratedType>());
+            CollectionAssert.AllItemsAreInstancesOfType(
+                ((FunctionCompilerGeneratedType)field.Type).ParameterTypes,
+                typeof(IntCompilerGeneratedType));
         }
 
         [Test]
@@ -198,9 +211,12 @@ namespace Kiwi.Tests
 
             var boundCompilationUnit = binder.Bind(new List<CompilationUnitSyntax>() { ast }).Single();
             var type = boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass");
-            var function = (BoundFunction)boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass2").Functions.Single(x => x.Name == "Foo");
+            var function =
+                (BoundFunction)
+                boundCompilationUnit.Namespaces[0].Types.Single(x => x.Name == "MyClass2")
+                                                  .Functions.Single(x => x.Name == "Foo");
             var returnStatement = (BoundReturnStatement)((BoundScopeStatement)function.Statements).Statements[0];
-            var boundBinaryExpression = (BoundBinaryExpression)returnStatement.BoundExpression;
+            var boundBinaryExpression = (BoundBinaryExpression)returnStatement.Expression;
             Assert.AreEqual(BinaryOperators.Is, boundBinaryExpression.Operator);
             Assert.IsInstanceOf<BoundTypeExpression>(boundBinaryExpression.Right);
             Assert.AreSame(((BoundTypeExpression)boundBinaryExpression.Right).ReferencedType, type);
@@ -234,7 +250,9 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("MyClassS undefined Type"));
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("MyClassS undefined Type"));
         }
 
         [Test]
@@ -257,7 +275,9 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("If condition must be of Type Bool"));
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("If condition must be of Type Bool"));
         }
 
         [Test]
@@ -280,7 +300,10 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("IfTrue and IfFalse expression Type must match"));
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>()
+                      .With.Message.EqualTo("IfTrue and IfFalse expression Type must match"));
         }
 
         [Test]
@@ -309,7 +332,9 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("If condition must be of Type Bool"));
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("If condition must be of Type Bool"));
         }
 
         [Test]
@@ -342,7 +367,9 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("If condition must be of Type Bool"));
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("If condition must be of Type Bool"));
         }
 
         [Test]
@@ -371,7 +398,9 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("For condition must be of Type Bool"));
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("For condition must be of Type Bool"));
         }
 
         [Test]
@@ -400,7 +429,10 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Switch cases condition type must match switch condition type"));
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>()
+                      .With.Message.EqualTo("Switch cases condition type must match switch condition type"));
         }
 
         [Test]
@@ -429,7 +461,9 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("i not defined"));
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("i not defined"));
         }
 
         [Test]
@@ -453,7 +487,9 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Add Type cannot be inferred") );
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Add Type cannot be inferred"));
         }
 
         [Test]
@@ -480,7 +516,10 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Parameter count (1) must match array dimension count (2)") );
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>()
+                      .With.Message.EqualTo("Parameter count (1) must match array dimension count (2)"));
         }
 
         [Test]
@@ -510,7 +549,10 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("MyNamespace.MyClass has no constructor without arguments.") );
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>()
+                      .With.Message.EqualTo("MyNamespace.MyClass has no constructor without arguments."));
         }
 
         [Test]
@@ -539,7 +581,51 @@ namespace Kiwi.Tests
 
             var binder = new Binder();
 
-            Assert.That(() => binder.Bind(new List<CompilationUnitSyntax>() { ast }), Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Cannot resolve constructor(int)."));
+            Assert.That(
+                () => binder.Bind(new List<CompilationUnitSyntax>() { ast }),
+                Throws.InstanceOf<KiwiSemanticException>().With.Message.EqualTo("Cannot resolve constructor(int)."));
+        }
+
+        [Test]
+        public void Test_InfixCall_Types()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass2" +
+                               "    {" +
+                               "        infix func Add(int a, int b) -> return a + b" +
+                               "        func Foo()" +
+                               "        {" +
+                               "            var a : 1 Add 2" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+            var binder = new Binder();
+            var boundCompilationUnits = binder.Bind(new List<CompilationUnitSyntax>() { ast });
+
+            var myClass2Type = boundCompilationUnits[0].Namespaces[0].Types.Single();
+            var fooFunction = myClass2Type.Functions.Single(x => x.Name == "Foo");
+            var addFunction = myClass2Type.Functions.Single(x => x.Name == "Add");
+
+            Assert.IsInstanceOf<BoundFunction>(addFunction);
+            Assert.IsTrue(((BoundFunction)addFunction).IsInfixFunction);
+            Assert.IsInstanceOf<BoundFunction>(fooFunction);
+            var boundFunction = (BoundFunction)fooFunction;
+            Assert.IsInstanceOf<BoundScopeStatement>(boundFunction.Statements);
+            var boundScopeStatement = (BoundScopeStatement)boundFunction.Statements;
+            Assert.IsInstanceOf<BoundVariableDeclarationStatement>(boundScopeStatement.Statements[0]);
+            var boundVariableDeclarationStatement = (BoundVariableDeclarationStatement)boundScopeStatement.Statements[0];
+            Assert.IsInstanceOf<BoundInvocationExpression>(boundVariableDeclarationStatement.BoundExpression);
+            var boundInvocationExpression = (BoundInvocationExpression)boundVariableDeclarationStatement.BoundExpression;
+            Assert.IsInstanceOf<BoundMemberExpression>(boundInvocationExpression.ToInvoke);
+            var boundMemberExpression = (BoundMemberExpression)boundInvocationExpression.ToInvoke;
+            Assert.AreSame(addFunction, boundMemberExpression.BoundMember);
         }
     }
 }

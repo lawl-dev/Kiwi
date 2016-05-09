@@ -5,14 +5,14 @@ namespace Kiwi.Parser.Nodes
 {
     public class CompilationUnitSyntax : ISyntaxBase
     {
-        public CompilationUnitSyntax(List<ISyntaxBase> memberSyntax)
-        {
-            MemberSyntax = memberSyntax;
-        }
+        public List<UsingSyntax> Usings { get; set; }
+        public List<NamespaceSyntax> Namespaces { get; set; }
 
-        public List<ISyntaxBase> MemberSyntax { get; }
-        public List<UsingSyntax> UsingMember => MemberSyntax.OfType<UsingSyntax>().ToList();
-        public List<NamespaceSyntax> NamespaceMember => MemberSyntax.OfType<NamespaceSyntax>().ToList();
+        public CompilationUnitSyntax(List<UsingSyntax> usings, List<NamespaceSyntax> namespaces)
+        {
+            Usings = usings;
+            Namespaces = namespaces;
+        }
 
         public void Accept(ISyntaxVisitor visitor)
         {

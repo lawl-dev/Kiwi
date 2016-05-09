@@ -6,15 +6,14 @@ namespace Kiwi.Parser.Nodes
 {
     public class EnumSyntax : ISyntaxBase
     {
-        public EnumSyntax(Token enumName, List<ISyntaxBase> member)
+        public EnumSyntax(Token enumName, List<EnumMemberSyntax> member)
         {
             EnumName = enumName;
             Member = member;
         }
 
         public Token EnumName { get; private set; }
-        public List<ISyntaxBase> Member { get; }
-        public List<EnumMemberSyntax> EnumMember => Member.OfType<EnumMemberSyntax>().ToList();
+        public List<EnumMemberSyntax> Member { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

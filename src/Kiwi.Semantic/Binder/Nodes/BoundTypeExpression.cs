@@ -5,7 +5,7 @@ namespace Kiwi.Semantic.Binder.Nodes
 {
     public class BoundTypeExpression : BoundExpression
     {
-        public BoundTypeExpression(IType referencedType, MemberOrTypeExpressionSyntax syntax) : base(syntax, new TypeCompilerGeneratedType())
+        public BoundTypeExpression(IType referencedType, IdentifierExpressionSyntax syntax) : base(syntax, new TypeCompilerGeneratedType())
         {
             ReferencedType = referencedType;
         }

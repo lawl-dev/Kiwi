@@ -6,21 +6,21 @@ namespace Kiwi.Parser.Nodes
     public class NamespaceSyntax : ISyntaxBase
     {
         public NamespaceSyntax(
-            Token namespaceName,
+            Token name,
             List<ClassSyntax> classes,
             List<DataSyntax> datas,
             List<EnumSyntax> enums)
         {
-            NamespaceName = namespaceName;
+            Name = name;
             Classes = classes;
             Datas = datas;
             Enums = enums;
         }
 
-        public Token NamespaceName { get; private set; }
-        public List<ClassSyntax> Classes { get; private set; }
-        public List<DataSyntax> Datas { get; private set; }
-        public List<EnumSyntax> Enums { get; private set; }
+        public Token Name { get; }
+        public List<ClassSyntax> Classes { get; }
+        public List<DataSyntax> Datas { get; }
+        public List<EnumSyntax> Enums { get; }
 
         public void Accept(ISyntaxVisitor visitor)
         {

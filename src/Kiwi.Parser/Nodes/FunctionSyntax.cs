@@ -5,26 +5,25 @@ namespace Kiwi.Parser.Nodes
 {
     public class FunctionSyntax : ISyntaxBase
     {
-        public FunctionSyntax(
-            Token functionName,
-            List<ParameterSyntax> parameterList,
-            IStatementSyntax statements)
+        public FunctionSyntax(Token name, List<ParameterSyntax> parameter, IStatementSyntax statements, TypeSyntax returnType)
         {
-            FunctionName = functionName;
-            ParameterList = parameterList;
+            Name = name;
+            Parameter = parameter;
             Statements = statements;
+            ReturnType = returnType;
         }
 
-        public Token FunctionName { get; private set; }
-        public List<ParameterSyntax> ParameterList { get; private set; }
+        public Token Name { get; }
+        public List<ParameterSyntax> Parameter { get; }
         public IStatementSyntax Statements { get; }
+        public TypeSyntax ReturnType { get; }
 
         public virtual void Accept(ISyntaxVisitor visitor)
         {
             visitor.Visit(this);
         }
 
-        public TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
+        public virtual TResult Accept<TResult>(ISyntaxVisitor<TResult> visitor)
         {
             return visitor.Visit(this);
         }

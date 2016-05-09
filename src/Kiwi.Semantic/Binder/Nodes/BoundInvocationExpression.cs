@@ -3,12 +3,12 @@ using Kiwi.Parser.Nodes;
 
 namespace Kiwi.Semantic.Binder.Nodes
 {
-    internal class BoundInvocationExpression : BoundExpression
+    public class BoundInvocationExpression : BoundExpression
     {
         public BoundInvocationExpression(
             BoundExpression toInvoke,
             List<BoundExpression> boundParameter,
-            InvocationExpressionSyntax expressionSyntax,
+            IExpressionSyntax expressionSyntax,
             IType type) : base(expressionSyntax, type)
         {
             ToInvoke = toInvoke;

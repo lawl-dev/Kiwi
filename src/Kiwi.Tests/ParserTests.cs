@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Kiwi.Common;
 using Kiwi.Lexer;
 using Kiwi.Parser.Nodes;
@@ -25,18 +26,7 @@ namespace Kiwi.Tests
                                               "     {0}" + "\r\n" + //statements placeholder
                                               "}}";
 
-        [Test]
-        public void TestNamespace()
-        {
-            var lexer = new Lexer.Lexer();
-            var tokens = lexer.Lex(string.Format(NamespaceSource, string.Empty));
-            var parser = new Parser.Parser(tokens);
-
-            var ast = parser.Parse();
-            Assert.IsInstanceOf<CompilationUnitSyntax>(ast);
-            Assert.IsInstanceOf<NamespaceSyntax>(ast.MemberSyntax[0]);
-        }
-
+     
         [Test]
         public void TestClass()
         {
@@ -48,10 +38,10 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             Assert.IsInstanceOf<CompilationUnitSyntax>(ast);
-            Assert.IsInstanceOf<NamespaceSyntax>(ast.MemberSyntax[0]);
-            Assert.IsNotEmpty(((NamespaceSyntax)ast.MemberSyntax[0]).Classes);
-            Assert.AreEqual("ClassSample", ((NamespaceSyntax)ast.MemberSyntax[0]).Classes[0].ClassName.Value);
-            Assert.AreEqual("DSampleDescriptor", ((NamespaceSyntax)ast.MemberSyntax[0]).Classes[0].DescriptorName.Value);
+            Assert.IsNotEmpty(ast.Namespaces);
+            Assert.IsNotEmpty(ast.Namespaces[0].Classes);
+            Assert.AreEqual("ClassSample", ast.Namespaces[0].Classes[0].Name.Value);
+            Assert.AreEqual("DSampleDescriptor", ast.Namespaces[0].Classes[0].DescriptorName.Value);
         }
 
         [Test]
@@ -70,8 +60,8 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            Assert.IsNotEmpty(ast.NamespaceMember[0].Classes[0].FunctionMember);
-            Assert.AreEqual("FunctionSample", ast.NamespaceMember[0].Classes[0].FunctionMember[0].FunctionName.Value);
+            Assert.IsNotEmpty(ast.Namespaces[0].Classes[0].Functions);
+            Assert.AreEqual("FunctionSample", ast.Namespaces[0].Classes[0].Functions[0].Name.Value);
         }
         
 
@@ -89,9 +79,9 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            Assert.IsNotEmpty(ast.NamespaceMember[0].Classes[0].FunctionMember);
-            Assert.IsInstanceOf<ExpressionFunctionSyntax>(ast.NamespaceMember[0].Classes[0].FunctionMember[0]);
-            Assert.AreEqual("FunctionSample", ast.NamespaceMember[0].Classes[0].FunctionMember[0].FunctionName.Value);
+            Assert.IsNotEmpty(ast.Namespaces[0].Classes[0].Functions);
+            Assert.IsInstanceOf<FunctionSyntax>(ast.Namespaces[0].Classes[0].Functions[0]);
+            Assert.AreEqual("FunctionSample", ast.Namespaces[0].Classes[0].Functions[0].Name.Value);
         }
 
         [TestCase("return 1", typeof(ReturnStatementSyntax))]
@@ -135,14 +125,14 @@ namespace Kiwi.Tests
                   "{" + "\r\n" +
                   "     //code" + "\r\n" +
                   "}", typeof(ReverseForInStatementSyntax))]
-        [TestCase("when" + "\r\n" +
+        [TestCase("match" + "\r\n" +
                   "{" + "\r\n" +
                   "     case a = b && c > d  -> {" + "\r\n" +
                   "                 //code" + "\r\n" +
                   "                }" + "\r\n" +
                   "     case buu > b -> dooooStuff()" + "\r\n" +
-                  "}", typeof(SimpleWhenStatementSyntax))]
-        [TestCase("when (condition)" + "\r\n" +
+                  "}", typeof(SimpleMatchStatementSyntax))]
+        [TestCase("match (condition)" + "\r\n" +
                   "{" + "\r\n" +
                   "     case is Type -> Do()" + "\r\n" +
                   "     case !=value  -> Do2()" + "\r\n" +
@@ -151,7 +141,7 @@ namespace Kiwi.Tests
                   "     case > 20    -> {" + "\r\n" +
                   "                 //code" + "\r\n" +
                   "                }" + "\r\n" +
-                  "}", typeof(ConditionalWhenStatementSyntax))]
+                  "}", typeof(ConditionalMatchStatementSyntax))]
         public void TestStatements(string statementSource, Type type)
         {
             var lexer = new Lexer.Lexer();
@@ -167,14 +157,14 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
 
             var ast = parser.Parse();
-            Assert.IsInstanceOf(type, ((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0]);
+            Assert.IsInstanceOf(type, ((ScopeStatementSyntax)ast.Namespaces[0].Classes[0].Functions[0].Statements).Statements[0]);
         }
 
         [TestCase("return if(1 = 2 * 5) 1 else 2", typeof(IfElseExpressionSyntax))]
         [TestCase("return 1 * 2", typeof(BinaryExpressionSyntax))]
         [TestCase("return 12f", typeof(FloatExpressionSyntax))]
         [TestCase("return 12", typeof(IntExpressionSyntax))]
-        [TestCase("return variable", typeof(MemberOrTypeExpressionSyntax))]
+        [TestCase("return variable", typeof(IdentifierExpressionSyntax))]
         [TestCase("return new Object()", typeof(ObjectCreationExpressionSyntax))]
         [TestCase("return -1", typeof(SignExpressionSyntax))]
         [TestCase("return \"Hallo\"", typeof(StringExpressionSyntax))]
@@ -204,19 +194,19 @@ namespace Kiwi.Tests
             var ast = parser.Parse();
             Assert.IsInstanceOf(
                 type,
-                ((ReturnStatementSyntax)((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0]).Expression);
+                ((ReturnStatementSyntax)((ScopeStatementSyntax)ast.Namespaces[0].Classes[0].Functions[0].Statements).Statements[0]).Expression);
         }
 
         [TestCase("return if(switch) 1 else 2", typeof(KiwiSyntaxException),
             "Unexpected Token switch. Expected Sign Operator, New, Int, Float, String or Identifier Expression.")]
         [TestCase("int if(switch) 1 else 2", typeof(KiwiSyntaxException),
-            "Unexpected Token \"int\". Expected If, Return, When, Switch, Var, Const, Identifier, For or Forr")]
+            "Unexpected Token \"int\". Expected If, Return, Match, Switch, Var, Immutable, Identifier, For or Forr")]
         [TestCase("for(f(); i < 1; i :+ 1){}", typeof(KiwiSyntaxException),
             "Unexpected Statement. Expected AssignmentStatement")]
         [TestCase("i lol 1", typeof(KiwiSyntaxException),
             "Unexpected assign operator lol. Expected :, :+, :-, :/, :* or :^.")]
         [TestCase("i + 1", typeof(KiwiSyntaxException),
-            "Unexpected Syntax. Expected MemberAccessExpressionSyntax, ArrayAccessExpression, MemberOrTypeExpressionSyntax or InvocationExpressionSyntax"
+            "Unexpected Syntax. Expected MemberAccessExpressionSyntax, ArrayAccessExpression, IdentifierExpressionSyntax or InvocationExpressionSyntax"
             )]
         [TestCase("switch(i){" +
                   "else -> f()" +
@@ -226,7 +216,7 @@ namespace Kiwi.Tests
                   "switch -> f()" +
                   "else -> f2()" +
                   "}", typeof(KiwiSyntaxException), "Unexpected Token. Expected Case or Else")]
-        [TestCase("when(i){" +
+        [TestCase("match(i){" +
                   "case -> f()" +
                   "else -> f2()" +
                   "}", typeof(KiwiSyntaxException), "Expected a binary operator")]
@@ -264,7 +254,7 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax =
-                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0];
+                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.Namespaces[0].Classes[0].Functions[0].Statements).Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var leftBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -297,7 +287,7 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax =
-                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0];
+                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.Namespaces[0].Classes[0].Functions[0].Statements).Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -336,7 +326,7 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax =
-                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0];
+                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.Namespaces[0].Classes[0].Functions[0].Statements).Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -380,7 +370,7 @@ namespace Kiwi.Tests
 
             var ast = parser.Parse();
             var returnStatementSyntax =
-                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.NamespaceMember[0].Classes[0].FunctionMember[0].Statements).Statements[0];
+                (ReturnStatementSyntax)((ScopeStatementSyntax)ast.Namespaces[0].Classes[0].Functions[0].Statements).Statements[0];
 
             Assert.IsInstanceOf<BinaryExpressionSyntax>(returnStatementSyntax.Expression);
             var addBinaryExpression = (BinaryExpressionSyntax)returnStatementSyntax.Expression;
@@ -405,6 +395,32 @@ namespace Kiwi.Tests
             Assert.AreEqual(TokenType.Mult, multBinaryExpression.Operator.Type);
             Assert.IsInstanceOf<SignExpressionSyntax>(secondSignExpression.Expression);
             Assert.AreEqual(TokenType.Sub, ((SignExpressionSyntax)secondSignExpression.Expression).Operator.Type);
+        }
+
+        [Test]
+        public void TestInfix()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass2" +
+                               "    {" +
+                               "        infix func Add(int a, int b) -> return a + b" +
+                               "        func Foo()" +
+                               "        {" +
+                               "            var a : 1 Add 2" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+            var namespaceSyntax = ast.Namespaces.Single(x => x.Name.Value == "MyNamespace");
+            var classSyntax = namespaceSyntax.Classes.Single(x=> x.Name.Value == "MyClass2");
+            var infixFunction = classSyntax.Functions.Single(x=>x.Name.Value == "Add");
+            Assert.IsInstanceOf<InfixFunctionSyntax>(infixFunction);
         }
     }
 }
