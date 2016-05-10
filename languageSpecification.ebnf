@@ -26,9 +26,9 @@ namespace MyNamespaceName
 			myImmutableReferenceB : constructorParameterA
 		}
 		
-		operator Less(MyClassName opA, MyClassName opB) -> bool
+		operator Div(MyClassName opA, MyClassName opB) -> int
 		{
-			//less operator for MyClassName
+			//div operator for MyClassName
 		}
 		
 		func MyFunc(MyTypeA myParameterName)

@@ -551,7 +551,7 @@ namespace Kiwi.Semantic.Binder
         {
             var boundLeft = BindExpression(syntax.LeftExpression);
             var boundRight = BindExpression(syntax.RightExpression);
-
+            
             Ensure(() => boundLeft.Type is IntCompilerGeneratedType || boundLeft.Type is FloatCompilerGeneratedType, $"The operator / cannot handle ${boundLeft.Type}");
             Ensure(() => boundRight.Type is IntCompilerGeneratedType || boundRight.Type is FloatCompilerGeneratedType, $"The operator / cannot handle ${boundRight.Type}");
             Ensure(() => TypeEquals(boundLeft.Type, boundRight.Type), "Please ensure the operand types equals");
@@ -782,22 +782,5 @@ namespace Kiwi.Semantic.Binder
             }
             return t1 == t2;
         }
-    }
-
-    public enum BinaryOperators
-    {
-        None,
-        Equal,
-        Mult,
-        Div,
-        Add,
-        Sub,
-        Less,
-        Greater,
-        Or,
-        Is,
-        Range,
-        NotEqual,
-        And
     }
 }

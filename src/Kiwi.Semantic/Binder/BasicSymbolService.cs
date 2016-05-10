@@ -25,7 +25,7 @@ namespace Kiwi.Semantic.Binder
                             classSyntax.Fields.Select(x => new BoundField(x.Name.Value, x)));
                         boundType.FunctionsInternal.AddRange(
                             classSyntax.Functions.Select(x => new BoundFunction(x.Name.Value, x)));
-                        boundNamespace.TypesInternal.Add(boundType);
+                       boundNamespace.TypesInternal.Add(boundType);
                     }
                     boundNamespace.EnumsInternal.AddRange(
                         namespaceSyntax.Enums.Select(x => new BoundEnum(x.EnumName.Value, x)));

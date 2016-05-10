@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Binder\AssignmentOperators.cs" />
     <Compile Include="Binder\BasicSymbolService.cs" />
+    <Compile Include="Binder\BinaryOperators.cs" />
     <Compile Include="Binder\Binder.cs" />
     <Compile Include="Binder\Nodes\BoundArrayAccessExpression.cs" />
     <Compile Include="Binder\Nodes\BoundCase.cs" />

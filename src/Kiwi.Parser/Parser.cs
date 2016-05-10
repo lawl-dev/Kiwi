@@ -13,6 +13,23 @@ namespace Kiwi.Parser
         {
         }
 
+        private static string[] OperatorFunctionNames => new[]
+                                                         {
+                                                             "Add",
+                                                             "Sub",
+                                                             "Mult",
+                                                             "Div",
+                                                             "Pow",
+                                                             "Range",
+                                                             "In",
+                                                             "AddAssign",
+                                                             "SubAssign",
+                                                             "MultAssign",
+                                                             "PowAssign",
+                                                             "DivAssign",
+                                                             "CompareTo"
+                                                         };
+
         private static TokenType[] BinaryOperators => new[]
                                                       {
                                                           TokenType.Equal,
@@ -94,7 +111,8 @@ namespace Kiwi.Parser
                 namespaceName,
                 body.OfType<ClassSyntax>().ToList(),
                 body.OfType<DataSyntax>().ToList(),
-                body.OfType<EnumSyntax>().ToList());
+                body.OfType<EnumSyntax>().ToList(),
+                body.OfType<FunctionSyntax>().ToList());
         }
 
         private ISyntaxBase ParseNamespaceBody()
@@ -107,6 +125,10 @@ namespace Kiwi.Parser
                     return ParseDataClass();
                 case TokenType.EnumKeyword:
                     return ParseEnum();
+                case TokenType.FuncKeyword:
+                    return ParseFunction();
+                case TokenType.InfixKeyword:
+                    return ParseInfixFunction();
                 default:
                     throw new KiwiSyntaxException("Unexpected Token. Expected Class, Data or Enum");
             }
@@ -464,7 +486,7 @@ namespace Kiwi.Parser
         {
             ParseExpected(TokenType.Operator);
             var functionName = ParseExpected(TokenType.Identifier);
-            Ensure(() => OperatorFunctionNamesContains(functionName.Value), $"Invalid operator function name '{functionName.Value}'");
+            Ensure(() => IsOperatorFunctionName(functionName.Value), $"Invalid operator function name '{functionName.Value}'");
             var functionParameter = ParseParameterList();
 
             IStatementSyntax statements;
@@ -1018,9 +1040,9 @@ namespace Kiwi.Parser
             }
         }
 
-        private static bool OperatorFunctionNamesContains(string functionName)
+        private static bool IsOperatorFunctionName(string functionName)
         {
-            throw new NotImplementedException();
+            return OperatorFunctionNames.Contains(functionName);
         }
     }
 }

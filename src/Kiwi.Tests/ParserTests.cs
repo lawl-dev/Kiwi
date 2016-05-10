@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Kiwi.Common;
 using Kiwi.Lexer;
 using Kiwi.Parser.Nodes;
@@ -398,7 +399,7 @@ namespace Kiwi.Tests
         }
 
         [Test]
-        public void TestInfix()
+        public void Test_Infix_ClassLevel()
         {
             const string src = "namespace MyNamespace" +
                                "{" +
@@ -421,6 +422,95 @@ namespace Kiwi.Tests
             var classSyntax = namespaceSyntax.Classes.Single(x=> x.Name.Value == "MyClass2");
             var infixFunction = classSyntax.Functions.Single(x=>x.Name.Value == "Add");
             Assert.IsInstanceOf<InfixFunctionSyntax>(infixFunction);
+        }
+
+        [Test]
+        public void Test_Infix_NamespaceLevel()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    infix func Add(int a, int b) -> return a + b" +
+                               "    class MyClass2" +
+                               "    {" +
+                               "        func Foo()" +
+                               "        {" +
+                               "            var a : 1 Add 2" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+            var namespaceSyntax = ast.Namespaces.Single(x => x.Name.Value == "MyNamespace");
+            var infixFunction = namespaceSyntax.Functions.Single(x=>x.Name.Value == "Add");
+            Assert.IsInstanceOf<InfixFunctionSyntax>(infixFunction);
+        }
+
+        [Test]
+        public void Test_ValidOperatorNames_DontThrow()
+        {
+            const string template = "namespace MyNamespace" +
+                                    "{{" +
+                                    "    class MyClass2" +
+                                    "    {{" +
+                                    "        {0}" +
+                                    "    }}" +
+                                    "}}";
+
+
+
+
+            var parserFunc = new Action<string>(
+                opSrc =>
+                {
+                    var lexer = new Lexer.Lexer();
+                    var tokens = lexer.Lex(string.Format(template, opSrc));
+                    var parser = new Parser.Parser(tokens);
+                    parser.Parse();
+                });
+
+            Assert.That(() => parserFunc("operator Add(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator Sub(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator Mult(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator Div(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator Pow(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator Range(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator In(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator AddAssign(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator SubAssign(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator MultAssign(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator PowAssign(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator DivAssign(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc("operator CompareTo(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+        }
+
+        [Test]
+        public void Test_InvalidOperatorNames_Throw()
+        {
+            const string template = "namespace MyNamespace" +
+                                    "{{" +
+                                    "    class MyClass2" +
+                                    "    {{" +
+                                    "        {0}" +
+                                    "    }}" +
+                                    "}}";
+
+
+
+
+            var parserFunc = new Action<string>(
+                opSrc =>
+                {
+                    var lexer = new Lexer.Lexer();
+                    var tokens = lexer.Lex(string.Format(template, opSrc));
+                    var parser = new Parser.Parser(tokens);
+                    parser.Parse();
+                });
+
+            Assert.That(() => parserFunc("operator Addd(MyClassName opA, MyClassName opB) -> return true"), Throws.InstanceOf<KiwiSyntaxException>().With.Message.EqualTo("Invalid operator function name 'Addd'"));
         }
     }
 }
