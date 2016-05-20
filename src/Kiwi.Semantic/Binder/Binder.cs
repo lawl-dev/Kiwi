@@ -76,6 +76,8 @@ namespace Kiwi.Semantic.Binder
         private void BindFunction(BoundFunction boundFunction, FunctionSyntax syntax)
         {
             _contextService.EnterScope();
+
+
             var boundParameters = syntax.Parameter.Select(BindParameter).ToList();
             boundFunction.Parameter = boundParameters;
             

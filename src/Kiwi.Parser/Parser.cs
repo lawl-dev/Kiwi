@@ -158,7 +158,6 @@ namespace Kiwi.Parser
                 descriptorName,
                 inner.OfType<ConstructorSyntax>().ToList(),
                 inner.OfType<FunctionSyntax>().ToList(),
-                inner.OfType<InfixFunctionSyntax>().ToList(),
                 inner.OfType<FieldSyntax>().ToList());
         }
 
@@ -488,7 +487,7 @@ namespace Kiwi.Parser
             var functionName = ParseExpected(TokenType.Identifier);
             Ensure(() => IsOperatorFunctionName(functionName.Value), $"Invalid operator function name '{functionName.Value}'");
             var functionParameter = ParseParameterList();
-
+            
             IStatementSyntax statements;
             TypeSyntax returnType = null;
             if (ParseOptional(TokenType.HypenGreater))

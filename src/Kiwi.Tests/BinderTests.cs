@@ -627,5 +627,70 @@ namespace Kiwi.Tests
             var boundMemberExpression = (BoundMemberExpression)boundInvocationExpression.ToInvoke;
             Assert.AreSame(addFunction, boundMemberExpression.BoundMember);
         }
+
+        [Test]
+        public void Test_Operator_FunctionMapping()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class MyClass2" +
+                               "    {" +
+                               "        operator Add(MyClass2 opA, MyClass2 opB) -> return new MyClass2()" +
+                               "        operator Sub(MyClass2 opA, MyClass2 opB) -> return new MyClass2()" +
+                               "        operator Mult(MyClass2 opA, MyClass2 opB) -> return new MyClass2()" +
+                               "        operator Div(MyClass2 opA, MyClass2 opB) -> return new MyClass2()" +
+                               "        operator Pow(MyClass2 opA, MyClass2 opB) -> return new MyClass2()" +
+                               "        operator Range(MyClass2 opA, MyClass2 opB) -> return new MyClass2[1]" +
+                               "        operator In(MyClass2 opA, MyClass2 opB) -> return true" +
+                               "        operator AddAssign(MyClassName opA, MyClassName opB) -> {}" +
+                               "        operator SubAssign(MyClassName opA, MyClassName opB) -> {}" +
+                               "        operator MultAssign(MyClassName opA, MyClassName opB) -> {}" +
+                               "        operator PowAssign(MyClassName opA, MyClassName opB) -> {}" +
+                               "        operator DivAssign(MyClassName opA, MyClassName opB) -> {}" +
+                               "    }" +
+                               "    " +
+                               "    class TestClass" +
+                               "    {" +
+                               "        func TestBinaryFunc()" +
+                               "        {" +
+                               "            var instance : new MyClass2()" +
+                               "            var testAdd : instance + new MyClass2()" +
+                               "            var testSub : instance - new MyClass2()" +
+                               "            var testMult : instance * new MyClass2()" +
+                               "            var testDiv : instance / new MyClass2()" +
+                               "            var testPow : instance ^ new MyClass2()" +
+                               "            var testRange : instance..newMyClass2()" +
+                               "            var testIn : instance in new myClass2[10]" +
+                               "        }" +
+                               "" +
+                               "" +
+                               "        func TestAssignFunc()" +
+                               "        {" +
+                               "            var instance +: new MyClass2()" +
+                               "            var instance -: new MyClass2()" +
+                               "            var instance *: new MyClass2()" +
+                               "            var instance ^: new MyClass2()" +
+                               "            var instance /: new MyClass2()" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+
+            var ast = parser.Parse();
+            var binder = new Binder();
+            var boundCompilationUnit = binder.Bind(new List<CompilationUnitSyntax>() { ast }).Single();
+
+            var boundNamespace = boundCompilationUnit.Namespaces.Single(x=>x.Name== "MyNamespace");
+            var operatorClass = boundNamespace.Types.Single(x=>x.Name== "MyClass2");
+            var testClass = boundNamespace.Types.Single(x=>x.Name == "TestClass");
+            var testBinaryFunc = testClass.Functions.Single(x=>x.Name== "TestBinaryFunc");
+            var testAssignFunc = testClass.Functions.Single(x=>x.Name== "TestAssignFunc");
+
+            
+        }
     }
 }

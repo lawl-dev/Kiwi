@@ -13,7 +13,31 @@ namespace MyNamespaceName
 		func MyFunc(MyTypeA myParameterName)
 		func MyFunc2(MyType myParameterName, ..MyType myParamsParameters) -> MyReturnType		
 	}
+
+	func(TypeA, TypeB) GenericFunction(TypeA a, TypeB b) 
+	{
+		...
+	}
 	
+	func(TypeA) GenericFunctionSingleArg(TypeA a) -> int
+	{
+		...
+	}
+	
+	class GenericClass(TypeA, TypeB)
+	{
+		var mutable1 : None TypeA;
+		var mutable2 : None TypeB;
+		
+		Constructor(TypeA arg1, TypeB arg2)
+		{
+			mutable1 : arg1;
+			mutable2 : arg2;
+			
+			var i : GenericFunctionSingleArg!arg1; 
+			var b : GenericFunction!(arg1, arg2);
+		}
+	}
 		
 	class MyClassName is MyDescriptorName
 	{
