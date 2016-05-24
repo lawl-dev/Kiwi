@@ -27,16 +27,16 @@ namespace MyNamespaceName
 	
 	class GenericClass(TypeA, TypeB)
 	{
-		var mutable1 : None TypeA;
-		var mutable2 : None TypeB;
+		var mutable1 : None TypeA
+		var mutable2 : None TypeB
 		
 		Constructor(TypeA arg1, TypeB arg2)
 		{
-			mutable1 : arg1;
-			mutable2 : arg2;
+			mutable1 : arg1
+			mutable2 : arg2
 			
-			var i : GenericFunctionSingleArg!(arg1); 
-			var b : GenericFunction!(arg1, arg2);
+			var i : GenericFunctionSingleArg!(arg1)
+			var b : GenericFunction!(arg1, arg2)
 		}
 	}
 		
@@ -97,12 +97,11 @@ namespace MyNamespaceName
 		
 		func LookAtMyAwesomeFor(MyType[] arr)
 		{
-			for(var item in arr)
+			for(var index, var item in arr)
 			{
-				var i : index; 
 			}
 			
-			forr(var item in arr)
+			forr(var index, var item in arr)
 			{
 			
 			}

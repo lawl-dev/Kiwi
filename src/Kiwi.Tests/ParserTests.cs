@@ -507,5 +507,131 @@ namespace Kiwi.Tests
 
             Assert.That(() => parserFunc("operator Addd(MyClassName opA, MyClassName opB) -> return true"), Throws.InstanceOf<KiwiSyntaxException>().With.Message.EqualTo("Invalid operator function name 'Addd'"));
         }
+
+        [Test]
+        public void Test_GenericFunction_NamespaceLevel()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    func GenericFunction!(TypeA, TypeB)(TypeA a, TypeB b)" +
+                               "    {" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+            
+            Assert.DoesNotThrow(() => parser.Parse());
+        }
+
+        [Test]
+        public void Test_GenericLocalFunction()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    func GenericFunction!(TypeA, TypeB)(TypeA a, TypeB b)" +
+                               "    {" +
+                               "        immut anonFunc : func!(TypeX, TypeY)(TypeX x, TypeY y) -> return x" +
+                               "        " +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+            
+            Assert.DoesNotThrow(() => parser.Parse());
+        }
+
+        [Test]
+        public void Test_GenericLocalFunction_Call()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    func GenericFunction!(TypeA, TypeB)(TypeA a, TypeB b)" +
+                               "    {" +
+                               "        immut anonFunc : func!(TypeX, TypeY)(TypeX x, TypeY y) -> return x" +
+                               "        anonFunc!(a, a)" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+            
+            Assert.DoesNotThrow(() => parser.Parse());
+        }
+
+        [Test]
+        public void Test_GenericClass()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class GenericClass(TypeA, TypeB)" +
+                               "    {" +
+                               "        var mutable1 : None TypeA;" +
+                               "        var mutable2 : None TypeB;" +
+                               "        Constructor(TypeA arg1, TypeB arg2)" +
+                               "        {" +
+                               "            mutable1 : arg1;" +
+                               "            mutable2 : arg2;" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+            
+            Assert.DoesNotThrow(() => parser.Parse());
+        }
+
+        [Test]
+        public void Test_TryCatch()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class GenericClass(TypeA, TypeB)" +
+                               "    {" +
+                               "        Constructor(TypeA arg1, TypeB arg2)" +
+                               "        {" +
+                               "            Try" +
+                               "            {" +
+                               "            }" +
+                               "            catch(Error)" +
+                               "            {" +
+                               "            }" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+            
+            Assert.DoesNotThrow(() => parser.Parse());
+        }
+
+        [Test]
+        public void Test_Throw()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class GenericClass(TypeA, TypeB)" +
+                               "    {" +
+                               "        Constructor(TypeA arg1, TypeB arg2)" +
+                               "        {" +
+                               "            throw new Error()" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+            
+            Assert.DoesNotThrow(() => parser.Parse());
+        }
     }
 }
