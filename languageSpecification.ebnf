@@ -14,14 +14,15 @@ namespace MyNamespaceName
 		func MyFunc2(MyType myParameterName, ..MyType myParamsParameters) -> MyReturnType		
 	}
 
-	func(TypeA, TypeB) GenericFunction(TypeA a, TypeB b) 
+	func GenericFunction!(TypeA, TypeB)(TypeA a, TypeB b) 
 	{
 		...
 	}
 	
-	func(TypeA) GenericFunctionSingleArg(TypeA a) -> int
+	func GenericFunctionSingleArg!(TypeA)(TypeA a) -> int
 	{
-		...
+		immut anonFunc : func!(TypeX, TypeY)(TypeX x, TypeY y) -> return x
+		anonFunc!(a, a)
 	}
 	
 	class GenericClass(TypeA, TypeB)
@@ -34,7 +35,7 @@ namespace MyNamespaceName
 			mutable1 : arg1;
 			mutable2 : arg2;
 			
-			var i : GenericFunctionSingleArg!arg1; 
+			var i : GenericFunctionSingleArg!(arg1); 
 			var b : GenericFunction!(arg1, arg2);
 		}
 	}
@@ -82,27 +83,12 @@ namespace MyNamespaceName
 		{
 			match(1)
 			{
-				case is Int    -> 
-				{
-					
-				}				
-				case !0	       ->
-				{
-				
-				}				
-				case in 1..10  ->
-				{
-				
-				}				
-				case !in 11.20 ->
-				{
-					
-				}				
-				case > 30	   ->
-				{
-				
-				}				
-				else		   ->
+				case is Int    -> ...
+				case !0	       -> ...
+				case in 1..10  -> ...
+				case !in 11.20 -> ...
+				case > 30	   -> ...
+				else		   -> 
 				{
 				
 				}
@@ -113,7 +99,7 @@ namespace MyNamespaceName
 		{
 			for(var item in arr)
 			{
-			
+				var i : index; 
 			}
 			
 			forr(var item in arr)
