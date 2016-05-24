@@ -479,11 +479,6 @@ namespace Kiwi.Tests
             Assert.That(() => parserFunc("operator Pow(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
             Assert.That(() => parserFunc("operator Range(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
             Assert.That(() => parserFunc("operator In(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator AddAssign(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator SubAssign(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator MultAssign(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator PowAssign(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator DivAssign(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
             Assert.That(() => parserFunc("operator CompareTo(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
         }
 

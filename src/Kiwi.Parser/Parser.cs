@@ -22,11 +22,6 @@ namespace Kiwi.Parser
                                                              "Pow",
                                                              "Range",
                                                              "In",
-                                                             "AddAssign",
-                                                             "SubAssign",
-                                                             "MultAssign",
-                                                             "PowAssign",
-                                                             "DivAssign",
                                                              "CompareTo"
                                                          };
 

@@ -642,11 +642,6 @@ namespace Kiwi.Tests
                                "        operator Pow(MyClass2 opA, MyClass2 opB) -> return new MyClass2()" +
                                "        operator Range(MyClass2 opA, MyClass2 opB) -> return new MyClass2[1]" +
                                "        operator In(MyClass2 opA, MyClass2 opB) -> return true" +
-                               "        operator AddAssign(MyClassName opA, MyClassName opB) -> {}" +
-                               "        operator SubAssign(MyClassName opA, MyClassName opB) -> {}" +
-                               "        operator MultAssign(MyClassName opA, MyClassName opB) -> {}" +
-                               "        operator PowAssign(MyClassName opA, MyClassName opB) -> {}" +
-                               "        operator DivAssign(MyClassName opA, MyClassName opB) -> {}" +
                                "    }" +
                                "    " +
                                "    class TestClass" +
@@ -689,8 +684,6 @@ namespace Kiwi.Tests
             var testClass = boundNamespace.Types.Single(x=>x.Name == "TestClass");
             var testBinaryFunc = testClass.Functions.Single(x=>x.Name== "TestBinaryFunc");
             var testAssignFunc = testClass.Functions.Single(x=>x.Name== "TestAssignFunc");
-
-            
         }
     }
 }
