@@ -133,6 +133,28 @@ namespace MyNamespaceName
 			}
 			else throw Error("wtf")			
 		}
+		
+		func LookVariableDeclaration()
+		{
+			var a : 1
+			var b : 1, c : None 1, d : "string"
+			immut e : 3, f : "string"
+		}
+		
+		
+		var a : new Optional!(int)
+		var b : new Optional!(string)
+		func LookOptionalVariables(Optional!(int) integer, Optional!(string) sstring)
+		{
+			immut a : integer
+			var b : sstring
+			var c : integer * integer //Error	
+			if(a is Some!(int))
+			{
+				//work with int, inferred from condition
+			}
+			else throw new ArgumentException("'integer' not initialized")
+		}
 	}
 }
 

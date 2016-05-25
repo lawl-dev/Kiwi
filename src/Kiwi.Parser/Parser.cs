@@ -741,11 +741,8 @@ namespace Kiwi.Parser
             while (TokenStream.Current.Type == TokenType.Identifier)
             {
                 var identifier = ParseExpected(TokenType.Identifier);
-                IExpressionSyntax initExpression = null;
-                if (ParseOptional(TokenType.Colon))
-                {
-                    initExpression = ParseExpression();
-                }
+                ParseExpected(TokenType.Colon);
+                var initExpression = ParseExpression();
                 variableDeclarationStatements.Add(
                     new VariableDeclarationStatementSyntax(variableQualifier, identifier, initExpression));
                 ParseOptional(TokenType.Comma);

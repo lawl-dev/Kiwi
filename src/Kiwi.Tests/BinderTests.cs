@@ -661,11 +661,12 @@ namespace Kiwi.Tests
                                "" +
                                "        func TestAssignFunc()" +
                                "        {" +
-                               "            var instance +: new MyClass2()" +
-                               "            var instance -: new MyClass2()" +
-                               "            var instance *: new MyClass2()" +
-                               "            var instance ^: new MyClass2()" +
-                               "            var instance /: new MyClass2()" +
+                               "            var instance : None MyClass2" +
+                               "            instance +: new MyClass2()" +
+                               "            instance -: new MyClass2()" +
+                               "            instance *: new MyClass2()" +
+                               "            instance ^: new MyClass2()" +
+                               "            instance /: new MyClass2()" +
                                "        }" +
                                "    }" +
                                "}";

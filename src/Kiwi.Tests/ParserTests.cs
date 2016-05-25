@@ -633,5 +633,25 @@ namespace Kiwi.Tests
             
             Assert.DoesNotThrow(() => parser.Parse());
         }
+
+        [Test]
+        public void Test_Optional()
+        {
+            const string src = "namespace MyNamespace" +
+                               "{" +
+                               "    class Class" +
+                               "    {" +
+                               "        Constructor(Optional!(int) i, Optional!(string) s)" +
+                               "        {" +
+                               "        }" +
+                               "    }" +
+                               "}";
+
+            var lexer = new Lexer.Lexer();
+            var tokens = lexer.Lex(src);
+            var parser = new Parser.Parser(tokens);
+            
+            Assert.DoesNotThrow(() => parser.Parse());
+        }
     }
 }
