@@ -40,6 +40,32 @@ namespace MyNamespaceName
 		}
 	}
 		
+	abstract class BaseClass
+	{
+		func PrivateFoo(){}
+		open func OpenFoo(){}
+		open func OpenFoo2(){}		
+		open func OpenFoo3(){}
+		abstract func AbstractFoo(){}
+		public abstract func AbstractFoo2(){}
+		protected func ProtectedFoo(){}
+	}
+	
+	class MyDerivedClass is BaseClass, MyDescriptorName
+	{
+		func MyFunc(MyTypeA myParameterName){}
+		func MyFunc2(MyType myParameterName, ..MyType myParamsParameters) -> MyReturnType
+		{
+			return new MyReturnType(localA)
+		}
+	
+		override func OpenFoo(){}
+		open override func OpenFoo2(){}
+		override func OpenFoo3(){}
+		override func AbstractFoo(){}
+		public override func AbstractFoo2(){ProtectedFoo()}
+	}
+		
 	class MyClassName is MyDescriptorName
 	{
 		immut myImmutableReferenceA : new myTypeA()
@@ -137,17 +163,14 @@ namespace MyNamespaceName
 		func LookVariableDeclaration()
 		{
 			var a : 1
-			var b : 1, c : None 1, d : "string"
+			var b : 1, c : new None!(int), d : "string"
 			immut e : 3, f : "string"
 		}
 		
-		
-		var a : new Optional!(int)
-		var b : new Optional!(string)
+		var field : new None!(int)
 		func LookOptionalVariables(Optional!(int) integer, Optional!(string) sstring)
 		{
 			immut a : integer
-			var b : sstring
 			var c : integer * integer //Error	
 			if(a is Some!(int))
 			{

@@ -449,8 +449,15 @@ namespace Kiwi.Tests
             Assert.IsInstanceOf<InfixFunctionSyntax>(infixFunction);
         }
 
-        [Test]
-        public void Test_ValidOperatorNames_DontThrow()
+        [TestCase("operator Add(MyClassName opA, MyClassName opB) -> return true")]
+        [TestCase("operator Sub(MyClassName opA, MyClassName opB) -> return true")]
+        [TestCase("operator Mult(MyClassName opA, MyClassName opB) -> return true")]
+        [TestCase("operator Div(MyClassName opA, MyClassName opB) -> return true")]
+        [TestCase("operator Pow(MyClassName opA, MyClassName opB) -> return true")]
+        [TestCase("operator Range(MyClassName opA, MyClassName opB) -> return true")]
+        [TestCase("operator In(MyClassName opA, MyClassName opB) -> return true")]
+        [TestCase("operator CompareTo(MyClassName opA, MyClassName opB) -> return true")]
+        public void Test_ValidOperatorNames_DontThrow(string opCode)
         {
             const string template = "namespace MyNamespace" +
                                     "{{" +
@@ -472,14 +479,7 @@ namespace Kiwi.Tests
                     parser.Parse();
                 });
 
-            Assert.That(() => parserFunc("operator Add(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator Sub(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator Mult(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator Div(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator Pow(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator Range(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator In(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
-            Assert.That(() => parserFunc("operator CompareTo(MyClassName opA, MyClassName opB) -> return true"), Throws.Nothing);
+            Assert.That(() => parserFunc(opCode), Throws.Nothing);
         }
 
         [Test]
@@ -652,6 +652,91 @@ namespace Kiwi.Tests
             var parser = new Parser.Parser(tokens);
             
             Assert.DoesNotThrow(() => parser.Parse());
+        }
+
+        [TestCase("func PrivateFoo(){}")]
+        [TestCase("open func OpenFoo(){}")]
+        [TestCase("abstract func AbstractFoo(){}")]
+        [TestCase("public abstract func AbstractFoo2(){}")]
+        [TestCase("protected func ProtectedFoo(){}")]
+        [TestCase("override func OpenFoo(){}")]
+        [TestCase("open override func OpenFoo2(){}")]
+        [TestCase("public override func AbstractFoo2(){ProtectedFoo()}")]
+        public void Test_Function_VisibilityModifiers(string code)
+        {
+            const string template = "namespace MyNamespace" +
+                                    "{{" +
+                                    "    class MyClass" +
+                                    "    {{" +
+                                    "        {0}" +
+                                    "    }}" +
+                                    "}}";
+
+
+
+
+            var parserFunc = new Action<string>(
+                opSrc =>
+                {
+                    var lexer = new Lexer.Lexer();
+                    var tokens = lexer.Lex(string.Format(template, opSrc));
+                    var parser = new Parser.Parser(tokens);
+                    parser.Parse();
+                });
+
+            Assert.That(() => parserFunc(code), Throws.Nothing);
+        }
+
+        [TestCase("abstract")]
+        [TestCase("public abstract")]
+        public void Test_Class_VisibilityModifiers(string modifiers)
+        {
+            const string template = "namespace MyNamespace" +
+                                    "{{" +
+                                    "    {0} class MyClass" +
+                                    "    {{" +
+                                    "    }}" +
+                                    "}}";
+
+
+
+
+            var parserFunc = new Action<string>(
+                opSrc =>
+                {
+                    var lexer = new Lexer.Lexer();
+                    var tokens = lexer.Lex(string.Format(template, opSrc));
+                    var parser = new Parser.Parser(tokens);
+                    parser.Parse();
+                });
+
+            Assert.That(() => parserFunc(modifiers), Throws.Nothing);
+        }
+
+        [TestCase("Descriptor")]
+        [TestCase("BaseClass, Descriptor")]
+        public void Test_Class_Inheritance(string code)
+        {
+            const string template = "namespace MyNamespace" +
+                                    "{{" +
+                                    "    class MyClass is {0}" +
+                                    "    {{" +
+                                    "    }}" +
+                                    "}}";
+
+
+
+
+            var parserFunc = new Action<string>(
+                opSrc =>
+                {
+                    var lexer = new Lexer.Lexer();
+                    var tokens = lexer.Lex(string.Format(template, opSrc));
+                    var parser = new Parser.Parser(tokens);
+                    parser.Parse();
+                });
+
+            Assert.That(() => parserFunc(code), Throws.Nothing);
         }
     }
 }
