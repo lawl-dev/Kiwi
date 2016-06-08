@@ -179,6 +179,40 @@ namespace MyNamespaceName
 			else throw new ArgumentException("'integer' not initialized")
 		}
 	}
+
+	class PrimaryConstructorClass
+	{
+		immut immutFieldFromPrimaryConstructor
+		primary Constructor(int val)
+		{
+			immutFieldFromPrimaryConstructor = val
+		}
+		
+		Constructor() : this(1)
+		{
+			
+		}
+	}
+	
+	abstract class Optional!(T)
+	{		
+	}
+	
+	class Some!(T) is Optional!(T)
+	{
+		private var _some
+		primary Constructor(T val)
+		{
+			_some = val
+		}
+		
+		public Get() -> return _some
+	}
+	
+	class None!(T) is Optional!(T)
+	{
+		
+	}
 }
 
 
