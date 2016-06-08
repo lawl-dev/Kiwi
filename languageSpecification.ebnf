@@ -207,12 +207,23 @@ namespace MyNamespaceName
 		}
 		
 		public Get() -> return _some
+		public Set(T val)
+		{
+			_some = val
+		}
 	}
 	
 	class None!(T) is Optional!(T)
-	{
-		
+	{		
 	}
+	
+	class Empty
+	
+	class NoneInt is None!(int)
+	
+	class SomeGenericClass!(T1, T2)
+	
+	class SomeEmptySpecifiedGenericClass!(T) is SomeGenericClass!(Empty, T)
 }
 
 
