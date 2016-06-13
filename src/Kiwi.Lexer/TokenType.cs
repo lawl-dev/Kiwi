@@ -2,11 +2,11 @@ namespace Kiwi.Lexer
 {
     public enum TokenType
     {
-        DescriptorKeyword,
+        ProtocolKeyword,
         FuncKeyword,
         DataKeyword,
         Int,
-        ImmutKeyword,
+        LetKeyword,
         StringKeyword,
         VarKeyword,
         OpenBrace,
@@ -70,6 +70,7 @@ namespace Kiwi.Lexer
         NotKeyword,
         AndKeyword,
         InfixKeyword,
-        Operator
+        Operator,
+        Primary
     }
 }

@@ -15,7 +15,7 @@ namespace Kiwi.Tests
                                                "    {0}" + "\r\n" + //class placeholder
                                                "}}";
 
-        private const string ClassSource = "class ClassSample is DSampleDescriptor" + "\r\n" +
+        private const string ClassSource = "class ClassSample is DSampleProtocol" + "\r\n" +
                                            "{{" + "\r\n" +
                                            "    {0}" + "\r\n" + //constructor placeholder
                                            "    {1}" + "\r\n" + //field placeholder
@@ -42,7 +42,7 @@ namespace Kiwi.Tests
             Assert.IsNotEmpty(ast.Namespaces);
             Assert.IsNotEmpty(ast.Namespaces[0].Classes);
             Assert.AreEqual("ClassSample", ast.Namespaces[0].Classes[0].Name.Value);
-            Assert.AreEqual("DSampleDescriptor", ast.Namespaces[0].Classes[0].DescriptorName.Value);
+            Assert.AreEqual("DSampleProtocol", ast.Namespaces[0].Classes[0].ProtocolName.Value);
         }
 
         [Test]
@@ -201,7 +201,7 @@ namespace Kiwi.Tests
         [TestCase("return if(switch) 1 else 2", typeof(KiwiSyntaxException),
             "Unexpected Token switch. Expected Sign Operator, New, Int, Float, String or Identifier Expression.")]
         [TestCase("int if(switch) 1 else 2", typeof(KiwiSyntaxException),
-            "Unexpected Token \"int\". Expected If, Return, Match, Switch, Var, Immutable, Identifier, For or Forr")]
+            "Unexpected Token \"int\". Expected If, Return, Match, Switch, Var, Let, Identifier, For or Forr")]
         [TestCase("for(f(); i < 1; i :+ 1){}", typeof(KiwiSyntaxException),
             "Unexpected Statement. Expected AssignmentStatement")]
         [TestCase("i lol 1", typeof(KiwiSyntaxException),
@@ -532,7 +532,7 @@ namespace Kiwi.Tests
                                "{" +
                                "    func GenericFunction!(TypeA, TypeB)(TypeA a, TypeB b)" +
                                "    {" +
-                               "        immut anonFunc : func!(TypeX, TypeY)(TypeX x, TypeY y) -> return x" +
+                               "        let anonFunc : func!(TypeX, TypeY)(TypeX x, TypeY y) -> return x" +
                                "        " +
                                "    }" +
                                "}";
@@ -551,7 +551,7 @@ namespace Kiwi.Tests
                                "{" +
                                "    func GenericFunction!(TypeA, TypeB)(TypeA a, TypeB b)" +
                                "    {" +
-                               "        immut anonFunc : func!(TypeX, TypeY)(TypeX x, TypeY y) -> return x" +
+                               "        let anonFunc : func!(TypeX, TypeY)(TypeX x, TypeY y) -> return x" +
                                "        anonFunc!(a, a)" +
                                "    }" +
                                "}";
@@ -713,8 +713,8 @@ namespace Kiwi.Tests
             Assert.That(() => parserFunc(modifiers), Throws.Nothing);
         }
 
-        [TestCase("Descriptor")]
-        [TestCase("BaseClass, Descriptor")]
+        [TestCase("Protocol")]
+        [TestCase("BaseClass, Protocol")]
         public void Test_Class_Inheritance(string code)
         {
             const string template = "namespace MyNamespace" +
@@ -737,6 +737,140 @@ namespace Kiwi.Tests
                 });
 
             Assert.That(() => parserFunc(code), Throws.Nothing);
+        }
+
+        [Test]
+        public void Test_primary_Constructor()
+        {
+            const string code = @"namespace MyNamespace" +
+                                    "{" +
+                                    "    class MyClass" +
+                                    "    {" +
+                                    "       primary Constructor(int val)" +
+                                    "       {" +
+                                    "       }" +
+                                    "    }" +
+                                    "}";
+
+
+
+
+            var parserFunc = new Action<string>(
+                opSrc =>
+                {
+                    var lexer = new Lexer.Lexer();
+                    var tokens = lexer.Lex(opSrc);
+                    var parser = new Parser.Parser(tokens);
+                    parser.Parse();
+                });
+
+            Assert.That(() => parserFunc(code), Throws.Nothing);
+        }
+
+        [Test]
+        public void Test_Field_without_initializer_isValid()
+        {
+            const string code = @"namespace MyNamespace" +
+                                    "{" +
+                                    "    class MyClass" +
+                                    "    {" +
+                                    "       private var _some" +
+                                    "       primary Constructor(int val)" +
+                                    "       {" +
+                                    "           _some = val" +
+                                    "       }" +
+                                    "    }" +
+                                    "}";
+
+
+
+
+            var parserFunc = new Action<string>(
+                opSrc =>
+                {
+                    var lexer = new Lexer.Lexer();
+                    var tokens = lexer.Lex(opSrc);
+                    var parser = new Parser.Parser(tokens);
+                    parser.Parse();
+                });
+
+            Assert.That(() => parserFunc(code), Throws.Nothing);
+        }
+
+        [Test]
+        public void Test_Class_without_body_dontThrow()
+        {
+            const string code = @"namespace MyNamespace" +
+                                    "{" +
+                                    "    class Empty" +
+                                    "}";
+
+
+
+
+            var parserFunc = new Action<string>(
+                opSrc =>
+                {
+                    var lexer = new Lexer.Lexer();
+                    var tokens = lexer.Lex(opSrc);
+                    var parser = new Parser.Parser(tokens);
+                    parser.Parse();
+                });
+
+            Assert.That(() => parserFunc(code), Throws.Nothing);
+        }
+
+        [TestCase("Constructor()")]
+        [TestCase("Constructor(string)")]
+        [TestCase("Constructor(string, ..Type)")]
+        [TestCase("operator Div(TType, TType) -> TType")]
+        [TestCase("func Size() -> int")]
+        public void Test_Concept(string conceptConstraint)
+        {
+            const string template = "Concept ConceptName!(TType)" +
+                                    "{{" +
+                                    "   {0}" +
+                                    "}}";
+
+
+
+
+            var parserFunc = new Action<string>(
+                opSrc =>
+                {
+                    var lexer = new Lexer.Lexer();
+                    var tokens = lexer.Lex(string.Format(template, opSrc));
+                    var parser = new Parser.Parser(tokens);
+                    parser.Parse();
+                });
+
+            Assert.That(() => parserFunc(conceptConstraint), Throws.Nothing);
+        }
+
+        [TestCase("is Protocol")]
+        [TestCase("is this")]
+        [TestCase("fits MyConcept")]
+        [TestCase("fits {" +
+                  "         operator Div(T, T) -> T" +
+                  "         func Size() -> int" +
+                       "}")]
+        public void Test_GenericConstraints(string constraint)
+        {
+            const string template = "class SomeGenericClass!(T) where T {0}";
+
+
+
+
+            var parserFunc = new Action<string>(
+                opSrc =>
+                {
+                    var lexer = new Lexer.Lexer();
+                    var tokens = lexer.Lex(string.Format(template, opSrc));
+                    var parser = new Parser.Parser(tokens);
+                    parser.Parse();
+                });
+
+            Assert.That(() => parserFunc(constraint), Throws.Nothing);
         }
     }
 }

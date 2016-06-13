@@ -8,14 +8,15 @@ namespace Kiwi.Tests
     {
         [TestCase(TokenType.FuncKeyword, "func")]
         [TestCase(TokenType.Operator, "operator")]
+        [TestCase(TokenType.Primary, "primary")]
         [TestCase(TokenType.InfixKeyword, "infix")]
         [TestCase(TokenType.TrueKeyword, "true")]
         [TestCase(TokenType.FalseKeyword, "false")]
-        [TestCase(TokenType.DescriptorKeyword, "descriptor")]
+        [TestCase(TokenType.ProtocolKeyword, "protocol")]
         [TestCase(TokenType.DataKeyword, "data")]
         [TestCase(TokenType.IntKeyword, "int")]
         [TestCase(TokenType.FloatKeyword, "float")]
-        [TestCase(TokenType.ImmutKeyword, "immut")]
+        [TestCase(TokenType.LetKeyword, "let")]
         [TestCase(TokenType.CaseKeyword, "case")]
         [TestCase(TokenType.StringKeyword, "string")]
         [TestCase(TokenType.VarKeyword, "var")]
@@ -89,9 +90,9 @@ namespace Kiwi.Tests
         }
 
         [Test]
-        public void TestSampleDescriptor()
+        public void TestSampleProtocol()
         {
-            const string descriptorSource = "descriptor DescriptorSample" + "\r\n" +
+            const string protocolSource = "protocol DescriptorSample" + "\r\n" +
                                             "{" + "\r\n" +
                                             "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> TypeNameSample;"
                                             + "\r\n"
@@ -103,7 +104,7 @@ namespace Kiwi.Tests
 
             var tokenTypesSource = new[]
                                    {
-                                       TokenType.DescriptorKeyword,
+                                       TokenType.ProtocolKeyword,
                                        TokenType.Identifier,
                                        TokenType.OpenBrace,
                                        TokenType.FuncKeyword,
@@ -139,15 +140,15 @@ namespace Kiwi.Tests
                                        TokenType.Semicolon,
                                        TokenType.ClosingBrace
                                    };
-            ValidateLexerResults(descriptorSource, tokenTypesSource);
+            ValidateLexerResults(protocolSource, tokenTypesSource);
         }
 
         [Test]
         public void TestSampleClass()
         {
-            const string classSource = "class ClassNameSample is DescriptorNameSample" + "\r\n" +
+            const string classSource = "class ClassNameSample is ProtocolNameSample" + "\r\n" +
                                        "{" + "\r\n" +
-                                       "    immut FieldTypeSample fieldNameSample : \"Hallo\";" + "\r\n" +
+                                       "    let FieldTypeSample fieldNameSample : \"Hallo\";" + "\r\n" +
                                        "    FieldTypeSample2 = 1 * 2 + 3 / 4;" + "\r\n" +
                                        "    func FunctionNameSample(TypeNameSample parameterNameSample, ..TypeNameSample paramsParameterName) -> TypeNameSample"
                                        + "\r\n"
@@ -169,7 +170,7 @@ namespace Kiwi.Tests
                                        TokenType.IsKeyword,
                                        TokenType.Identifier,
                                        TokenType.OpenBrace,
-                                       TokenType.ImmutKeyword,
+                                       TokenType.LetKeyword,
                                        TokenType.Identifier,
                                        TokenType.Identifier,
                                        TokenType.Colon,

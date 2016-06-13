@@ -141,16 +141,16 @@ namespace Kiwi.Parser
             ParseExpected(TokenType.ClassKeyword);
             var className = ParseExpected(TokenType.Identifier);
 
-            Token descriptorName = null;
+            Token protocolName = null;
             if (ParseOptional(TokenType.IsKeyword))
             {
-                descriptorName = ParseExpected(TokenType.Identifier);
+                protocolName = ParseExpected(TokenType.Identifier);
             }
 
             var inner = ParseInner(ParseClassBody);
             return new ClassSyntax(
                 className,
-                descriptorName,
+                protocolName,
                 inner.OfType<ConstructorSyntax>().ToList(),
                 inner.OfType<FunctionSyntax>().ToList(),
                 inner.OfType<FieldSyntax>().ToList());
@@ -169,7 +169,7 @@ namespace Kiwi.Parser
                 case TokenType.InfixKeyword:
                     return ParseInfixFunction();
                 case TokenType.VarKeyword:
-                case TokenType.ImmutKeyword:
+                case TokenType.LetKeyword:
                     return ParseField();
                 default:
                     throw new KiwiSyntaxException("Unexpected Token. Expected Constructor, Func, Var or Const");
@@ -178,8 +178,8 @@ namespace Kiwi.Parser
 
         private FieldSyntax ParseField()
         {
-            var isImmutable = TokenStream.Current.Type == TokenType.ImmutKeyword;
-            var fieldTypeQualifier = ParseExpected(isImmutable ? TokenType.ImmutKeyword : TokenType.VarKeyword);
+            var isImmutable = TokenStream.Current.Type == TokenType.LetKeyword;
+            var fieldTypeQualifier = ParseExpected(isImmutable ? TokenType.LetKeyword : TokenType.VarKeyword);
             var fieldName = ParseExpected(TokenType.Identifier);
             ParseExpected(TokenType.Colon);
             var fieldInitializer = ParseExpression();
@@ -544,7 +544,7 @@ namespace Kiwi.Parser
                 case TokenType.SwitchKeyword:
                     return ParseSwitchStatement();
                 case TokenType.VarKeyword:
-                case TokenType.ImmutKeyword:
+                case TokenType.LetKeyword:
                     return ParseVariablesDeclarationStatement();
                 case TokenType.Identifier:
                     return ParseFunctionCallOrAssignStatement();
@@ -556,7 +556,7 @@ namespace Kiwi.Parser
                     return ParseScope(ParseStatement);
                 default:
                     throw new KiwiSyntaxException(
-                        $"Unexpected Token \"{TokenStream.Current.Value}\". Expected If, Return, When, Switch, Var, Const, Identifier, For or Forr");
+                        $"Unexpected Token \"{TokenStream.Current.Value}\". Expected If, Return, Match, Switch, Var, Const, Identifier, For or Forr");
             }
         }
 
@@ -730,7 +730,7 @@ namespace Kiwi.Parser
             switch (current.Type)
             {
                 case TokenType.VarKeyword:
-                case TokenType.ImmutKeyword:
+                case TokenType.LetKeyword:
                     ParseExpected(current.Type);
                     variableQualifier = current;
                     break;

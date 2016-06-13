@@ -323,8 +323,8 @@ namespace Kiwi.Semantic.Binder
                 case TokenType.VarKeyword:
                     qualifier = VariableQualifier.Var;
                     break;
-                case TokenType.ImmutKeyword:
-                    qualifier = VariableQualifier.Immutable;
+                case TokenType.LetKeyword:
+                    qualifier = VariableQualifier.Let;
                     break;
                 default:
                     throw new KiwiSemanticException($"Forbidden Variable Qualifier {tokenType}");

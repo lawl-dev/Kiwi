@@ -6,17 +6,17 @@ namespace Kiwi.Parser.Nodes
 {
     public class ClassSyntax : ISyntaxBase
     {
-        public ClassSyntax(Token name, Token descriptorName, List<ConstructorSyntax> constructors, List<FunctionSyntax> functions, List<FieldSyntax> fields)
+        public ClassSyntax(Token name, Token protocolName, List<ConstructorSyntax> constructors, List<FunctionSyntax> functions, List<FieldSyntax> fields)
         {
             Name = name;
-            DescriptorName = descriptorName;
+            ProtocolName = protocolName;
             Constructors = constructors;
             Functions = functions;
             Fields = fields;
         }
 
         public Token Name { get; }
-        public Token DescriptorName { get; }
+        public Token ProtocolName { get; }
         public List<ConstructorSyntax> Constructors { get; }
         public List<FunctionSyntax> Functions { get; }
         public List<FieldSyntax> Fields { get; }
