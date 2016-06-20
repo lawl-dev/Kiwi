@@ -229,10 +229,77 @@ namespace MyNamespaceName
 																												operator Div(T, T) -> T
 																												func Size() -> int
 																											 }, Addable!(T)
+
+
 	
+	
+	Concept Square!(T) where T : Mult!(T)
+	{
+		func Square(T val) -> return val * val
+	}
+
 	Concept Addable!(T)
 	{
 		operator Add(T, T) -> T
+	}
+	
+	Concept Mult!(T)
+	{
+		operator Mult(T, T) -> T
+	}
+	
+	impl Addable!(int) //implies imlp Addable!(T) { operator Add(int a, int b) -> return a.Add(b) }
+	impl Mult!(int) //implies imlp Mult!(T) { operator Mult(int a, int b) -> return a.Mult(b) }
+	
+	func Func!(T)(T val) where T : Addable!(T) + Mult!(T) + DefaultConstructor!(T)
+	{
+		
+	}
+	
+	Concept Enumerable!(T)
+	{
+		func Current() -> T
+		func Next()
+	}
+	
+	impl Enumerable!(int)
+	{
+		func Current() -> return this
+		func Next()
+		{
+			this : this + 1
+		}
+	}
+	
+	extend int : Enumerable!(int)
+	{
+		func Current() -> return this
+		func Next()
+		{
+			this : this + 1
+		}
+	}
+	
+	Enumerable!(int)
+	{
+		func Current() -> return this
+		func Next()
+		{
+			this : this + 1
+		}
+	}
+		
+	class int : Enumerable!(int)
+	{
+		func Current() -> return this
+		func Next()
+		{
+			this : this + 1
+		}
+	}	
+		
+	impl Square!(int)
+	{
 	}
 	
 	Concept DefaultConstructor!(T)
@@ -240,16 +307,46 @@ namespace MyNamespaceName
 		Constructor()
 	}
 	
-	infix func Add!(T)(T a, T b) where T fits Addable!(T) -> return a + b
-	
-	func UseAddWithConcept()
+	func Enumerable!(T).Where!(T)(func(T, bool) predicate) -> T
 	{
-		var a : 1
-		var b : 2
-		var c : a Add b
-	}		
+		var result : new List!(T)
+		for(T item in this)
+		{
+			if(predicate(item))
+			{
+				result.Add(item)
+			}
+		}
+		return result
+	}
 	
-	func IEnumerable!(T).Sum!(T)() -> T where T fits Addable!(T), DefaultConstructor!(T)
+	func CalcAverage()
+	{
+		var ints : new int[](1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+		var doubles : new dobule[](1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.1, 11.2, 12.3)
+		var float : new float[](1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.1, 11.2, 12.3)
+		
+		int : Addable!(int)
+		extend int : Addable!(int)
+		
+		impl Addable!(int)
+		impl Divable!(int)
+		impl Addable!(double)
+		impl Divable!(double)
+		impl Addable!(float)
+		impl Divable!(float)
+		
+		var avInt : ints.Average()
+		var avDouble : double.Average()
+		var avFloat : float.Average()
+	}
+	
+	func Enumerable!(TNumber).Average() where TNumber : Addable!(TNumber) + Divable!(TNumber) + DefaultConstructor!(T)
+	{
+		return this.Sum() / this.Count()
+	}
+	
+	func IEnumerable!(T).Sum!(T)() -> T where T fits Addable!(T) + DefaultConstructor!(T)
 	{
 		T result : new T()
 		for(T item in this)
